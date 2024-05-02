@@ -1,0 +1,835 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: samir.das@tessell.com
+    name: Samir Das
+  description: Tessell Gateway Service API Specification
+  title: Tessell Gateway Service API
+  version: "1.0"
+servers:
+- url: http://localhost:8080
+paths:
+  /command:
+    post:
+      operationId: sendCommand
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/command'
+      responses:
+        "200":
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Send a new command to a DB VM.
+      tags:
+      - tessellGatewayServiceController
+      x-contentType: application/json
+      x-accepts: application/json
+  /ta-status/{taId}:
+    get:
+      operationId: getTessellAgentStatus
+      parameters:
+      - explode: false
+        in: path
+        name: taId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get the status of a command
+      tags:
+      - tessellGatewayServiceController
+      x-accepts: application/json
+  /status/{taId}/{executionId}:
+    get:
+      operationId: getCommandStatus
+      parameters:
+      - explode: false
+        in: path
+        name: taId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: executionId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commandStatusResponse'
+          description: SUCCESS
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get the status of a command
+      tags:
+      - tessellGatewayServiceController
+      x-accepts: application/json
+  /upgrade-library/{taId}:
+    put:
+      operationId: upgradeLibrary
+      parameters:
+      - explode: false
+        in: path
+        name: taId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpgradeLibraryPayload'
+      responses:
+        "200":
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Upgrade a library in the vm
+      tags:
+      - tessellGatewayServiceController
+      x-contentType: application/json
+      x-accepts: application/json
+  /read-file/{taId}:
+    get:
+      operationId: readRemoteFile
+      parameters:
+      - explode: false
+        in: path
+        name: taId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: filePath
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: line-limit
+        required: false
+        schema:
+          default: 200
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadFileResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Read a file from DB VM.
+      tags:
+      - tessellGatewayServiceController
+      x-accepts: application/json
+  /scrape:
+    get:
+      operationId: scrape
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  type: string
+                type: array
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Scrape TA for DB metrics.
+      tags:
+      - tessellGatewayServiceController
+      x-accepts: application/json
+  /curl:
+    post:
+      operationId: sendCurlRequest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CurlRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurlResponse'
+          description: SUCCESS
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Send a curl command request to a monitoring VM.
+      tags:
+      - tessellGatewayServiceController
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-ops/tenants/{tenantId}/register:
+    delete:
+      operationId: deregisterTenantAccount
+      parameters:
+      - explode: false
+        in: path
+        name: tenantId
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Deregister Account for Tenant
+      tags:
+      - tessellGatewayServiceController
+      x-accepts: application/json
+    post:
+      operationId: registerTenantAccount
+      parameters:
+      - explode: false
+        in: path
+        name: tenantId
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/registerTenantAccountResponse'
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Register Account for Tenant
+      tags:
+      - tessellGatewayServiceController
+      x-accepts: application/json
+  /tessell-ops/tenants/{tenantId}/stream:
+    delete:
+      operationId: deleteTenantStream
+      parameters:
+      - explode: false
+        in: path
+        name: tenantId
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Delete stream for Tenant
+      tags:
+      - tessellGatewayServiceController
+      x-accepts: application/json
+    post:
+      operationId: initializeTenantStream
+      parameters:
+      - explode: false
+        in: path
+        name: tenantId
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "201":
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Initialize stream for Tenant
+      tags:
+      - tessellGatewayServiceController
+      x-accepts: application/json
+  /tessell-ops/agent/{deploymentId}/token:
+    get:
+      operationId: getTessellAgentToken
+      parameters:
+      - explode: false
+        in: path
+        name: deploymentId
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: agent-type
+        required: true
+        schema:
+          $ref: '#/components/schemas/agentType'
+        style: form
+      - explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getTessellAgentTokenResponse'
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get Tessell Agent Token
+      tags:
+      - tessellGatewayServiceController
+      x-accepts: application/json
+  /tessell-ops/tenants/{tenantId}/upgrade:
+    post:
+      operationId: publishTenantServicesUpgrade
+      parameters:
+      - explode: false
+        in: path
+        name: tenantId
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/publishTenantServicesUpgradeRequest'
+      responses:
+        "200":
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Publish Upgrade message for Tenant Services
+      tags:
+      - tessellGatewayServiceController
+      x-contentType: application/json
+      x-accepts: application/json
+components:
+  schemas:
+    command:
+      description: Command packet sent by TGS to an agent.
+      properties:
+        dbVmId:
+          description: DB VM identifier
+          type: string
+        cmdString:
+          description: Commend Identifier.
+          type: string
+        payload:
+          description: Command Payload.
+          format: byte
+          type: string
+        executionId:
+          description: Associated Execution ID with the request.
+          type: string
+        timeout:
+          description: Timeout for this execution in seconds.
+          type: integer
+      type: object
+    commandStatusResponse:
+      description: Command status is sent by TA to TGA when a command is completed.
+      example:
+        output: output
+        errno: 0
+        error: error
+      properties:
+        status:
+          $ref: '#/components/schemas/commandStatus'
+        output:
+          description: output of the associated log file.
+          format: byte
+          type: string
+        error:
+          description: error message.
+          type: string
+        errno:
+          description: Error number from the command.
+          type: integer
+      type: object
+    UpgradeLibraryPayload:
+      description: Upgrade library payload
+      example:
+        library: library
+        checksum: checksum
+        id: id
+        type: type
+        version: version
+        parameters:
+          key: parameters
+        url: url
+      properties:
+        id:
+          description: upgrade request id
+          type: string
+        type:
+          description: output of the associated log file.
+          type: string
+        library:
+          description: library name
+          type: string
+        url:
+          description: presigned url
+          type: string
+        version:
+          description: new version
+          type: string
+        checksum:
+          description: checksum of the package of the library
+          type: string
+        parameters:
+          additionalProperties:
+            type: string
+          type: object
+      type: object
+    ReadFileResponse:
+      description: Read file response
+      example:
+        errno: 0
+        error: error
+        fileContent: fileContent
+      properties:
+        fileContent:
+          format: byte
+          type: string
+        error:
+          description: error message.
+          type: string
+        errno:
+          description: Error number from the command.
+          type: integer
+      type: object
+    commandStatus:
+      description: Status of the command.
+      enum:
+      - FAILED
+      - SUCCESS
+      - RUNNING
+      - WAITING
+      - SCHEDULED
+      type: string
+    RPCRequest:
+      properties:
+        service:
+          type: string
+        port:
+          type: integer
+        endpoint:
+          type: string
+        method:
+          type: string
+        headers:
+          type: object
+        payload:
+          format: byte
+          type: string
+        mediaType:
+          type: string
+        namespace:
+          type: string
+        timeout:
+          type: integer
+      required:
+      - endpoint
+      - namespace
+      - service
+      type: object
+    RPCResponse:
+      properties:
+        status:
+          type: integer
+        payload:
+          format: byte
+          type: string
+      type: object
+    checkConnectivityRequest:
+      description: Check Connectivity request payload
+      properties:
+        endpoints:
+          description: List of endpoints in format DNS/IP:Port
+          items:
+            type: string
+          type: array
+      type: object
+    checkConnectivityResponse:
+      description: Check Connectivity response
+      properties:
+        status:
+          $ref: '#/components/schemas/connectivityStatus'
+        error:
+          description: error message.
+          type: string
+        errno:
+          description: Error number from the command.
+          type: integer
+      type: object
+    connectivityStatus:
+      description: Status of connectivity.
+      enum:
+      - FAILED
+      - SUCCESS
+      type: string
+    registerTenantAccountResponse:
+      description: User credentials for the registered account
+      example:
+        accountName: accountName
+        dmmSchedulerCredentials:
+          seed: seed
+          jwt: jwt
+          publicKey: publicKey
+          userName: userName
+        governanceCredentials:
+          seed: seed
+          jwt: jwt
+          publicKey: publicKey
+          userName: userName
+      properties:
+        accountName:
+          description: Name of the account
+          type: string
+        dmmSchedulerCredentials:
+          $ref: '#/components/schemas/JWTCredentials'
+        governanceCredentials:
+          $ref: '#/components/schemas/JWTCredentials'
+      type: object
+    getTessellAgentTokenResponse:
+      description: User credentials for the registered agent
+      example:
+        accountName: accountName
+        tessellAgentCredentials:
+          seed: seed
+          jwt: jwt
+          publicKey: publicKey
+          userName: userName
+      properties:
+        accountName:
+          description: Name of the account
+          type: string
+        tessellAgentCredentials:
+          $ref: '#/components/schemas/JWTCredentials'
+      type: object
+    JWTCredentials:
+      description: JWT Credentials
+      example:
+        seed: seed
+        jwt: jwt
+        publicKey: publicKey
+        userName: userName
+      properties:
+        userName:
+          description: Name of the user
+          type: string
+        publicKey:
+          description: Public Key
+          type: string
+        seed:
+          description: Seed
+          type: string
+        jwt:
+          description: JWT of the user
+          type: string
+      type: object
+    agentType:
+      description: Type of Tessell Agent.
+      enum:
+      - DB_SERVICE
+      - MONITORING
+      type: string
+    UpgradeParametersRequest:
+      properties:
+        namespace:
+          type: string
+        computeResourceId:
+          type: string
+        deploymentId:
+          type: string
+        tenantId:
+          type: string
+        agentType:
+          type: string
+        timeout:
+          type: integer
+      required:
+      - namespace
+      type: object
+    UpgradeParametersResponse:
+      properties:
+        controlPlaneCloudType:
+          type: string
+        computeResource:
+          additionalProperties:
+            type: string
+          type: object
+        dbServices:
+          items:
+            $ref: '#/components/schemas/dbService'
+          type: array
+        tenantInfo:
+          type: object
+        infraConfig:
+          $ref: '#/components/schemas/infraConfig'
+        genieInfo:
+          type: object
+      type: object
+    dbService:
+      description: DB Service Info
+      properties:
+        name:
+          type: string
+        id:
+          type: string
+        serviceInstanceId:
+          type: string
+      type: object
+    infraConfig:
+      properties:
+        k8sConfig:
+          additionalProperties:
+            type: string
+          type: object
+        loggingConfig:
+          additionalProperties:
+            type: string
+          type: object
+        agentConfig:
+          additionalProperties:
+            type: string
+          type: object
+        networkProfile:
+          type: object
+      type: object
+    CurlRequest:
+      description: curl Request.
+      example:
+        dbVmId: dbVmId
+        endpoint: endpoint
+        payload: payload
+        header: header
+        timeout: 0
+      properties:
+        dbVmId:
+          description: DB VM identifier
+          type: string
+        requestMethod:
+          $ref: '#/components/schemas/RequestMethod'
+        endpoint:
+          description: Endpoint to which request needs to be made
+          type: string
+        header:
+          description: request headers
+          type: string
+        payload:
+          description: request payload
+          type: string
+        timeout:
+          description: Timeout for this execution in seconds.
+          type: integer
+      type: object
+    RequestMethod:
+      description: Request Method
+      enum:
+      - GET
+      - PUT
+      - POST
+      - DELETE
+      - PATCH
+      - OPTIONS
+      type: string
+    CurlResponse:
+      description: curl response
+      example:
+        response: response
+        statusCode: 0
+      properties:
+        statusCode:
+          description: Response Status Code
+          type: integer
+        response:
+          description: curl response
+          type: string
+      type: object
+    publishTenantServicesUpgradeRequest:
+      description: publish tenant services upgrade request
+      properties:
+        libraries:
+          description: List of libraries available for upgrade
+          items:
+            $ref: '#/components/schemas/libraryUpgradeInfo'
+          type: array
+      type: object
+    libraryUpgradeInfo:
+      properties:
+        library:
+          type: string
+        url:
+          type: string
+        version:
+          type: string
+        checksum:
+          type: string
+        os:
+          type: string
+        engine:
+          type: string
+        cloud:
+          type: string
+      required:
+      - checksum
+      - library
+      - url
+      - version
+      type: object
+    ApiError:
+      description: Common error response object for non 2xx responses
+      properties:
+        code:
+          description: Status code for the error response
+          type: string
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        defaultCodeSet:
+          type: boolean
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    ApiErrorDetails:
+      description: Common API exception details
+      properties:
+        resolution:
+          description: Resolution detail for API exception
+          type: string
+      type: object
+    ApiErrorOps:
+      description: Common error response object for non 2xx responses of internal
+        or ops APIs
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/TessellErrorCode'
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        serviceException:
+          $ref: '#/components/schemas/ApiError'
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    TessellErrorCode:
+      description: Error code object for API Exceptions
+      properties:
+        httpErrorCode:
+          description: Standard http error code
+          type: string
+        serviceCode:
+          description: Service error code
+          type: string
+        opCode:
+          description: Operation error code
+          type: string
+        description:
+          description: Error code description
+          type: string
+      type: object
+

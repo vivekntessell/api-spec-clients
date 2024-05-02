@@ -1,0 +1,2483 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: support@tessell.com
+    name: Inc
+    url: https://www.tessell.com
+  description: REST API Documentation
+  termsOfService: https://www.tessell.com/terms
+  title: REST API Documentation
+  version: "1.0"
+servers:
+  - description: Inferred Url
+    url: http://localhost:8084
+paths:
+  /tessell-ops/governance/cache:
+    delete:
+      summary: Clear cache of current instance
+      tags:
+        - governance-config
+      operationId: clearCache
+      parameters:
+        - name: namespaces
+          description: Cache namespaces to clear
+          in: query
+          required: true
+          schema:
+            items:
+              type: string
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /service-plans:
+    get:
+      operationId: getServicePlans
+      parameters:
+        - description: load-apps
+          explode: true
+          in: query
+          name: load-apps
+          required: false
+          schema:
+            type: string
+        - description: load-features
+          explode: true
+          in: query
+          name: load-features
+          required: false
+          schema:
+            type: string
+          style: form
+        - $ref: 'common-specification.yaml#/components/parameters/pageSize'
+        - $ref: 'common-specification.yaml#/components/parameters/pageOffset'
+        - $ref: 'common-specification.yaml#/components/parameters/timeZone'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServicePlanApiResponse'
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+      summary: Get a list of Tessell Service Plans
+      tags:
+        - tessell-service-plan-controller
+  /tessell-internal/service-plans:
+    post:
+      operationId: createServicePlan
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServicePlanCreatePayload'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServicePlan'
+          description: OK
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+      summary: Create an Tessell App
+      tags:
+        - tessell-service-plan-controller
+  /tessell-internal/service-plans/{name}:
+    delete:
+      operationId: deleteServicePlan
+      parameters:
+        - description: name
+          explode: false
+          in: path
+          name: name
+          required: true
+          schema:
+            type: string
+          style: simple
+        - description: softDelete
+          explode: true
+          in: query
+          name: softDelete
+          required: false
+          schema:
+            type: boolean
+          style: form
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GovernStatus'
+          description: OK
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+      summary: Delete a Tessell App
+      tags:
+        - tessell-service-plan-controller
+    get:
+      operationId: getServicePlan
+      parameters:
+        - description: name
+          explode: false
+          in: path
+          name: name
+          required: true
+          schema:
+            type: string
+          style: simple
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServicePlan'
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+      summary: Get details of an Tessell App
+      tags:
+        - tessell-service-plan-controller
+  #    patch:
+  #      operationId: updateServicePlan
+  #      parameters:
+  #        - description: name
+  #          explode: false
+  #          in: path
+  #          name: name
+  #          required: true
+  #          schema:
+  #            type: string
+  #          style: simple
+  #      requestBody:
+  #        content:
+  #          application/json:
+  #            schema:
+  #              $ref: '#/components/schemas/AppUpdatePayload'
+  #      responses:
+  #        '200':
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/App'
+  #          description: OK
+  #        '204':
+  #          description: No Content
+  #        '401':
+  #          description: Unauthorized
+  #        '403':
+  #          description: Forbidden
+  #      summary: Update a Tessell App
+  #      tags:
+  #        - tessell-service-plan-controller
+  /tessell-ops/support-plans:
+    get:
+      operationId: getSupportPlans
+      parameters:
+        - description: name
+          explode: false
+          in: query
+          name: name
+          required: false
+          schema:
+            type: string
+          style: form
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportPlanApiResponse'
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+      summary: Get all support plans
+      tags:
+        - tessell-support-plan
+  /tessell-ops/support-plans/{id}:
+    get:
+      operationId: getSupportPlan
+      parameters:
+        - description: id
+          explode: false
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          style: simple
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportPlan'
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+      summary: Get support plan details
+      tags:
+        - tessell-support-plan
+  /apps:
+    get:
+      operationId: getApps
+      parameters:
+        - name: tenant-id
+          in: header
+          description: tenant-id
+          required: true
+          style: simple
+          schema:
+            type: string
+        - description: load-features
+          explode: true
+          in: query
+          name: load-features
+          required: false
+          schema:
+            type: string
+          style: form
+        - $ref: 'common-specification.yaml#/components/parameters/pageSize'
+        - $ref: 'common-specification.yaml#/components/parameters/pageOffset'
+        - $ref: 'common-specification.yaml#/components/parameters/timeZone'
+        - $ref: 'common-specification.yaml#/components/parameters/consumerType'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppApiResponse'
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+      summary: Get a list of Tessell App
+      tags:
+        - tessell-app-controller
+  /tessell-internal/apps:
+    post:
+      operationId: createApp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppCreatePayload'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/App'
+          description: OK
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+      summary: Create an Tessell App
+      tags:
+        - tessell-app-controller
+  /tessell-internal/apps/{name}:
+    delete:
+      operationId: deleteApp
+      parameters:
+        - description: name
+          explode: false
+          in: path
+          name: name
+          required: true
+          schema:
+            type: string
+          style: simple
+        - description: softDelete
+          explode: true
+          in: query
+          name: softDelete
+          required: false
+          schema:
+            type: boolean
+          style: form
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GovernStatus'
+          description: OK
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+      summary: Delete a Tessell App
+      tags:
+        - tessell-app-controller
+    get:
+      operationId: getApp
+      parameters:
+        - description: name
+          explode: false
+          in: path
+          name: name
+          required: true
+          schema:
+            type: string
+          style: simple
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/App'
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+      summary: Get details of an Tessell App
+      tags:
+        - tessell-app-controller
+    patch:
+      operationId: updateApp
+      parameters:
+        - description: name
+          explode: false
+          in: path
+          name: name
+          required: true
+          schema:
+            type: string
+          style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppUpdatePayload'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/App'
+          description: OK
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+      summary: Update a Tessell App
+      tags:
+        - tessell-app-controller
+
+  /tessell-internal/apps-families:
+    get:
+      operationId: getAppsFamilies
+      parameters:
+        - description: load-apps
+          explode: true
+          in: query
+          name: load-apps
+          required: false
+          schema:
+            type: string
+            default: 'false'
+          style: form
+        - description: load-features
+          explode: true
+          in: query
+          name: load-features
+          required: false
+          schema:
+            type: string
+            default: 'false'
+          style: form
+        - $ref: 'common-specification.yaml#/components/parameters/pageSize'
+        - $ref: 'common-specification.yaml#/components/parameters/pageOffset'
+        - $ref: 'common-specification.yaml#/components/parameters/timeZone'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppFamilyApiResponse'
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+      summary: Get a list of App Family
+      tags:
+        - tessell-app-family-controller
+    post:
+      operationId: createAppFamily
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppFamilyCreatePayload'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppFamily'
+          description: OK
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+      summary: Create an App Family
+      tags:
+        - tessell-app-family-controller
+  /tessell-internal/apps-families/{name}:
+    delete:
+      operationId: deleteAppFamily
+      parameters:
+        - description: name
+          explode: false
+          in: path
+          name: name
+          required: true
+          schema:
+            type: string
+          style: simple
+        - description: softDelete
+          explode: true
+          in: query
+          name: softDelete
+          required: false
+          schema:
+            type: boolean
+          style: form
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GovernStatus'
+          description: OK
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+      summary: Delete App Family
+      tags:
+        - tessell-app-family-controller
+    patch:
+      operationId: updateAppFamily
+      parameters:
+        - description: name
+          explode: false
+          in: path
+          name: name
+          required: true
+          schema:
+            type: string
+          style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppFamilyUpdatePayload'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppFamily'
+          description: OK
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+      summary: Update App Family
+      tags:
+        - tessell-app-family-controller
+  "/tessell-internal/features":
+    get:
+      tags:
+        - tessell-feature-controller
+      summary: Get list of features
+      operationId: getFeatures
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantId'
+        - name: app
+          in: query
+          description: App name
+          required: false
+          style: simple
+          schema:
+            type: string
+        - name: app-family
+          in: query
+          description: App family name
+          required: false
+          style: simple
+          schema:
+            type: string
+        - name: features
+          in: query
+          description: List of feature names
+          required: false
+          style: simple
+          schema:
+            type: array
+            items:
+              type: string
+        - name: without-tenant-context
+          in: query
+          description: Load all features irrespective of tenantId
+          required: false
+          style: simple
+          schema:
+            type: boolean
+        - $ref: 'common-specification.yaml#/components/parameters/pageSize'
+        - $ref: 'common-specification.yaml#/components/parameters/pageOffset'
+        - $ref: 'common-specification.yaml#/components/parameters/timeZone'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/FeatureApiResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    post:
+      tags:
+        - tessell-feature-controller
+      summary: Create a feature
+      operationId: createFeature
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeatureCreatePayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Feature'
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  "/tessell-internal/features/{name}":
+    get:
+      tags:
+        - tessell-feature-controller
+      summary: Get details of an feature
+      operationId: getFeature
+      parameters:
+        - name: name
+          in: path
+          description: name
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/Feature'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    delete:
+      tags:
+        - tessell-feature-controller
+      summary: Delete a feature
+      operationId: deleteFeature
+      parameters:
+        - name: name
+          in: path
+          description: name
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: softDelete
+          in: query
+          description: softDelete
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/GovernStatus'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    patch:
+      tags:
+        - tessell-feature-controller
+      summary: Update a feature
+      operationId: updateFeature
+      parameters:
+        - name: name
+          in: path
+          description: name
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeatureUpdatePayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/Feature'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /availability-zones:
+    get:
+      operationId: getAvailabilityZones
+      parameters:
+        - description: id
+          explode: true
+          in: query
+          name: id
+          required: false
+          schema:
+            type: string
+          style: form
+        - description: name
+          explode: true
+          in: query
+          name: name
+          required: false
+          schema:
+            type: string
+          style: form
+        - description: cloudId
+          explode: true
+          in: query
+          name: cloudId
+          required: false
+          schema:
+            type: string
+            format: uuid
+          style: form
+        - description: regionId
+          explode: true
+          in: query
+          name: regionId
+          required: false
+          schema:
+            type: string
+            format: uuid
+          style: form
+        - description: pageSize
+          explode: true
+          in: query
+          name: pageSize
+          required: false
+          schema:
+            format: int32
+            type: integer
+            default: 10
+          style: form
+        - description: pageOffset
+          explode: true
+          in: query
+          name: pageOffset
+          required: false
+          schema:
+            format: int32
+            type: integer
+            default: 0
+          style: form
+        - description: timezone
+          name: timezone
+          in: query
+          schema:
+            type: string
+        - description: consumer-type
+          explode: true
+          in: query
+          name: consumer-type
+          required: false
+          schema:
+            $ref: 'common-specification.yaml#/components/schemas/consumerType'
+          style: form
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiResponse'
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+      summary: Get a list of enabled availability zones in Tessell
+      tags:
+        - tessell-availability-zone-controller
+  /cloud-accounts:
+    get:
+      operationId: getCloudAccounts
+      parameters:
+        - description: id
+          explode: true
+          in: query
+          name: id
+          required: false
+          schema:
+            type: string
+            format: uuid
+          style: form
+        - description: cloudAccountType
+          explode: true
+          in: query
+          name: cloudAccountType
+          required: false
+          schema:
+            $ref: 'common-specification.yaml#/components/schemas/cloudAccountType'
+          style: form
+        - description: name
+          explode: true
+          in: query
+          name: name
+          required: false
+          schema:
+            type: string
+          style: form
+        - description: pageSize
+          explode: true
+          in: query
+          name: pageSize
+          required: false
+          schema:
+            format: int32
+            type: integer
+            default: 10
+          style: form
+        - description: pageOffset
+          explode: true
+          in: query
+          name: pageOffset
+          required: false
+          schema:
+            format: int32
+            type: integer
+            default: 0
+          style: form
+        - description: timezone
+          name: timezone
+          in: query
+          schema:
+            type: string
+        - description: consumer-type
+          explode: true
+          in: query
+          name: consumer-type
+          required: false
+          schema:
+            $ref: 'common-specification.yaml#/components/schemas/consumerType'
+          style: form
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiResponse'
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+      summary: Get a list of enabled cloud accounts in Tessell
+      tags:
+        - tessell-cloud-account-controller
+    post:
+      operationId: registerCloudAssetAccount
+      parameters:
+        - description: consumer-type
+          explode: true
+          in: query
+          name: consumer-type
+          required: false
+          schema:
+            $ref: 'common-specification.yaml#/components/schemas/consumerType'
+          style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterCloudAccountRequestPayload'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskSummary'
+          description: OK
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+      summary: Register cloud asset account for tenant
+      tags:
+        - tessell-cloud-account-controller
+  /cloud-accounts/i:
+    post:
+      operationId: addCloudAccount
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloudAccount'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloudAccount'
+          description: OK
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+      summary: Add a cloud account in Tessell
+      tags:
+        - tessell-cloud-account-controller
+  /cloud-accounts/i/{id}:
+    delete:
+      operationId: deleteTenant
+      parameters:
+        - description: id
+          explode: false
+          in: path
+          name: id
+          required: true
+          schema:
+            format: uuid
+            type: string
+          style: simple
+        - description: soft-delete
+          explode: true
+          in: query
+          name: soft-delete
+          required: false
+          schema:
+            type: boolean
+          style: form
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GovernStatus'
+          description: OK
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+      summary: Delete a cloud account
+      tags:
+        - tessell-cloud-account-controller
+    put:
+      operationId: updateTenant
+      parameters:
+        - description: id
+          explode: false
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          style: simple
+        - description: update-secret
+          explode: true
+          in: query
+          name: update-secret
+          required: false
+          schema:
+            type: boolean
+          style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloudAccount'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloudAccount'
+          description: OK
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+      summary: Update a cloud-account
+      tags:
+        - tessell-cloud-account-controller
+  /cloud-accounts/i/{id}/secret:
+    get:
+      operationId: getCloudAccountSecret
+      parameters:
+        - description: id
+          explode: false
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          style: simple
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  $ref: '#/components/schemas/Parameter'
+                type: object
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+      summary: Get a cloud's credential
+      tags:
+        - tessell-cloud-account-controller
+  /cloud-accounts/{cloudName}:
+    get:
+      operationId: getCloudAccount
+      parameters:
+        - description: cloudName
+          explode: false
+          in: path
+          name: cloudName
+          required: true
+          schema:
+            type: string
+          style: simple
+        - description: by-id
+          explode: true
+          in: query
+          name: by-id
+          required: false
+          schema:
+            type: boolean
+          style: form
+        - description: consumer-type
+          explode: true
+          in: query
+          name: consumer-type
+          required: false
+          schema:
+            $ref: 'common-specification.yaml#/components/schemas/consumerType'
+          style: form
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloudAccount'
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+      summary: Get a Tessell cloud account by name
+      tags:
+        - tessell-cloud-account-controller
+  /clouds:
+    get:
+      operationId: getClouds
+      parameters:
+        - description: id
+          explode: true
+          in: query
+          name: id
+          required: false
+          schema:
+            type: string
+            format: uuid
+          style: form
+        - description: type
+          explode: true
+          in: query
+          name: type
+          required: false
+          schema:
+            type: string
+          style: form
+        - description: pageSize
+          explode: true
+          in: query
+          name: pageSize
+          required: false
+          schema:
+            format: int32
+            type: integer
+            default: 10
+          style: form
+        - description: pageOffset
+          explode: true
+          in: query
+          name: pageOffset
+          required: false
+          schema:
+            format: int32
+            type: integer
+            default: 0
+          style: form
+        - description: timeZone
+          explode: true
+          in: query
+          name: timeZone
+          required: false
+          schema:
+            type: string
+          style: form
+        - description: consumer-type
+          explode: true
+          in: query
+          name: consumer-type
+          required: false
+          schema:
+            $ref: 'common-specification.yaml#/components/schemas/consumerType'
+          style: form
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiResponse'
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+      summary: Get a list of enabled clouds in Tessell
+      tags:
+        - tessell-cloud-controller
+    post:
+      operationId: addCloud
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cloud'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cloud'
+          description: OK
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+      summary: Add a cloud in Tessell
+      tags:
+        - tessell-cloud-controller
+  /cloud-locations:
+    get:
+      tags:
+        - tessell-cloud-location-controller
+      summary: Get a list of all enabled cloud locations in Tessell
+      operationId: getCloudLocations
+      parameters:
+        - name: id
+          description: Cloud location identifier of type cloudType/region/az (region, az - optional)
+          in: query
+          required: false
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 128
+          style: form
+          example: aws/us-east-2/us-east-2a
+        - name: cloudType
+          description: Cloud Type
+          explode: true
+          in: query
+          required: false
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 16
+          example: AWS
+          style: form
+        - $ref: 'common-specification.yaml#/components/parameters/cloudRegion'
+        - name: az
+          description: Availability Zone
+          explode: true
+          in: query
+          required: false
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 128
+          style: form
+          example: us-east-2a
+        - $ref: 'common-specification.yaml#/components/parameters/fetchAll'
+        - name: include-disabled
+          description: Flag to decide whether to include disabled cloud locations in response.
+          in: query
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: false
+        - $ref: 'common-specification.yaml#/components/parameters/pageSize'
+        - $ref: 'common-specification.yaml#/components/parameters/pageOffset'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiResponse'
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+components:
+  schemas:
+    ServicePlanApiResponse:
+      title: ServicePlanApiResponse
+      type: object
+      properties:
+        metadata:
+          $ref: 'common-specification.yaml#/components/schemas/apiMetadata'
+        response:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServicePlan'
+    AppFamilyApiResponse:
+      title: AppFamilyApiResponse
+      type: object
+      properties:
+        metadata:
+          $ref: 'common-specification.yaml#/components/schemas/apiMetadata'
+        response:
+          type: array
+          items:
+            $ref: '#/components/schemas/AppFamily'
+    AppApiResponse:
+      title: AppApiResponse
+      type: object
+      properties:
+        metadata:
+          $ref: 'common-specification.yaml#/components/schemas/apiMetadata'
+        response:
+          type: array
+          items:
+            $ref: '#/components/schemas/App'
+    FeatureApiResponse:
+      title: AppFamilyApiResponse
+      type: object
+      properties:
+        metadata:
+          $ref: 'common-specification.yaml#/components/schemas/apiMetadata'
+        response:
+          type: array
+          items:
+            $ref: '#/components/schemas/Feature'
+    AppChangeStatusPayload:
+      description: This is a definition for Tessell's app status update payload object
+      properties:
+        status:
+          $ref: '#/components/schemas/AppStatus'
+      title: AppChangeStatusPayload
+      type: object
+    AppCreatePayload:
+      description: This is a definition for Tessell internal create app payload object
+      example:
+        features:
+          - features
+        name: name
+        description: description
+        appFamily: appFamily
+      properties:
+        appFamily:
+          description: App family name this app belong to
+          type: string
+          minLength: 1
+          maxLength: 32
+        description:
+          description: Description of the app
+          type: string
+          minLength: 1
+          maxLength: 256
+        name:
+          description: Name of the app
+          type: string
+          minLength: 1
+          maxLength: 32
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/AppFeatureCreatePayload'
+        privileges:
+          description: List of privileges associated with the app.
+          items:
+            type: string
+            minLength: 1
+            maxLength: 32
+          type: array
+      title: AppCreatePayload
+      type: object
+    ServicePlanCreatePayload:
+      description: This is a definition for Tessell internal create service plan payload object
+      properties:
+        description:
+          description: Description of the service plan
+          type: string
+          minLength: 1
+          maxLength: 256
+        name:
+          description: Name of the service plan
+          type: string
+          minLength: 1
+          maxLength: 64
+        apps:
+          type: array
+          description: List of subscription names
+          items:
+            $ref: '#/components/schemas/ServicePlanCreateAppPayload'
+      title: ServicePlanCreatePayload
+      type: object
+
+    ServicePlanCreateAppPayload:
+      description: This is a definition for Tessell internal create service plan payload object
+      properties:
+        appFamily:
+          description: Family to which this app belongs to
+          type: string
+          minLength: 1
+          maxLength: 256
+        name:
+          description: Name of the service plan
+          type: string
+          minLength: 1
+          maxLength: 32
+        features:
+          type: array
+          description: List of feature names
+          items:
+            type: string
+        limits:
+          type: object
+          additionalProperties:
+            uniqueItems: true
+            type: object
+      title: ServicePlanCreateAppPayload
+      type: object
+    ServicePlanApp:
+      description: This is a definition for Tessell app DTO object
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/BaseEntity'
+        - title: ServicePlanApp
+          type: object
+      properties:
+        appFamily:
+          description: Family to which this app belongs to
+          type: string
+          minLength: 1
+          maxLength: 256
+        name:
+          description: Name of the service plan
+          type: string
+          minLength: 1
+          maxLength: 32
+        features:
+          type: array
+          description: List of feature names
+          items:
+            $ref: '#/components/schemas/ServicePlanAppFeature'
+        limits:
+          type: object
+          additionalProperties:
+            uniqueItems: true
+            type: object
+      title: ServicePlanCreateAppPayload
+      type: object
+    ServicePlanAppFeature:
+      description: This is a definition for Tessell app DTO object
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/BaseEntity'
+        - title: ServicePlanAppFeature
+          type: object
+      properties:
+        name:
+          description: Name of the service plan
+          type: string
+          minLength: 1
+          maxLength: 32
+        displayName:
+          type: string
+          description: UI display name of feature
+        description:
+          type: string
+          description: Description of feature
+      title: ServicePlanCreateAppPayload
+      type: object
+
+    ServicePlan:
+      description: This is a definition for Tessell app DTO object
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/BaseEntity'
+        - title: ServicePlan
+          type: object
+          properties:
+            description:
+              type: string
+            name:
+              description: Name of the app
+              type: string
+            apps:
+              description: List of features associated with the app
+              items:
+                $ref: '#/components/schemas/ServicePlanApp'
+              type: array
+            status:
+              $ref: '#/components/schemas/ServicePlanStatus'
+    SupportPlan:
+      description: Support plan details
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/BaseEntity'
+        - title: SupportPlan
+          type: object
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+            displayName:
+              type: string
+            status:
+              $ref: '#/components/schemas/SupportPlanStatus'
+            order:
+              type: integer
+            pricing:
+              type: object
+              properties:
+                percentage:
+                  type: float
+                minimum:
+                  $ref: 'common-specification.yaml#/components/schemas/Amount'
+            responseTimes:
+              type: object
+              properties:
+                sev1:
+                  $ref: 'common-specification.yaml#/components/schemas/TimeUnit'
+                sev2:
+                  $ref: 'common-specification.yaml#/components/schemas/TimeUnit'
+                sev3:
+                  $ref: 'common-specification.yaml#/components/schemas/TimeUnit'
+                sev4:
+                  $ref: 'common-specification.yaml#/components/schemas/TimeUnit'
+            supportServiceHours:
+              type: array
+              items:
+                $ref: '#/components/schemas/SupportServiceHour'
+            features:
+              items:
+                $ref: '#/components/schemas/Feature'
+              type: array
+    SupportPlanStatus:
+      x-dao-annotations: |
+        @Enumerated(EnumType.STRING)
+          @NotNull
+      description: Support Plan Status
+      enum:
+        - ENABLED
+        - DISABLED
+        - DELETED
+      type: string
+    SupportPlanPricing:
+      type: object
+      properties:
+        percentage:
+          type: float
+        minimum:
+          $ref: 'common-specification.yaml#/components/schemas/Amount'
+    SupportServiceHour:
+      type: object
+      properties:
+        startTime:
+          type: string
+        endTime:
+          type: string
+        days:
+          type: array
+          items:
+            type: string
+            enum:
+              - ALL
+              - BUSINESS
+              - HOLIDAY
+              - WEEKEND
+        severities:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupportSeverity'
+    SupportSeverity:
+      type: string
+      enum:
+        - sev1
+        - sev2
+        - sev3
+        - sev4
+    SupportPlanApiResponse:
+      title: ServicePlanApiResponse
+      type: object
+      properties:
+        metadata:
+          $ref: 'common-specification.yaml#/components/schemas/apiMetadata'
+        response:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupportPlan'
+
+    App:
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_APPS
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_APPS")
+      description: This is a definition for Tessell app DTO object
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/BaseEntity'
+        - title: App
+          type: object
+          properties:
+            appFamily:
+              x-dao-query: true
+              x-dao-annotations: |
+                @Column(name = "APP_FAMILY")
+              description: App family this app belongs to
+              type: string
+            description:
+              x-dao-annotations: |
+                @NotNull
+              description: Description of the app
+              type: string
+            name:
+              x-dao-query: true
+              x-dao-annotations: |
+                @NotNull
+              description: Name of the app
+              type: string
+            privileges:
+              x-dao-ignore: true
+              description: List of privileges associated with the app
+              items:
+                $ref: '#/components/schemas/Privilege'
+              type: array
+            features:
+              x-dao-ignore: true
+              description: List of features associated with the app
+              items:
+                $ref: '#/components/schemas/AppFeature'
+              type: array
+            status:
+              $ref: '#/components/schemas/AppStatus'
+    AppFamilyChangeStatusPayload:
+      description: This is a definition for Tessell's app family status update payload object
+      properties:
+        status:
+          $ref: '#/components/schemas/AppFamilyStatus'
+      title: AppFamilyChangeStatusPayload
+      type: object
+    AppFamilyCreatePayload:
+      description: This is a definition for Tessell internal create app family payload object
+      properties:
+        description:
+          description: Description of the app family
+          type: string
+        name:
+          description: Name of the app family
+          type: string
+        apps:
+          description: List of apps associated with the app.
+          items:
+            $ref: '#/components/schemas/AppFamilyAppCreatePayload'
+          type: array
+      title: AppFamilyCreatePayload
+      type: object
+    #    ServicePlanCreateAppPayload:
+    #      description: This is a definition for Tessell internal create app family payload
+    #        object
+    #      properties:
+    #        description:
+    #          description: Description of the app family
+    #          type: string
+    #        name:
+    #          description: Name of the app family
+    #          type: string
+    #        features:
+    #          description: List of features associated with the app.
+    #          items:
+    #            $ref: '#/components/schemas/ServicePlanCreateAppFeaturePayload'
+    #    ServicePlanCreateAppFeaturePayload:
+    #      description: This is a definition for Tessell internal create app family payload
+    #        object
+    #      properties:
+    #        name:
+    #          description: Name of the app family
+    #          type: string
+    AppFamilyAppCreatePayload:
+      description: This is a definition for Tessell internal create app family payload object
+      properties:
+        description:
+          description: Description of the app family
+          type: string
+        name:
+          description: Name of the app family
+          type: string
+        features:
+          description: List of features associated with the app.
+          items:
+            $ref: '#/components/schemas/AppFeatureCreatePayload'
+
+    AppFeatureCreatePayload:
+      description: This is a definition for Tessell internal create app family payload object
+      properties:
+        description:
+          description: Description of the app family
+          type: string
+        name:
+          description: Name of the app family
+          type: string
+        displayName:
+          description: Display name of the app family
+          type: string
+    AppFamily:
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_APPS_FAMILIES
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_APPS_FAMILIES")
+      description: This is a definition for Tessell internal app family DTO object
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/BaseEntity'
+        - properties:
+            apps:
+              x-dao-ignore: true
+              description: List of apps.
+              items:
+                $ref: '#/components/schemas/AppFamilyApp'
+              type: array
+            description:
+              x-dao-annotations: |
+                @NotNull
+              description: Description of the app family
+              type: string
+            name:
+              x-dao-query: true
+              x-dao-annotations: |
+                @NotNull
+              description: Name of the app family
+              type: string
+            status:
+              $ref: '#/components/schemas/AppFamilyStatus'
+          title: AppFamily
+          type: object
+    AppPrivilege:
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_APPS_PRIVILEGES
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_APPS_PRIVILEGES")
+      x-dao-primary-key: app
+      x-dao-composite-primary-keys: true
+      type: object
+      properties:
+        app:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+              @NotNull
+          type: string
+          description: Name of the privilege
+        privilege:
+          x-dao-annotations: |
+            @Id
+              @NotNull
+          type: string
+          description: HTTP endpoint
+    AppFamilyApp:
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/BaseEntity'
+        - properties:
+            features:
+              x-dao-ignore: true
+              description: List of apps.
+              items:
+                $ref: '#/components/schemas/AppFeature'
+              type: array
+            description:
+              x-dao-annotations: |
+                @NotNull
+              description: Description of the app family
+              type: string
+            name:
+              x-dao-query: true
+              x-dao-annotations: |
+                @NotNull
+              description: Name of the app family
+              type: string
+            status:
+              $ref: '#/components/schemas/AppStatus'
+          title: AppFamilyApp
+          type: object
+    AppFeature:
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/BaseEntity'
+        - properties:
+            description:
+              x-dao-annotations: |
+                @NotNull
+              description: Description of the app family
+              type: string
+            name:
+              x-dao-query: true
+              x-dao-annotations: |
+                @NotNull
+              description: Name of the app family
+              type: string
+            displayName:
+              x-dao-query: true
+              x-dao-annotations: |
+                @NotNull
+              description: Name of the app family
+              type: string
+            status:
+              $ref: '#/components/schemas/FeatureStatus'
+          title: AppFeature
+          type: object
+    #    AppFeature:
+    #      x-dao-entity: true
+    #      x-dao-table-name: TESSELL_APPS_features
+    #      x-dao-entity-annotations: |
+    #        @Table(name = "TESSELL_APPS_features")
+    #      x-dao-primary-key: app
+    #      x-dao-composite-primary-keys: true
+    #      type: object
+    #      properties:
+    #        app:
+    #          x-dao-query: true
+    #          x-dao-annotations: |
+    #            @Id
+    #              @NotNull
+    #          type: string
+    #          description: Name of the feature
+    #        feature:
+    #          x-dao-annotations: |
+    #            @Id
+    #              @NotNull
+    #          type: string
+    #          description: HTTP endpoint
+    AppFamilyUpdatePayload:
+      description: This is a definition for Tessell internal app family object
+      example:
+        name: name
+        description: description
+      properties:
+        description:
+          description: Description of the app family
+          type: string
+        name:
+          description: Name of the app family
+          type: string
+      title: AppFamilyUpdatePayload
+      type: object
+    AppServiceConsumer:
+      description: This is a definition for Tessell service consumer app object
+      properties:
+        appFamily:
+          description: App family this app belongs to
+          type: string
+        description:
+          description: Description of the app
+          type: string
+        name:
+          description: Name of the app
+          type: string
+        privileges:
+          description: List of privileges
+          items:
+            $ref: '#/components/schemas/PrivilegeServiceConsumer'
+          type: array
+        status:
+          $ref: '#/components/schemas/AppStatus'
+      title: AppServiceConsumer
+      type: object
+    AppUpdatePayload:
+      description: This is a definition for Tessell app update object
+      example:
+        name: name
+        description: description
+      properties:
+        description:
+          description: Description of the app
+          type: string
+        name:
+          description: Name of the app
+          type: string
+      title: AppUpdatePayload
+      type: object
+    AvailabilityZone:
+      description: This is a definition for Availability Zones in Tessell
+      example:
+        dateCreated: 2000-01-23T04:56:07+00:00
+        regionId: 123e4567-e89b-12d3-a456-426614174000
+        cloudId: 123e4567-e89b-12d3-a456-426614174000
+        name: sample-entity
+        dateModified: 2000-01-23T04:56:07+00:00
+        id: 123e4567-e89b-12d3-a456-426614174000
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/BaseEntity'
+        - type: object
+          required:
+            - name
+          title: AvailabilityZone
+          properties:
+            cloudId:
+              description: ID of the cloud where this AZ belongs
+              example: 123e4567-e89b-12d3-a456-426614174000
+              type: string
+              format: uuid
+              x-dao-query: true
+              x-dao-annotations: |
+                @Type(type = "pg-uuid")
+                  @NotNull
+                  @Column(name = "cloud_id")
+              x-dao-foreign-key-entity: '#/components/schemas/Cloud'
+              x-dao-foreign-key-annotations: |
+                @ManyToOne
+                  @JoinColumn(name = "cloud_id", insertable = false, updatable = false)
+            name:
+              description: Name of the entity
+              example: sample-entity
+              type: string
+              x-dao-annotations: |
+                @NotNull
+              x-dao-unique: true
+            regionId:
+              description: ID of the region where this AZ belongs
+              example: 123e4567-e89b-12d3-a456-426614174000
+              type: string
+              x-dao-query: true
+              x-dao-annotations: |
+                @Type(type = "pg-uuid")
+                  @NotNull
+                  @Column(name = "region_id")
+              x-dao-foreign-key-entity: '#/components/schemas/Region'
+              x-dao-foreign-key-annotations: |
+                @ManyToOne
+                  @JoinColumn(name = "region_id", insertable = false, updatable = false)
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_AVAILABILITY_ZONES
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_AVAILABILITY_ZONES", uniqueConstraints = @UniqueConstraint(columnNames = {"region_id", "name"}))
+    ServicePlanStatus:
+      x-dao-annotations: |
+        @Enumerated(EnumType.STRING)
+          @NotNull
+      description: Service Plan Status
+      enum:
+        - ENABLED
+        - DISABLED
+        - DELETED
+      type: string
+    AppStatus:
+      x-dao-annotations: |
+        @Enumerated(EnumType.STRING)
+          @NotNull
+      description: App Status
+      enum:
+        - ENABLED
+        - DISABLED
+        - DELETED
+      type: string
+    AppFamilyStatus:
+      x-dao-annotations: |
+        @Enumerated(EnumType.STRING)
+      description: App Status
+      enum:
+        - ENABLED
+        - DISABLED
+        - DELETED
+      type: string
+    CloudAccount:
+      description: This is a definition for Cloud Accounts in Tessell
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_CLOUD_ACCOUNTS
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_CLOUD_ACCOUNTS", uniqueConstraints = @UniqueConstraint(columnNames = {"account_id"}))
+      example:
+        accountId: "1234567890"
+        dateCreated: 2000-01-23T04:56:07+00:00
+        name: sample-entity
+        description: Production Account
+        dateModified: 2000-01-23T04:56:07+00:00
+        secret:
+          key:
+            valueType: valueType
+            secure: true
+            value: value
+        id: 123e4567-e89b-12d3-a456-426614174000
+        cloudLocationId: aws
+        status: ACTIVE
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/BaseEntity'
+        - properties:
+            secret:
+              x-dao-annotations: |
+                @Type(type = "jsonb")
+                  @Column(columnDefinition = "jsonb")
+                  @Basic(fetch = FetchType.LAZY)
+              x-dto-annotations: |
+                @ToString.Exclude
+              additionalProperties:
+                $ref: '#/components/schemas/Parameter'
+              description: Cloud Login Secrets
+              type: object
+            secretARN:
+              description: Secret identifier
+              type: string
+            accountId:
+              x-dao-query: true
+              x-dao-annotations: |
+                @Column(name = "account_id")
+                  @NotNull
+              description: Account ID
+              example: "1234567890"
+              type: string
+            cloudAccountType:
+              $ref: 'common-specification.yaml#/components/schemas/cloudAccountType'
+            cloudLocationId:
+              x-dao-annotations: |
+                @NotNull
+                  @Column(name = "cloud_location_id")
+              description: ID of the cloud location where this account belongs
+              example: aws
+              type: string
+              x-dao-foreign-key-entity: '#/components/schemas/CloudLocation'
+              x-dao-foreign-key-annotations: |
+                @ManyToOne
+                  @JoinColumn(name = "cloud_location_id", insertable = false, updatable = false)
+            description:
+              description: Description
+              example: Production Account
+              type: string
+            name:
+              description: Name of the entity
+              example: sample-entity
+              type: string
+            managedType:
+              $ref: '#/components/schemas/managedType'
+            status:
+              $ref: '#/components/schemas/cloudAccountStatus'
+          required:
+            - name
+          title: CloudAccount
+          type: object
+    CloudAccountServiceConsumer:
+      properties:
+        accountId:
+          type: string
+        cloudType:
+          type: string
+        description:
+          type: string
+        name:
+          type: string
+        status:
+          $ref: '#/components/schemas/cloudAccountStatus'
+        type:
+          type: string
+      title: CloudAccountServiceConsumer
+      type: object
+    cloudAccountStatus:
+      description: Account Status
+      x-dao-annotations: |
+        @Column(name = "status")
+          @Enumerated(EnumType.STRING)
+      enum:
+        - ACTIVE
+        - DELETED
+        - DELETING
+        - ONBOARDING
+        - UPDATING
+        - DELETION_FAILED
+      example: ACTIVE
+      type: string
+    Cloud:
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_CLOUDS
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_CLOUDS", uniqueConstraints = @UniqueConstraint(columnNames = {"type"}))
+      description: This is a definition for Clouds in Tessell
+      example:
+        dateCreated: 2000-01-23T04:56:07+00:00
+        name: sample-entity
+        dateModified: 2000-01-23T04:56:07+00:00
+        id: 123e4567-e89b-12d3-a456-426614174000
+        type: AWS
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/BaseEntity'
+        - properties:
+            name:
+              x-dao-query: true
+              description: Name of the entity
+              example: sample-entity
+              type: string
+            type:
+              x-dao-query: true
+              x-dao-annotations: |
+                @NotNull
+              description: Type of the cloud
+              example: AWS
+              type: string
+          required:
+            - name
+            - type
+          title: Cloud
+          type: object
+
+    CloudLocation:
+      title: CloudLocation
+      type: object
+      description: This is a definition for Tessell Cloud Location Identifier Object
+      properties:
+        availabilityZone:
+          description: Availability Zone Name
+          type: string
+          example: ap-south-1a
+        cloudType:
+          $ref: 'common-specification.yaml#/components/schemas/cloudType'
+        region:
+          description: Region Name
+          type: string
+          example: ap-south-1
+        name:
+          description: Presentable name
+          type: string
+          example: Asia Pacific (Mumbai)
+        id:
+          description: Cloud location identifier of type cloudType/region/az (region, az - optional)
+          type: string
+          example: aws/ap-south-1/ap-south-1a
+        isEnabled:
+          description: Whether this Cloud Location is enabled or not
+          type: boolean
+
+    CloudLocationFileEntity:
+      title: CloudLocationFileEntity
+      type: object
+      description: This is a definition for Tessell Cloud Location Identifier Object representing the JSON format of the cloud-location file
+      properties:
+        availabilityZone:
+          description: Availabilty Zone Name
+          type: string
+          example: ap-south-1a
+        cloudType:
+          $ref: 'common-specification.yaml#/components/schemas/cloudType'
+        region:
+          description: Region Name
+          type: string
+          example: ap-south-1
+        name:
+          description: Presentable name
+          type: string
+          example: Asia Pacific (Mumbai)
+        id:
+          description: Cloud location identifier of type cloudType/region/az (region, az - optional)
+          type: string
+          example: aws/ap-south-1/ap-south-1a
+        isEnabled:
+          description: Whether this Cloud Location is enabled or not
+          type: boolean
+          example: true
+
+    Parameter:
+      example:
+        valueType: valueType
+        secure: true
+        value: value
+      properties:
+        secure:
+          type: boolean
+        value:
+          type: string
+        valueType:
+          type: string
+      title: Parameter
+      type: object
+    Privilege:
+      description: This is a definition for Tessell internal privilege DTO object
+      example:
+        dateCreated: 2000-01-23T04:56:07+00:00
+        name: name
+        description: description
+        dateModified: 2000-01-23T04:56:07+00:00
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        status: DELETED
+      properties:
+        dateCreated:
+          description: Date when the privilege is created in Tessell metadata
+          format: date-time
+          type: string
+        dateModified:
+          description: Date when privilege is last modified in Tessell metadata
+          format: date-time
+          type: string
+        description:
+          description: Description of the privilege
+          type: string
+        id:
+          description: generated UUID for the privilege object
+          format: uuid
+          type: string
+        name:
+          description: Name of the privilege
+          type: string
+        status:
+          enum:
+            - DELETED
+            - ENABLED
+          type: string
+      title: Privilege
+      type: object
+    PrivilegeServiceConsumer:
+      description: This is a definition for Tessell privilege object for service consumers
+      properties:
+        description:
+          description: Description of the privilege
+          type: string
+        name:
+          description: Name of the privilege
+          type: string
+        status:
+          enum:
+            - DELETED
+            - ENABLED
+          type: string
+      title: PrivilegeServiceConsumer
+      type: object
+    Region:
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_REGIONS
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_REGIONS", uniqueConstraints = @UniqueConstraint(columnNames = {"cloud_id", "name"}))
+      description: This is a definition for Regions in Tessell
+      example:
+        code: us-west-1
+        dateCreated: 2000-01-23T04:56:07+00:00
+        cloudId: 123e4567-e89b-12d3-a456-426614174000
+        name: sample-entity
+        dateModified: 2000-01-23T04:56:07+00:00
+        id: 123e4567-e89b-12d3-a456-426614174000
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/BaseEntity'
+        - properties:
+            cloudId:
+              x-dao-query: true
+              x-dao-annotations: |
+                @Type(type = "pg-uuid")
+                  @NotNull
+                  @Column(name = "cloud_id")
+              description: ID of the cloud where this region belongs
+              example: 123e4567-e89b-12d3-a456-426614174000
+              type: string
+              format: uuid
+              x-dao-foreign-key-entity: '#/components/schemas/Cloud'
+              x-dao-foreign-key-annotations: |
+                @ManyToOne
+                  @JoinColumn(name = "cloud_id", insertable = false, updatable = false)
+            code:
+              x-dao-annotations: |
+                @NotNull
+              description: Region code
+              example: us-west-1
+              type: string
+            name:
+              x-dao-query: true
+              description: Name of the entity
+              example: sample-entity
+              type: string
+          required:
+            - code
+            - name
+          title: Region
+          type: object
+
+    RegisterCloudAccountRequestPayload:
+      description: This is the payload definition for registering a new cloud account to Tessell ecosystem
+      example:
+        accountId: For AWS, its could be '123456789', for azure, it could be ''HARRYPOTTER
+        cloudType: AWS
+        name: name
+        description: description
+        secret:
+          key: secret
+      properties:
+        accountId:
+          description: Cloud Account accountId
+          example: For AWS, its could be '123456789', for azure, it could be ''HARRYPOTTER
+          type: string
+        cloudType:
+          $ref: 'common-specification.yaml#/components/schemas/cloudType'
+        description:
+          description: Cloud Account's description
+          type: string
+        name:
+          description: Cloud Account's name
+          type: string
+        secret:
+          additionalProperties:
+            type: string
+          description: Secret information
+          type: object
+      required:
+        - cloudType
+      title: RegisterCloudAccountRequestPayload
+      type: object
+
+    GovernStatus:
+      example:
+        message: message
+        status: status
+      properties:
+        status:
+          enum:
+            - SUCCESS
+            - FAILED
+          type: string
+        message:
+          type: string
+      title: GovernStatus
+      type: object
+
+    TaskSummary:
+      example:
+        taskType: taskType
+        details:
+          key: details
+        taskId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        details:
+          additionalProperties:
+            type: string
+          type: object
+        taskId:
+          format: uuid
+          type: string
+        taskType:
+          type: string
+      title: TaskSummary
+      type: object
+    VirtualNetwork:
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_VIRTUAL_NETWORKS
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_VIRTUAL_NETWORKS", uniqueConstraints = @UniqueConstraint(columnNames = {"cloud_location_id", "name"}))
+      description: This is a definition for Virtual Networks in Tessell
+      example:
+        dateCreated: 2000-01-23T04:56:07+00:00
+        cloudAccountId: 123e4567-e89b-12d3-a456-426614174000
+        name: sample-entity
+        dateModified: 2000-01-23T04:56:07+00:00
+        id: 123e4567-e89b-12d3-a456-426614174000
+        cloudLocationId: aws
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/BaseEntity'
+        - properties:
+            cloudAccountId:
+              description: ID of the cloud account to which this compute belongs
+              example: 123e4567-e89b-12d3-a456-426614174000
+              x-dao-annotations: |
+                @NotNull
+                  @Column(name = "cloud_account_id")
+              type: string
+              format: uuid
+              x-dao-foreign-key-entity: '#/components/schemas/CloudAccount'
+              x-dao-foreign-key-annotations: |
+                @ManyToOne
+                  @JoinColumn(name = "cloud_account_id", insertable = false, updatable = false)
+            cloudLocationId:
+              x-dao-query: true
+              x-dao-annotations: |
+                @NotNull
+                  @Column(name = "cloud_location_id")
+              description: ID of the cloud location where this compute belongs
+              example: aws
+              type: string
+              x-dao-foreign-key-entity: '#/components/schemas/CloudLocation'
+              x-dao-foreign-key-annotations: |
+                @ManyToOne
+                  @JoinColumn(name = "cloud_location_id", insertable = false, updatable = false)
+            name:
+              x-dao-query: true
+              description: Name of the entity
+              example: sample-entity
+              type: string
+          required:
+            - name
+          title: VirtualNetwork
+          type: object
+
+    appConstants:
+      type: object
+      x-constants: true
+      properties:
+        TRUE:
+          type: string
+          default: "true"
+        LOAD_PRIVILEGES:
+          type: string
+          default: "load-privilieges"
+        DEFAULT_LOAD_PRIVILEGES:
+          type: string
+          default: "false"
+        LOAD_FEATURES:
+          type: string
+          default: "load-features"
+        DEFAULT_LOAD_FEATURES:
+          type: string
+          default: "false"
+
+    appFamilyConstants:
+      type: object
+      x-constants: true
+      properties:
+        TRUE:
+          type: string
+          default: "true"
+        LOAD_APPS:
+          type: string
+          default: "load-apps"
+        DEFAULT_LOAD_APPS:
+          type: string
+          default: "false"
+    managedType:
+      $ref: 'common-specification.yaml#/components/schemas/cloudAccountManagedType'
+    FeatureCreatePayload:
+      title: FeatureCreatePayload
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description of the feature
+        name:
+          type: string
+          description: Name of the feature
+        displayName:
+          type: string
+          description: UI display name of the feature
+        app:
+          type: string
+          description: Name of the app feature belongs to
+        appFamily:
+          type: string
+          description: Name of the app family the feature and app belongs to
+        status:
+          $ref: '#/components/schemas/FeatureStatus'
+      description: This is a definition for Tessell internal create feature payload object
+    Feature:
+      title: Feature
+      type: object
+      properties:
+        dateCreated:
+          type: string
+          description: Date when the feature is created  metadata
+          format: date-time
+        dateModified:
+          type: string
+          description: Date when feature is last modified  metadata
+          format: date-time
+        description:
+          type: string
+          description: Description of the feature
+        id:
+          type: string
+          description: Tessell generated UUID for the feature object
+          format: uuid
+        name:
+          type: string
+          description: Name of the feature
+        displayName:
+          type: string
+          description: UI display name of the feature
+        app:
+          type: string
+          description: Name of the app this feature belongs to
+        appFamily:
+          type: string
+          description: Name of app family the app and feature belongs to
+        status:
+          $ref: '#/components/schemas/FeatureStatus'
+      description: This is a definition for Tessell internal feature DTO object
+    FeatureUpdatePayload:
+      title: FeatureUpdatePayload
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description of the feature
+        name:
+          type: string
+          description: Name of the feature
+        displayName:
+          type: string
+          description: Name of the feature
+        status:
+          $ref: '#/components/schemas/FeatureStatus'
+      description: This is a definition for Tessell feature update object
+    FeatureStatus:
+      title: FeatureStatus
+      type: string
+      description: This is a definition for Tessell feature status object
+      enum:
+        - DELETED
+        - ENABLED
+        - DISABLED
+

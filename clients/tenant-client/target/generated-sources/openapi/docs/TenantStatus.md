@@ -1,0 +1,29 @@
+
+
+# TenantStatus
+
+## Enum
+
+
+* `EMAIL_UNVERIFIED` (value: `"EMAIL_UNVERIFIED"`)
+
+* `ONBOARDING` (value: `"ONBOARDING"`)
+
+* `ACTIVATION_PENDING` (value: `"ACTIVATION_PENDING"`)
+
+* `ACTIVATION_STARTED` (value: `"ACTIVATION_STARTED"`)
+
+* `ACTIVATION_FAILED` (value: `"ACTIVATION_FAILED"`)
+
+* `ONBOARDED` (value: `"ONBOARDED"`)
+
+* `FAILED` (value: `"FAILED"`)
+
+* `DELETING` (value: `"DELETING"`)
+
+* `DELETION_FAILED` (value: `"DELETION_FAILED"`)
+
+* `DELETED` (value: `"DELETED"`)
+
+
+

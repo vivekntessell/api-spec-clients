@@ -1,0 +1,1640 @@
+openapi: "3.0.0"
+info:
+  title: Tessell Monitoring Service API
+  version: v1beta
+  description: Monitoring API
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /monitoring/service/{id}/features/{feature-name}:
+    patch:
+      tags:
+        - tessell-monitoring-controller
+      operationId: patchMonitoringFeature
+      description: Patches (enable / disable) monitoring features on a specific service
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+        - name: feature-name
+          in: path
+          description: feature name
+          required: true
+          style: simple
+          schema:
+            type: string
+            enum:
+              - 'perf-insights'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchMonitoringFeaturePayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+  /monitoring/infra:
+    post:
+      tags:
+        - monitoring-infra-controller
+      operationId: provisionMonitoringInfra
+      description: Provisioning a monitoring infra
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenant-id-in-header-required'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProvisionMonitoringInfraPayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/taskSummary'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/ApiError'
+
+  /monitoring/infra/{id}:
+    delete:
+      tags:
+        - monitoring-infra-controller
+      operationId: deleteMonitoringInfra
+      description: Deletes a monitoring infra
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenant-id-in-header-required'
+        - name: id
+          in: path
+          description: The ID of the Monitoring infra
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/taskSummary'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/ApiError'
+
+  /monitoring/metrics/avg-db-load:
+    post:
+      tags:
+        - tessell-monitoring-perf-metrics-controller
+      operationId: getAvgDbLoad
+      description: Returns Average DB Load
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvgDbLoadPayload'
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvgDbLoadResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /monitoring/metrics/top-dimensions:
+    post:
+      tags:
+        - tessell-monitoring-perf-metrics-controller
+      operationId: getTopDimensions
+      description: Returns Top dimensions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TopDimensionsPayload'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopDimensionsResponse'
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /monitoring/metrics/extended-perf-metrics:
+    post:
+      tags:
+        - tessell-monitoring-perf-metrics-controller
+      operationId: getExtendedPerfMetrics
+      description: Returns Extended Perf Insights Metrics for a given metric
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExtendedPerfMetricsPayload'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtendedPerfMetricsResponse'
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /monitoring/metrics/top-processes:
+    get:
+      tags:
+        - tessell-monitoring-perf-metrics-controller
+      operationId: getTopProcesses
+      description: Returns top processes running on the vm
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenant-id-in-header-required'
+        - $ref: '#/components/parameters/compute-resource-id-in-query'
+        - $ref: '#/components/parameters/start-time-in-query'
+        - $ref: '#/components/parameters/end-time-in-query'
+        - $ref: '#/components/parameters/num-top-k-in-query'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopProcessesResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tessell-ops/monitoring/metrics/top-processes:
+    get:
+      tags:
+        - tessell-monitoring-perf-metrics-controller
+      operationId: getTopProcessesForOps
+      description: Returns top processes running on the vm
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenant-id-in-header-required'
+        - $ref: '#/components/parameters/compute-resource-id-in-query'
+        - $ref: '#/components/parameters/start-time-in-query'
+        - $ref: '#/components/parameters/end-time-in-query'
+        - $ref: '#/components/parameters/num-top-k-in-query'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopProcessesResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/monitoring/entity:
+    post:
+      tags:
+        - tessell-monitoring-controller
+      operationId: addEntityMonitoring
+      description: Add monitoring for entity.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddEntityMonitoringPayload'
+      responses:
+        200:
+          description: Monitoring dashboard details
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    patch:
+      tags:
+        - tessell-monitoring-controller
+      operationId: updateEntityMonitoring
+      description: Update monitoring entity.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddEntityMonitoringPayload'
+      responses:
+        200:
+          description: Monitoring dashboard details
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    delete:
+      tags:
+        - tessell-monitoring-controller
+      operationId: removeEntityMonitoring
+      description: Remove entity monitoring.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoveEntityMonitoringPayload'
+      responses:
+        200:
+          description: Monitoring dashboard details
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /monitoring/metrics:
+    get:
+      tags:
+        - tessell-monitoring-controller
+      operationId: getMonitoringMetrics
+      description: Returns the metrics data
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenant-id-in-header-required'
+        - $ref: '#/components/parameters/entity-type-in-query'
+        - $ref: '#/components/parameters/service-id-in-query'
+        - $ref: '#/components/parameters/service-instance-id-in-query'
+        - $ref: '#/components/parameters/compute-resource-id-in-query'
+        - $ref: '#/components/parameters/start-time-in-query'
+        - $ref: '#/components/parameters/end-time-in-query'
+        - $ref: '#/components/parameters/step-in-query'
+      responses:
+        200:
+          description: The list of metrics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TessellMonitoringChartDTO'
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tessell-ops/monitoring/metrics:
+    get:
+      tags:
+        - tessell-monitoring-controller
+      operationId: getMonitoringMetricsForOps
+      description: Returns the metrics data
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenant-id-in-header-required'
+        - $ref: '#/components/parameters/entity-type-in-query'
+        - $ref: '#/components/parameters/service-id-in-query'
+        - $ref: '#/components/parameters/service-instance-id-in-query'
+        - $ref: '#/components/parameters/compute-resource-id-in-query'
+        - $ref: '#/components/parameters/start-time-in-query'
+        - $ref: '#/components/parameters/end-time-in-query'
+        - $ref: '#/components/parameters/step-in-query'
+      responses:
+        200:
+          description: The list of metrics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TessellMonitoringChartDTO'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/monitoring/infra/container-metrics:
+    get:
+      tags:
+        - tessell-monitoring-controller
+      description: Returns the metrics data of a K8s container
+      operationId: getContainerMonitoringMetricsOps
+      parameters:
+        - $ref: "#/components/parameters/container-name-in-query"
+        - $ref: "#/components/parameters/namespace-in-query"
+        - $ref: "#/components/parameters/start-time-in-query"
+        - $ref: "#/components/parameters/end-time-in-query"
+        - $ref: "#/components/parameters/step-in-query"
+      responses:
+        200:
+          description: The list of metrics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TessellMonitoringChartDTO"
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/monitoring/infra/container-metrics/summary:
+    get:
+      tags:
+        - tessell-monitoring-controller
+      description: Returns the metrics data of all the containers in a namespace
+      operationId: getContainerMonitoringSummaryMetricsOps
+      parameters:
+        - $ref: "#/components/parameters/namespace-in-query"
+        - $ref: "#/components/parameters/start-time-in-query"
+        - $ref: "#/components/parameters/end-time-in-query"
+        - $ref: "#/components/parameters/step-in-query"
+      responses:
+        200:
+          description: The list of metrics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TessellMonitoringChartDTO"
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /monitoring/compute-resources/summary:
+    get:
+      tags:
+        - tessell-monitoring-controller
+      operationId: getComputeResourcesMonitoringSummary
+      description: View a list of available Compute Resources
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenant-id-in-header-required'
+        - $ref: '#/components/parameters/compute-resource-ids-in-query'
+        - $ref: '#/components/parameters/time-duration-for-aggregation-in-query'
+        - $ref: '#/components/parameters/aggregation-type-in-query'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComputeResourceMonitoringSummaryResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+
+  /monitoring/deployments:
+    get:
+      tags:
+        - tessell-monitoring-controller
+      description: Returns the monitoring service details data
+      operationId: getMonitoringDeployments
+      parameters:
+        - $ref: '#/components/parameters/cloud-in-query'
+        - $ref: '#/components/parameters/region-in-query'
+        - $ref: '#/components/parameters/vpc-id-in-query'
+        - $ref: 'common-specification.yaml#/components/parameters/subscription-id-in-query'
+        - $ref: '#/components/parameters/load-instances-in-query'
+        - $ref: '#/components/parameters/deployment-statuses-in-query'
+        - $ref: '#/components/parameters/deployment-skip-statuses-in-query'
+        - $ref: 'common-specification.yaml#/components/parameters/pageSize'
+        - $ref: 'common-specification.yaml#/components/parameters/pageOffset'
+      responses:
+        200:
+          description: The list of monitoring deployments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitoringDeploymentsResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/ApiErrorOps'
+  /tessell-ops/monitoring/deployments:
+    post:
+      tags:
+        - tessell-monitoring-controller
+      description: Returns the monitoring service details data
+      operationId: createMonitoringDeploymentOps
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MonitoringDeploymentOpsDTO'
+      responses:
+        200:
+          description: The created monitoring deployment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitoringDeploymentOpsDTO'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    get:
+      tags:
+        - tessell-monitoring-controller
+      description: Returns the monitoring service details data
+      operationId: getMonitoringDeploymentsOps
+      parameters:
+        - $ref: '#/components/parameters/cloud-in-query'
+        - $ref: '#/components/parameters/region-in-query'
+        - $ref: '#/components/parameters/vpc-id-in-query'
+        - $ref: 'common-specification.yaml#/components/parameters/subscription-id-in-query'
+        - $ref: '#/components/parameters/load-instances-in-query'
+        - $ref: '#/components/parameters/deployment-statuses-in-query'
+        - $ref: '#/components/parameters/deployment-skip-statuses-in-query'
+        - $ref: 'common-specification.yaml#/components/parameters/pageSize'
+        - $ref: 'common-specification.yaml#/components/parameters/pageOffset'
+      responses:
+        200:
+          description: The list of monitoring deployments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitoringDeploymentsResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /monitoring/deployments/{deployment-id}:
+    get:
+      tags:
+        - tessell-monitoring-controller
+      description: Returns the monitoring service details data
+      operationId: getMonitoringDeployment
+      parameters:
+        - $ref: '#/components/parameters/deployment-id-in-path'
+        - $ref: '#/components/parameters/load-instances-in-query'
+      responses:
+        200:
+          description: The monitoring deployment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitoringDeploymentOpsDTO'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/ApiErrorOps'
+  /tessell-ops/monitoring/deployments/{deployment-id}:
+
+    get:
+      tags:
+        - tessell-monitoring-controller
+      description: Returns the monitoring service details data
+      operationId: getMonitoringDeploymentOps
+      parameters:
+        - $ref: '#/components/parameters/deployment-id-in-path'
+        - $ref: '#/components/parameters/load-instances-in-query'
+      responses:
+        200:
+          description: The monitoring deployment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitoringDeploymentOpsDTO'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    patch:
+      tags:
+        - tessell-monitoring-controller
+      description: Returns the monitoring service details data
+      operationId: updateMonitoringDeploymentOps
+      parameters:
+        - $ref: '#/components/parameters/deployment-id-in-path'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MonitoringDeploymentOpsDTO'
+      responses:
+        200:
+          description: The updated monitoring deployment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitoringDeploymentOpsDTO'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/monitoring/deployments/{deployment-id}/instances:
+    post:
+      tags:
+        - tessell-monitoring-controller
+      description: Returns the monitoring service details data
+      operationId: createMonitoringInstanceOps
+      parameters:
+        - $ref: '#/components/parameters/deployment-id-in-path'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MonitoringInstanceOpsDTO'
+      responses:
+        200:
+          description: The created monitoring instance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitoringInstanceOpsDTO'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    get:
+      tags:
+        - tessell-monitoring-controller
+      description: Returns the monitoring service details data
+      operationId: getMonitoringInstancesOps
+      parameters:
+        - $ref: '#/components/parameters/deployment-id-in-path'
+        - $ref: '#/components/parameters/instance-statuses-in-query'
+        - $ref: '#/components/parameters/instance-skip-statuses-in-query'
+      responses:
+        200:
+          description: The list of monitoring instances
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitoringInstancesResponse'
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/monitoring/deployments/{deployment-id}/instances/{instance-id}:
+    get:
+      tags:
+        - tessell-monitoring-controller
+      description: Returns the monitoring service details data
+      operationId: getMonitoringInstanceOps
+      parameters:
+        - $ref: '#/components/parameters/deployment-id-in-path'
+        - $ref: '#/components/parameters/instance-id-in-path'
+      responses:
+        200:
+          description: The monitoring instance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitoringInstanceOpsDTO'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    patch:
+      tags:
+        - tessell-monitoring-controller
+      description: Returns the monitoring service details data
+      operationId: updateMonitoringInstanceOps
+      parameters:
+        - $ref: '#/components/parameters/deployment-id-in-path'
+        - $ref: '#/components/parameters/instance-id-in-path'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MonitoringInstanceOpsDTO'
+      responses:
+        200:
+          description: The updated monitoring instance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonitoringInstanceOpsDTO'
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+components:
+  schemas:
+    PatchMonitoringFeaturePayload:
+      title: PatchMonitoringFeaturePayload
+      type: object
+      required:
+        - enable
+      properties:
+        enable:
+          type: boolean
+          default: false
+
+    ProvisionMonitoringInfraPayload:
+      title: ProvisionMonitoringInfraPayload
+      type: object
+      required:
+        - tenantId
+        - subscriptionId
+        - cloudType
+        - region
+        - vpcId
+        - cloudAccountId
+        - computeId
+        - owner
+      properties:
+        tenantId:
+          type: string
+          format: uuid
+          description: Tenant Id
+        subscriptionId:
+          type: string
+          format: uuid
+          description: Subscription Id
+        cloudType:
+          $ref: 'common-specification.yaml#/components/schemas/cloudType'
+        region:
+          type: string
+          description: Region in which the infra to be provisioned
+        vpcId:
+          type: string
+          format: uuid
+          description: Vpc Id in which the infra to be provisioned
+        cloudAccountId:
+          type: string
+          format: uuid
+          description: Cloud account id of the data plane where infra to be provisioned
+        encryptionKeyCloudId:
+          type: string
+          description: Encryption Key Id of the cloud
+        computeId:
+          type: string
+          format: uuid
+          description: Compute Id for the compute configuration
+        volumeSize:
+          type: integer
+          description: Volume size of the infra
+        owner:
+          type: string
+          description: Owner of the infra
+        skipProvisionRollback:
+          type: boolean
+          default: false
+          description: Internal flag to indicate if vms to be rolled back in case of provision failure
+    TopProcessesOpsDto:
+      title: TopProcessesOpsDto
+      type: object
+      properties:
+        metrics:
+          type: array
+          items:
+            $ref: '#/components/schemas/TopProcessesMetricOps'
+    AvgDbLoadPayload:
+      title: AvgDbLoadPayload
+      type: object
+      properties:
+        serviceId:
+          $ref: 'common-specification.yaml#/components/schemas/ServiceId'
+        serviceInstanceId:
+          $ref: 'common-specification.yaml#/components/schemas/ServiceInstanceId'
+        startTime:
+          $ref: '#/components/schemas/MetricStartTime'
+        endTime:
+          $ref: '#/components/schemas/MetricEndTime'
+        sliceBy:
+          $ref: '#/components/schemas/MonitoringSliceBy'
+        filterBy:
+          type: array
+          description: Array of filters to filter Avg Db Load
+          items:
+            $ref: '#/components/schemas/MonitoringFilterBy'
+        step:
+          type: integer
+          format: int32
+          default: 1
+          minimum: 1
+          maximum: 86400
+          description: Specifies the frequency at which data points are sampled or aggregated within the specified time range
+      required:
+        - serviceId
+        - serviceInstanceId
+        - startTime
+        - endTime
+    AvgDbLoadResponse:
+      title: AvgDbLoadResponse
+      properties:
+        serviceId:
+          $ref: 'common-specification.yaml#/components/schemas/ServiceId'
+        serviceInstanceId:
+          $ref: 'common-specification.yaml#/components/schemas/ServiceInstanceId'
+        startTime:
+          $ref: '#/components/schemas/MetricStartTime'
+        endTime:
+          $ref: '#/components/schemas/MetricEndTime'
+        sliceBy:
+          $ref: '#/components/schemas/MonitoringSliceBy'
+        filterBy:
+          type: array
+          description: Array of filters to filter Avg Db Load
+          items:
+            $ref: '#/components/schemas/MonitoringFilterBy'
+        metricDistribution:
+          type: array
+          description: Distribution of Avg DB Load across different entities as categorized by the specified slice by parameter.
+          items:
+            $ref: '#/components/schemas/SlicedMetric'
+    TopDimensionsPayload:
+      title: TopDimensionsPayload
+      type: object
+      properties:
+        serviceId:
+          $ref: 'common-specification.yaml#/components/schemas/ServiceId'
+        serviceInstanceId:
+          $ref: 'common-specification.yaml#/components/schemas/ServiceInstanceId'
+        startTime:
+          $ref: '#/components/schemas/MetricStartTime'
+        endTime:
+          $ref: '#/components/schemas/MetricEndTime'
+        metricType:
+          $ref: '#/components/schemas/PerfMetricType'
+        sliceBy:
+          $ref: '#/components/schemas/MonitoringSliceBy'
+        numTopK:
+          $ref: '#/components/schemas/NumTopK'
+      required:
+        - serviceId
+        - serviceInstanceId
+        - metricType
+        - startTime
+        - endTime
+    TopDimensionsResponse:
+      title: TopDimensionsResponse
+      properties:
+        serviceId:
+          $ref: 'common-specification.yaml#/components/schemas/ServiceId'
+        serviceInstanceId:
+          $ref: 'common-specification.yaml#/components/schemas/ServiceInstanceId'
+        metricType:
+          $ref: '#/components/schemas/PerfMetricType'
+        startTime:
+          $ref: '#/components/schemas/MetricStartTime'
+        endTime:
+          $ref: '#/components/schemas/MetricEndTime'
+        numTopK:
+          $ref: '#/components/schemas/NumTopK'
+        extendedPerfMetricsAvailable:
+          type: boolean
+          default: false
+          description: Indicates if Extended Perf Metrics are available for the metric values returned in response or not
+        sliceBy:
+          $ref: '#/components/schemas/MonitoringSliceBy'
+        metricValues:
+          type: array
+          description: Top dimension metric values
+          items:
+            $ref: '#/components/schemas/TopDimensionsMetricValue'
+    ExtendedPerfMetricsPayload:
+      title: ExtendedPerfMetricsPayload
+      type: object
+      properties:
+        serviceId:
+          $ref: 'common-specification.yaml#/components/schemas/ServiceId'
+        serviceInstanceId:
+          $ref: 'common-specification.yaml#/components/schemas/ServiceInstanceId'
+        startTime:
+          $ref: '#/components/schemas/MetricStartTime'
+        endTime:
+          $ref: '#/components/schemas/MetricEndTime'
+        metricType:
+          $ref: '#/components/schemas/PerfMetricType'
+        metricValue:
+          type: string
+          description: Value of the metric of which the extended metrics to be fetched
+        limit:
+          type: integer
+          format: int32
+          default: 10
+          minimum: 1
+          maximum: 100
+          description: Number of metrics to be fetched
+      required:
+        - serviceId
+        - serviceInstanceId
+        - startTime
+        - endTime
+        - metricType
+        - metricValue
+    ExtendedPerfMetricsResponse:
+      title: ExtendedPerfMetricsResponse
+      type: object
+      properties:
+        serviceId:
+          $ref: 'common-specification.yaml#/components/schemas/ServiceId'
+        serviceInstanceId:
+          $ref: 'common-specification.yaml#/components/schemas/ServiceInstanceId'
+        startTime:
+          $ref: '#/components/schemas/MetricStartTime'
+        endTime:
+          $ref: '#/components/schemas/MetricEndTime'
+        limit:
+          type: integer
+          format: int32
+        metricType:
+          $ref: '#/components/schemas/PerfMetricType'
+        metricValue:
+          type: string
+          description: Value of the metric of which the extended metrics to be fetched
+        extendedMetricValues:
+          type: array
+          description: Array of extended metric values
+          items:
+            $ref: '#/components/schemas/TopDimensionsMetricValue'
+    TopDimensionsMetricValue:
+      title: TopDimensionsMetricValue
+      properties:
+        additionalMetrics:
+          type: array
+          description: Any additional metrics associated with the entity
+          items:
+            $ref: '#/components/schemas/TopDimensionsAdditionalMetricValue'
+        value:
+          type: string
+          description: Value of the top dimension entity
+        metricDistribution:
+          type: array
+          description: Distribution of Load across different entities as categorized by the specified slice by parameter.
+          items:
+            $ref: '#/components/schemas/TopDimensionSlicedMetricValue'
+      required:
+        - value
+    TopProcessesResponse:
+      title: TopProcessesResponse
+      properties:
+        computeResourceId:
+          $ref: 'common-specification.yaml#/components/schemas/ComputeResourceId'
+        startTime:
+          $ref: '#/components/schemas/MetricStartTime'
+        endTime:
+          $ref: '#/components/schemas/MetricEndTime'
+        metrics:
+          type: array
+          description: Array containing top processes categorized on metric like CPU, Memory, etc,.
+          items:
+            $ref: '#/components/schemas/TopProcessesMetric'
+    TopProcessesMetric:
+      title: TopProcessesMetric
+      properties:
+        metricName:
+          type: string
+          description: Name of the top process metric.
+        displayName:
+          type: string
+          description: Name of the top process metric, e.g Top CPU Processes, Top Memory Processes
+        unit:
+          type: string
+          description: Unit of the metric values
+        metricValues:
+          type: array
+          description: Array of top processes for a specific metric
+          items:
+            $ref: '#/components/schemas/TopProcessesMetricValue'
+    TopProcessesMetricOps:
+      title: TopProcessesMetricOps
+      properties:
+        metricName:
+          type: string
+        metricValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/TopProcessesMetricValueOps'
+    TopProcessesMetricValueOps:
+      title: TopProcessesMetricValueOps
+      type: object
+      properties:
+        processName:
+          type: string
+        pid:
+          type: string
+        value:
+          type: number
+          format: double
+    TopProcessesMetricValue:
+      title: TopProcessesMetricValue
+      type: object
+      properties:
+        processName:
+          type: string
+          description: Name of the process
+        pid:
+          type: string
+          description: PID of the processes
+        value:
+          type: number
+          format: double
+          description: Value of the process metric
+    TopDimensionsAdditionalMetricValue:
+      title: TopDimensionsAdditionalMetricValue
+      type: object
+      properties:
+        metricName:
+          type: string
+          description: Name of the additional metric
+        metricValue:
+          type: number
+          format: double
+          description: Value of the metric
+    TopDimensionSlicedMetricValue:
+      title: TopDimensionSlicedMetricValue
+      type: object
+      properties:
+        slicedByEntityName:
+          type: string
+          description: Name of the sliced entity in the metric distribution.
+        value:
+          type: number
+          format: double
+          description: Value of the sliced entity
+
+    MonitoringSliceBy:
+      title: MonitoringSliceBy
+      type: object
+      properties:
+        metricType:
+          $ref: '#/components/schemas/PerfMetricType'
+        limit:
+          type: integer
+          format: int32
+          default: 5
+          minimum: 1
+          maximum: 25
+          description: Limit the number of entities to slice the metric with
+      required:
+        - metricType
+    MonitoringFilterBy:
+      title: MonitoringFilterBy
+      type: object
+      properties:
+        metricType:
+          $ref: '#/components/schemas/PerfMetricType'
+        metricValue:
+          type: string
+          minLength: 1
+          description: Value of the metric filter
+        metricValueMasked:
+          type: boolean
+          default: false
+          description: Boolean that indicates if the value passed in the filter is masked or not
+      required:
+        - metricType
+        - metricValue
+    SlicedMetric:
+      title: SlicedMetric
+      type: object
+      properties:
+        slicedEntityName:
+          type: string
+          description: Name of the sliced entity in the metric distribution.
+        metricValues:
+          type: array
+          description: Array containing metric values associated with the sliced entity.
+          items:
+            $ref: '#/components/schemas/MetricValue'
+    MetricValue:
+      title: MetricValue
+      type: object
+      properties:
+        timestamp:
+          type: number
+          format: double
+          description: Timestamp representing the time at which the metric value was recorded
+        value:
+          type: number
+          format: double
+          description: The numeric value associated with the metric at the specified timestamp.
+      required:
+        - timestamp
+        - value
+    AddEntityMonitoringPayload:
+      title: AddEntityMonitoringPayload
+      type: object
+      properties:
+        entityType:
+          $ref: '#/components/schemas/MonitoringEntityType'
+        serviceId:
+          $ref: 'common-specification.yaml#/components/schemas/ServiceId'
+        serviceInstanceId:
+          $ref: 'common-specification.yaml#/components/schemas/ServiceInstanceId'
+        computeResourceId:
+          $ref: 'common-specification.yaml#/components/schemas/ComputeResourceId'
+        tenantId:
+          type: string
+        tenantName:
+          type: string
+        tenantEmail:
+          type: string
+    RemoveEntityMonitoringPayload:
+      title: RemoveEntityMonitoringPayload
+      type: object
+      properties:
+        entityType:
+          $ref: '#/components/schemas/MonitoringEntityType'
+        serviceId:
+          $ref: 'common-specification.yaml#/components/schemas/ServiceId'
+        serviceInstanceId:
+          $ref: 'common-specification.yaml#/components/schemas/ServiceInstanceId'
+        computeResourceId:
+          $ref: 'common-specification.yaml#/components/schemas/ComputeResourceId'
+
+    TessellMonitoringMetricsDTO:
+      title: Metrics
+      description: This is a definition for Tessell Monitoring Metrics
+      type: object
+      properties:
+        metric:
+          type: string
+          description: Metric name
+        displayName:
+          type: string
+          description: Metric name to be displayed on the chart
+        metricValues:
+          type: array
+          items:
+            type: array
+            items:
+              type: number
+              format: double
+          description: Metric data points
+    TessellMonitoringChartDTO:
+      title: Monitoring chart object
+      description: This is a definition for Tessell Monitoring Metrics Chart object
+      type: object
+      properties:
+        entityId:
+          type: string
+          format: uuid
+        title:
+          type: string
+          description: The title of the chart
+        entityType:
+          $ref: '#/components/schemas/MonitoringEntityType'
+        xlabel:
+          type: string
+          description: The label of x-axis
+        ylabel:
+          type: string
+          description: The label of y-axis
+        unit:
+          type: string
+          description: The unit of the metric
+        metrics:
+          type: array
+          description: Array of Metrics in the chart
+          items:
+            $ref: '#/components/schemas/TessellMonitoringMetricsDTO'
+    ComputeResourceMonitoringSummaryResponse:
+      title: ComputeResourceMonitoringSummaryResponse
+      properties:
+        timeDurationForAggregation:
+          type: string
+          format: int32
+          description: Time duration for aggregation
+        aggregationType:
+          $ref: '#/components/schemas/AggregationType'
+        stats:
+          type: array
+          description: Array of the aggregated metric stats
+          items:
+            $ref: '#/components/schemas/ComputeResourceMonitoringSummary'
+    ComputeResourceMonitoringSummary:
+      title: ComputeResourceMonitoringSummary
+      type: object
+      properties:
+        computeResourceId:
+          $ref: 'common-specification.yaml#/components/schemas/ComputeResourceId'
+        cpuUsagePct:
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 100
+          description: CPU utilization in percentage
+        memoryAvailable:
+          type: integer
+          format: int64
+          description: Available memory in bytes
+        memoryTotal:
+          type: integer
+          format: int64
+          description: Total memory in bytes
+    MonitoringEntityType:
+      title: Monitoring Entity Type
+      type: string
+      description: This is a definition for Tessell Monitoring Entity Type
+      enum:
+        - NODE
+        - DB
+        - K8S_INFRA
+    MetricType:
+      title: Monitoring Metric Type
+      type: string
+      description: This is a definition for Tessell Monitoring Metric Type
+      enum:
+        - NODE
+        - DB
+        - K8S_INFRA
+    AggregationType:
+      title: Aggregation
+      type: string
+      enum:
+        - AVG
+    PerfMetricType:
+      type: string
+      description: Type of Performance Metric
+      enum:
+        - SQL
+        - HOST
+        - DB
+        - USER
+        - WAIT
+    MonitoringInfraProvisionTaskPayload:
+      title: MonitoringInfraProvisionTaskPayload
+      type: object
+      required:
+        - tenantId
+        - subscriptionId
+        - cloudType
+        - region
+        - vpcId
+        - cloudAccountId
+        - computeId
+        - owner
+      properties:
+        tenantId:
+          type: string
+          format: uuid
+        subscriptionId:
+          type: string
+          format: uuid
+        cloudType:
+          $ref: 'common-specification.yaml#/components/schemas/cloudType'
+        region:
+          type: string
+        vpcId:
+          type: string
+          format: uuid
+        cloudAccountId:
+          type: string
+          format: uuid
+        encryptionKeyCloudId:
+          type: string
+        computeId:
+          type: string
+          format: uuid
+        volumeSize:
+          type: integer
+        owner:
+          type: string
+        skipProvisionRollback:
+          type: boolean
+    MonitoringInfraDeleteTaskPayload:
+      title: MonitoringInfraDeleteTaskPayload
+      type: object
+      required:
+        - tenantId
+        - subscriptionId
+        - cloudType
+        - region
+        - cloudAccountId
+        - monitoringDeploymentOpsDTOId
+      properties:
+        tenantId:
+          type: string
+          format: uuid
+        subscriptionId:
+          type: string
+          format: uuid
+        cloudType:
+          $ref: 'common-specification.yaml#/components/schemas/cloudType'
+        cloudAccountId:
+          type: string
+          format: uuid
+        region:
+          type: string
+        monitoringDeploymentOpsDTOId:
+          type: string
+          format: uuid
+    MonitoringDeploymentsResponse:
+      title: MonitoringDeploymentsResponse
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/apiResponse'
+        - type: object
+          properties:
+            response:
+              type: array
+              items:
+                $ref: '#/components/schemas/MonitoringDeploymentOpsDTO'
+    MonitoringDeploymentOpsDTO:
+      title: MonitoringDeploymentOpsDTO
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        vpcId:
+          type: string
+          format: uuid
+        subscriptionId:
+          type: string
+          format: uuid
+        cloud:
+          $ref: 'common-specification.yaml#/components/schemas/cloudType'
+        region:
+          type: string
+        cloudAccountId:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/MonitoringDeploymentStatusOps'
+        connectivity:
+          $ref: '#/components/schemas/MonitoringDeploymentConnectivity'
+        numOfInstances:
+          type: integer
+        owner:
+          type: string
+        instances:
+          type: array
+          items:
+            $ref: '#/components/schemas/MonitoringInstanceOpsDTO'
+        dateCreated:
+          type: string
+          format: date-time
+        dateModified:
+          type: string
+          format: date-time
+    MonitoringDeploymentStatusOps:
+      title: MonitoringDeploymentStatusOps
+      type: string
+      enum:
+        - CREATING
+        - CREATION_FAILED
+        - RUNNING
+        - STOPPED
+        - DELETING
+        - DELETED
+        - DELETION_FAILED
+    MonitoringDeploymentConnectivity:
+      title: MonitoringDeploymentConnectivity
+      type: object
+      properties:
+        deploymentId:
+          type: string
+          format: uuid
+        publicIp:
+          type: string
+        privateIp:
+          type: string
+    MonitoringInstancesResponse:
+      title: MonitoringInstancesResponse
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/apiResponse'
+        - type: object
+          properties:
+            response:
+              type: array
+              items:
+                $ref: '#/components/schemas/MonitoringInstanceOpsDTO'
+    MonitoringInstanceOpsDTO:
+      title: MonitoringInstanceOpsDTO
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        monitoringDeploymentId:
+          type: string
+          format: uuid
+        computeResourceId:
+          $ref: 'common-specification.yaml#/components/schemas/ComputeResourceId'
+        vpcId:
+          type: string
+          format: uuid
+        subnetId:
+          type: string
+          format: uuid
+        connectivity:
+          $ref: '#/components/schemas/MonitoringInstanceConnectivity'
+        infraInfo:
+          $ref: '#/components/schemas/MonitoringInstanceInfraInfo'
+        subscriptionId:
+          type: string
+          format: uuid
+        deploymentId:
+          type: string
+          format: uuid
+        cloudLocation:
+          type: string
+        status:
+          $ref: '#/components/schemas/MonitoringInstanceStatusOps'
+        dateCreated:
+          type: string
+          format: date-time
+        dateModified:
+          type: string
+          format: date-time
+    MonitoringInstanceConnectivity:
+      title: MonitoringInstanceConnectivity
+      type: object
+      properties:
+        publicIp:
+          type: string
+        privateIp:
+          type: string
+    MonitoringInstanceInfraInfo:
+      title: MonitoringInstanceInfraInfo
+      type: object
+      properties:
+        computeId:
+          type: string
+          format: uuid
+        compute:
+          type: string
+    MonitoringInstanceStatusOps:
+      title: MonitoringInstanceStatusOps
+      type: string
+      enum:
+        - CREATING
+        - CREATION_FAILED
+        - RUNNING
+        - STOPPED
+        - DELETING
+        - DELETED
+        - DELETION_FAILED
+    MetricStartTime:
+      type: string
+      pattern: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}Z$'
+      description: Start timestamp in prometheus date-time format
+    MetricEndTime:
+      type: string
+      pattern: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}Z$'
+      description: End timestamp in prometheus date-time format
+    NumTopK:
+      type: integer
+      format: int32
+      default: 10
+      minimum: 1
+      maximum: 25
+      description: Number of top dimension entities
+
+  parameters:
+    num-top-k-in-query:
+      name: num-top-k
+      in: query
+      description: Number of top entities
+      required: false
+      schema:
+        type: integer
+        format: int32
+        default: 10
+        minimum: 1
+        maximum: 100
+    entity-type-in-query:
+      in: query
+      name: entity-type
+      schema:
+        $ref: '#/components/schemas/MonitoringEntityType'
+      required: true
+      description: Monitoring entity type
+    container-name-in-query:
+      in: query
+      name: container-name
+      schema:
+        type: string
+      required: true
+      description: "Name of the container for which metrics is required"
+    namespace-in-query:
+      in: query
+      name: namespace
+      schema:
+        type: string
+      required: true
+      description: "Name of the namespace in which container is present"
+    service-id-in-query:
+      in: query
+      name: service-id
+      schema:
+        type: string
+        format: uuid
+      required: false
+      description: The ID of the DB Service. This parameter is required when entity-type is one of DB Engines
+    service-instance-id-in-query:
+      in: query
+      name: service-instance-id
+      schema:
+        type: string
+        format: uuid
+      required: false
+      description: The ID of the service's instance. This parameter is required when entity-type is one of DB Engines
+    compute-resource-id-in-query:
+      in: query
+      name: compute-resource-id
+      schema:
+        type: string
+        format: uuid
+      required: false
+      description: The ID of the Compute Resource(NODE). This parameter is required when entity-type is NODE
+    start-time-in-query:
+      in: query
+      name: start-time
+      schema:
+        type: string
+        pattern: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}Z$'
+      required: false
+      description: Start timestamp in prometheus date-time format yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS'Z'
+    end-time-in-query:
+      in: query
+      name: end-time
+      schema:
+        type: string
+        pattern: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}Z$'
+      required: false
+      description: End timestamp in prometheus date-time format yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS'Z'
+    step-in-query:
+      in: query
+      name: step
+      schema:
+        type: string
+      required: false
+      description: Specifies the frequency at which data points are sampled or aggregated within the specified time range
+    compute-resource-ids-in-query:
+      in: query
+      name: compute-resource-ids
+      schema:
+        type: array
+        items:
+          type: string
+          format: uuid
+      required: true
+      description: Array of Compute Resource Ids
+    time-duration-for-aggregation-in-query:
+      in: query
+      name: time-duration-for-aggregation
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 60
+        default: 5
+      required: false
+      description: Time duration in minutes to aggregate the metrics, defaults to 5mins.
+    aggregation-type-in-query:
+      in: query
+      name: aggregation-type
+      schema:
+        $ref: '#/components/schemas/AggregationType'
+      description: Type of aggregation to be performed on the metric
+    cloud-in-query:
+      in: query
+      name: cloud
+      schema:
+        $ref: 'common-specification.yaml#/components/schemas/cloudType'
+      description: Cloud Type, e.g AWS, AZURE, etc,.
+    region-in-query:
+      in: query
+      name: region
+      schema:
+        type: string
+      description: Region in the cloud, e.g ap-south-1
+    vpc-id-in-query:
+      in: query
+      name: vpc-id
+      schema:
+        type: string
+        format: uuid
+      description: VPC ID
+    load-instances-in-query:
+      in: query
+      name: load-instances
+      schema:
+        type: boolean
+      description: Boolean to indicate if instances to be fetched or not
+    deployment-statuses-in-query:
+      in: query
+      name: statuses
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/MonitoringDeploymentStatusOps'
+    deployment-skip-statuses-in-query:
+      in: query
+      name: skip-statuses
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/MonitoringDeploymentStatusOps'
+    instance-statuses-in-query:
+      in: query
+      name: statuses
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/MonitoringInstanceStatusOps'
+    instance-skip-statuses-in-query:
+      in: query
+      name: skip-statuses
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/MonitoringInstanceStatusOps'
+    deployment-id-in-path:
+      in: path
+      name: deployment-id
+      schema:
+        type: string
+        format: uuid
+      required: true
+    instance-id-in-path:
+      in: path
+      name: instance-id
+      schema:
+        type: string
+        format: uuid
+      required: true

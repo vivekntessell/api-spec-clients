@@ -1,0 +1,5455 @@
+openapi: "3.0.0"
+info:
+  title: Tessell Tenant Onboarding Service API
+  version: v1beta
+  description: Tenant Onboarding API
+
+servers:
+  - description: Inferred Url
+    url: http://localhost:8088
+tags:
+  - name: subscription-ops
+    description: Subscription Ops APIs
+  - name: subscription-service
+    description: Subscription Service APIs
+  - name: tenant-service
+    description: Tenant Service APIs
+  - name: tenant-ops
+    description: Tenant Ops APIs
+
+paths:
+
+  # -------------------
+  # Tenant - No Auth APIs
+  # -------------------
+  /tenants:
+    get:
+      tags:
+        - tenant-service
+      summary: Returns the tenant details for specified email address
+      description: Returns the tenant details for specified email address
+      operationId: getTenantByEmail
+      parameters:
+        - in: query
+          name: email
+          schema:
+            type: string
+          required: true
+          description: "Email address of the tenant"
+      responses:
+        200:
+          description: List of tenants
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantOnboardingResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tenants/register:
+    post:
+      tags:
+        - tenant-service
+      description: Sign up a new PE tenant.
+      operationId: registerTenant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterTenantRequest"
+      responses:
+        200:
+          description: Tenant response with status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisterTenantResponse"
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tenants/verify:
+    post:
+      tags:
+        - tenant-service
+      description: Verify the email verification code.
+      operationId: verifyEmail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifyCodeRequest"
+      responses:
+        200:
+          description: Tenant response with status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisterTenantResponse"
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tenants/activate:
+    post:
+      tags:
+        - tenant-service
+      description: Activate the tenant
+      operationId: activateTenant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActivateTenantRequest"
+      responses:
+        200:
+          description: Tenant response with status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantServiceConsumer"
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /azureauth/callback:
+    get:
+      tags:
+        - tenant-service
+      description: Verify the azure oauth code.
+      operationId: verifyAzureAuth
+      parameters:
+        - in: query
+          name: code
+          schema:
+            type: string
+          required: true
+          description: "Azure auth code"
+        - in: query
+          name: state
+          schema:
+            type: string
+          required: true
+          description: "Tessell Tenant ID"
+      responses:
+        200:
+          description: "200 response"
+          headers: {}
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tenant-config:
+    get:
+      tags:
+        - tenant-service
+      summary: Returns the tenant service config
+      operationId: getTenantConfigServiceView
+      parameters:
+        - in: header
+          name: tenant-id
+          schema:
+            type: string
+          required: true
+          description: "Tenant Id"
+      responses:
+        200:
+          description: Tenant service consumer view
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantConfigServiceView'
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tessell-ops/tenants/setup:
+    post:
+      tags:
+        - tenant-ops
+      description: Sets up a tenant.
+      operationId: setupTenant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetupTenantRequest"
+      responses:
+        200:
+          description: Tenant response with status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tenant"
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/tenants/base-tenant-setup:
+    post:
+      tags:
+        - tenant-ops
+      description: Sets up console tenant. This is a temp api and will go away in later versions
+      operationId: setupSharedControlPlaneBaseInfra
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetupSharedControlPlaneBaseInfraRequest"
+      responses:
+        200:
+          description: Tenant response with status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tenant"
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/tenants/onboard:
+    post:
+      tags:
+        - tenant-ops
+      description: Onboard a tenant.
+      operationId: onboardTenant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OnboardTenantRequest"
+      responses:
+        200:
+          description: Tenant response with status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tenant"
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/tenants:
+    get:
+      tags:
+        - tenant-ops
+      summary: Returns one or all of the registered/onboarded tenant entries.
+      description: Returns one or all of the registered/onboarded tenant entries. If 'consumer-type' is OPS, return all entries, else return one entry for specified 'email'.
+      operationId: getTenants
+      parameters:
+        - in: query
+          name: email
+          schema:
+            type: string
+          required: false
+          description: "Email address of the tenant"
+        - in: query
+          name: domain
+          schema:
+            type: string
+          required: false
+          description: "Domain of the tenant"
+        - $ref: "common-specification.yaml#/components/parameters/pageSize"
+        - $ref: "common-specification.yaml#/components/parameters/pageOffset"
+        - $ref: "common-specification.yaml#/components/parameters/timeZone"
+        - $ref: "#/components/parameters/queryParamStatus"
+      responses:
+        200:
+          description: List of tenants
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    post:
+      tags:
+        - tenant-ops
+      summary: Create a Tessell Tenant
+      operationId: createTenant
+      requestBody:
+        description: "Create tenant object"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tenant'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/v2/tenants:
+    get:
+      tags:
+        - tenant-ops
+      summary: Returns all of the registered/onboarded tenant entries.
+      description: Returns all of the registered/onboarded tenant entries.
+      operationId: getTenantsV2
+      parameters:
+        - in: query
+          name: email-id
+          schema:
+            type: string
+          required: false
+          description: "Email address of the tenant"
+        - in: query
+          name: domain
+          schema:
+            type: string
+          required: false
+          description: "Domain of the tenant"
+        - in: query
+          name: infra-deployment-id
+          schema:
+            type: string
+            format: uuid
+          required: false
+          description: "infra deployment id of tenant"
+        - in: query
+          name: tenant-id
+          schema:
+            type: string
+          required: false
+          description: "Tenant id which is used as a header everywhere"
+        - in: query
+          name: status
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/tenantStatus"
+          required: false
+          description: "Status of the tenant"
+        - in: query
+          name: tenant-types
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/TenantType"
+          required: false
+          description: "List of tenant type"
+        - $ref: "common-specification.yaml#/components/parameters/pageSize"
+        - $ref: "common-specification.yaml#/components/parameters/pageOffset"
+        - in: query
+          name: api-domain-url
+          schema:
+            type: string
+          required: false
+          description: "Domain URL for the backend endpoints"
+      responses:
+        200:
+          description: List of tenants
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTenantsApiResponse'
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-internal/tenant:
+    get:
+      tags:
+        - tenant-internal
+      summary: Return tenant entity by the request header tenant-id.
+      description: Return tenant entity by the request header tenant-id.
+      operationId: getCurrentTenant
+      responses:
+        200:
+          description: Current tenant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/tenants/{id}:
+    get:
+      tags:
+        - tenant-ops
+      summary: Return tenant entity by id.
+      description: Returns one or all of the registered/onboarded tenant entries. If 'consumer-type' is OPS, return all entries, else return one entry for specified 'email'.
+      operationId: getTenantById
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: include-cloud-accounts
+          in: query
+          description: id
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - $ref: "common-specification.yaml#/components/parameters/timeZone"
+      responses:
+        200:
+          description: List of tenants
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    delete:
+      tags:
+        - tenant-ops
+      summary: Delete a Tessell Tenant
+      operationId: deleteTenant
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/soft-delete'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "common-specification.yaml#/components/schemas/apiStatus"
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    patch:
+      tags:
+        - tenant-ops
+      summary: Update a Tessell Tenant
+      operationId: updateTenant
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: "Update tenant object"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tenant'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/tenants/{id}/upgrade:
+    put:
+      tags:
+        - tenant-ops
+      summary: Upgrade a Tessell Tenant
+      operationId: upgradeTenant
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: "Upgrade a tenant"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpgradeTenantRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/tenants/{id}/deboard:
+    put:
+      tags:
+        - tenant-ops
+      summary: Deboard a Tenant
+      operationId: deboardTenant
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: "De-board tenant request"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeboardTenantRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/tenants/upgrade-services:
+    put:
+      tags:
+        - tenant-ops
+      summary: Upgrade services of a tenant
+      operationId: upgradeTenantServices
+      parameters:
+        - name: tenant-id
+          in: header
+          description: tenant id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-internal/tenants/deboard/cleanup/entities:
+    get:
+      tags:
+        - tenant-internal
+      summary: Return tenant entities to be cleaned up
+      description: Return tenant entities to be cleaned up
+      operationId: getCleanupEntities
+      parameters:
+        - name: subscriptionEntities
+          in: query
+          description: whether to return the subscription level entity types
+          required: false
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: List of entity type configs to be cleaned up
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeboardingCleanupEntitiesResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  # -------------------
+  # Seed data - Internal/Ops APIs
+  # -------------------
+  /tessell-ops/seed-data:
+    get:
+      tags:
+        - seed-data
+      summary: Return the seed info.
+      description: Return the seed info.
+      operationId: getSeedData
+      parameters:
+        - in: query
+          name: tenant_id
+          schema:
+            type: string
+            format: uuid
+          required: false
+          description: "Filter for a specific tenant"
+        - in: query
+          name: version
+          schema:
+            type: integer
+          required: false
+          description: "Filter for a specific version"
+      responses:
+        200:
+          description: Seed data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeedDataWrapper'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    post:
+      tags:
+        - seed-data
+      summary: Create a new version of the seed info.
+      operationId: createSeedData
+      requestBody:
+        description: "Seed data request"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SeedData"
+      responses:
+        200:
+          description: Seed data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeedDataWrapper'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/seed-data/{version}:
+    patch:
+      tags:
+        - seed-data
+      summary: Create a new version of the seed info.
+      operationId: updateSeedData
+      parameters:
+        - in: path
+          name: version
+          schema:
+            type: integer
+          required: true
+          description: "Seed data version"
+      requestBody:
+        description: "Seed data request"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SeedData"
+      responses:
+        200:
+          description: Seed data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeedDataWrapper'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-internal/seed-data/replicate:
+    post:
+      tags:
+        - seed-data
+      summary: Replicate seed data.
+      operationId: replicateSeedData
+      requestBody:
+        description: "Seed data wrapper request"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SeedDataWrapper"
+      responses:
+        200:
+          description: Seed data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeedDataWrapper'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+
+  # -------------------
+  # Infra Deployment - Internal/Ops APIs
+  # -------------------
+  /tessell-ops/infra-deployments:
+    post:
+      tags:
+        - infra-deployment
+      summary: Submit a request for setting up shared tenant infra.
+      description: Submit a request for setting up shared tenant infra.
+      operationId: createSharedInfra
+      requestBody:
+        description: "Shared Infra specification"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SharedInfraCreationRequestPayload"
+      responses:
+        200:
+          description: Tracking information for infra creation request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InfraDeployment"
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    get:
+      tags:
+        - infra-deployment
+      summary: Get the infra deployments
+      operationId: getInfraDeployments
+      parameters:
+        - in: query
+          name: tenant-id
+          schema:
+            type: string
+            format: uuid
+          required: false
+          description: "Filter for a specific tenant"
+        - in: query
+          name: status
+          schema:
+            $ref: "#/components/schemas/InfraDeploymentStatus"
+          required: false
+          description: "Filter for infra deployment"
+        - in: query
+          name: for-tenant-type
+          schema:
+            $ref: "#/components/schemas/TenantType"
+          required: false
+          description: "Filter for which tenant type the deployment type is for"
+        - $ref: "common-specification.yaml#/components/parameters/pageSize"
+        - $ref: "common-specification.yaml#/components/parameters/pageOffset"
+      responses:
+        200:
+          description: Infra deployment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InfraDeploymentsResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/infra-deployments/{name}:
+    get:
+      tags:
+        - infra-deployment
+      summary: Get infra deployment.
+      operationId: getInfraDeployment
+      parameters:
+        - in: path
+          name: name
+          schema:
+            type: string
+          required: true
+          description: "Infra name"
+      responses:
+        200:
+          description: Infra infra deployment response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InfraDeployment'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    patch:
+      tags:
+        - infra-deployment
+      summary: Update infra deployment.
+      operationId: updateInfraDeployment
+      parameters:
+        - in: path
+          name: name
+          schema:
+            type: string
+          required: true
+          description: "Infra name"
+      requestBody:
+        description: "Update infra deployment request"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InfraDeployment"
+      responses:
+        200:
+          description: Update infra deployment response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InfraDeployment'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/infra-deployments/{name}/upgrade:
+    put:
+      tags:
+        - infra-deployment
+      summary: Upgrade infra deployment.
+      operationId: upgradeInfraDeployment
+      parameters:
+        - in: path
+          name: name
+          schema:
+            type: string
+          required: true
+          description: "Infra name"
+      requestBody:
+        description: "Upgrade infra deployment request"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpgradeInfraDeploymentRequest"
+      responses:
+        200:
+          description: Upgrade infra deployment response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InfraDeployment'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  # -------------------
+  # Proxy regions for infra deployments
+  # -------------------
+  /tessell-ops/infra-deployments/{name}/proxy-regions:
+    post:
+      tags:
+        - infra-deployment
+      description: "Submits a request for registering proxy regions in Infra Deployment"
+      summary: "Register proxy regions"
+      operationId: registerProxyRegionsInfraDeployment
+      parameters:
+        - $ref: '#/components/parameters/infraName'
+      requestBody:
+        description: "Proxy regions for Infra Deployment"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InfraDeploymentProxyRegionsPayload"
+      responses:
+        200:
+          description: "Infra Deployment"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InfraDeployment"
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    delete:
+      tags:
+        - infra-deployment
+      description: "Submits a request to delete proxy regions in Infra Deployment"
+      summary: "Deletes proxy regions"
+      operationId: deleteProxyRegionsInfraDeployment
+      parameters:
+        - $ref: '#/components/parameters/infraName'
+      requestBody:
+        description: "List of proxy regions for Infra Deployment"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InfraDeploymentProxyRegionsPayload"
+      responses:
+        200:
+          description: "Infra Deployment"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InfraDeployment"
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+
+  /tessell-ops/infra-deployments/{name}/proxy-regions/update-status:
+    patch:
+      tags:
+        - infra-deployment
+      description: "Submits a request for updating the proxy regions' status"
+      summary: "Updates proxy regions' status"
+      operationId: updateProxyRegionsStatus
+      parameters:
+        - $ref: '#/components/parameters/infraName'
+      requestBody:
+        description: "List of regions for status update"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InfraDeploymentProxyRegionsMap"
+      responses:
+        200:
+          description: "List of current proxy regions for Infra Deployment"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InfraDeployment"
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  # -------------------
+  # Register metadata for infra deployments
+  # -------------------
+  /tessell-ops/infra-deployments/register-metadata:
+    post:
+      tags:
+        - infra-deployment
+      summary: "Submit a request for registering metadata for infra deployment"
+      operationId: registerMetadataInfraDeployment
+      requestBody:
+        description: "Register metadata for infra deployment"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InfraDeployment"
+      responses:
+        200:
+          description: Register metadata for infra deployment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InfraDeployment"
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  # -------------------
+  # Data Plane Accounts
+  # -------------------
+  /tessell-ops/data-plane-accounts:
+    post:
+      tags:
+        - data-plane-accounts-ops
+      description: Create a new Tessell Data Plane Account
+      summary: Create a new Tessell Data Plane Account.
+      operationId: createDataPlaneAccountOps
+      requestBody:
+        description: "Data Plane Account Information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DataPlaneAccountRequestPayload"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataPlaneAccount"
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/data-plane-accounts/register:
+    post:
+      tags:
+        - data-plane-accounts-ops
+      description: Registers a Tessell Data Plane Account
+      summary: Register a Tessell Data Plane Account.
+      operationId: registerDataPlaneAccountOps
+      requestBody:
+        description: "Register Data Plane Account Payload"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DataPlaneAccountRequestPayload"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataPlaneAccount"
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/data-plane-accounts/{data-plane-account-id}/replicate:
+    post:
+      tags:
+        - data-plane-accounts-ops
+      description: Replicates an existing Tessell Data Plane Account
+      summary: Replicates an existing Tessell Data Plane Account.
+      operationId: replicateDataPlaneAccountOps
+      parameters:
+        - name: data-plane-account-id
+          in: path
+          description: Tessell Data Plane Account which has to be replicated
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: "Replicate Data Plane Account Payload"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReplicateDataPlaneAccountPayload"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataPlaneAccount"
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/data-plane-accounts/{data-plane-account-id}:
+    post:
+      tags:
+        - data-plane-accounts-ops
+      description: Updates an existing Tessell Data Plane Account
+      summary: Updates an existing Tessell Data Plane Account.
+      operationId: updateDataPlaneAccountOps
+      parameters:
+        - name: data-plane-account-id
+          in: path
+          description: Tessell Data Plane Account which has to be updated
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: "Update Data Plane Account Payload"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDataPlaneAccountPayload"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataPlaneAccount"
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    delete:
+      tags:
+        - data-plane-accounts-ops
+      description: Deletes an existing Tessell Data Plane Account
+      summary: Delete an existing Tessell Data Plane Account.
+      operationId: deleteDataPlaneAccountOps
+      parameters:
+        - name: data-plane-account-id
+          in: path
+          description: Tessell Data Plane Account which has to be deleted
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "common-specification.yaml#/components/schemas/apiStatus"
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/data-plane-accounts/bulk-delete:
+    post:
+      tags:
+        - data-plane-accounts-ops
+      summary: Bulk delete data plane accounts status
+      operationId: getBulkDeleteDataPlaneAccountsStatus
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkDeleteDataPlaneAccountsStatusPayload'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeleteResponseOps'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    delete:
+      tags:
+        - data-plane-accounts-ops
+      summary: Bulk delete Data Plane Accounts
+      operationId: bulkDeleteDataPlaneAccounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkDeleteDataPlaneAccountsPayload'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeleteResponseOps'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/data-plane-accounts/{data-plane-account-id}/tenant-associations:
+    post:
+      tags:
+        - data-plane-accounts-ops
+      description: Updates tenant cloud account association
+      summary: Updates tenant cloud account association
+      operationId: updateTenantDataPlaneAccountAssociation
+      parameters:
+        - name: data-plane-account-id
+          in: path
+          description: Tessell Data Plane Account which has to be updated
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: "Update tenant cloud account association"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTenantCloudAccountAssociationPayload"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "common-specification.yaml#/components/schemas/apiStatus"
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  # -------------------
+  # Subscription
+  # -------------------
+  /subscriptions:
+    get:
+      tags:
+        - subscription-service
+      summary: Returns details about the Tessell Subscriptions
+      description: It returns the details about the Tessell Subscriptions
+      operationId: getUserViewSubscriptions
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/subscriptionStatus'
+          required: false
+          description: "List of subscription statuses"
+        - $ref: "common-specification.yaml#/components/parameters/timeZone"
+        - $ref: "common-specification.yaml#/components/parameters/pageSize"
+        - $ref: "common-specification.yaml#/components/parameters/pageOffset"
+      responses:
+        200:
+          description: List of subscriptions
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/SubscriptionsUserViewApiResponse'
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /subscription-service/governance/subscriptions:
+    post:
+      tags:
+        - subscription-service
+      description: Creates a new Tessell subscription based on deployment type(shared/byoa) and cloud configurations.
+      summary: Create a new Tessell subscription.
+      operationId: createSubscription
+      requestBody:
+        description: "Subscription Information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSubscriptionPayload"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionAdminView"
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+    get:
+      tags:
+        - subscription-service
+      summary: Returns details about the Tessell Subscriptions
+      description: Returns details about the Tessell Subscriptions
+      operationId: getAdminViewSubscriptions
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/subscriptionStatus'
+          required: false
+          description: "List of subscription statuses"
+        - name: entity-owner
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          required: false
+          description: "Filter based on subscription owners"
+        - $ref: "common-specification.yaml#/components/parameters/timeZone"
+        - $ref: "common-specification.yaml#/components/parameters/pageSize"
+        - $ref: "common-specification.yaml#/components/parameters/pageOffset"
+      responses:
+        200:
+          description: List of subscriptions
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/SubscriptionsAdminApiResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /subscription-service/governance/subscriptions/{name}:
+    get:
+      tags:
+        - subscription-service
+      summary: Submits request to get the subscription details
+      description: Submits request to get the subscription details
+      operationId: getSubscriptionName
+      parameters:
+        - $ref: '#/components/parameters/subscription-name'
+        - $ref: "common-specification.yaml#/components/parameters/timeZone"
+      responses:
+        200:
+          description: Details of a subscription
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionAdminView'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+    patch:
+      tags:
+        - subscription-service
+      summary: Submits request to update a Tessell Subscription
+      description: Submits request to update a Tessell Subscription
+      operationId: updateSubscription
+      parameters:
+        - $ref: '#/components/parameters/subscription-name'
+      requestBody:
+        description: "Update Subscription Body"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSubscriptionServicePayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionAdminView'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+    delete:
+      summary: Submits request to delete a Tessell Subscription
+      description: Submits request to delete a Tessell Subscription
+      tags:
+        - subscription-service
+      operationId: deleteSubscription
+      parameters:
+        - $ref: '#/components/parameters/subscription-name'
+        - $ref: '#/components/parameters/soft-delete'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "common-specification.yaml#/components/schemas/apiStatus"
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /subscription-service/governance/subscriptions/{name}/{action}:
+    patch:
+      tags:
+        - subscription-service
+      summary: Submits request to enable or disable a Tessell Subscription
+      description: Submits request to enable or disable a Tessell Subscription
+      operationId: actionOnSubscription
+      parameters:
+        - $ref: '#/components/parameters/subscription-name'
+        - name: action
+          in: path
+          description: Action on the subscription. Eg. enable/disable
+          required: true
+          schema:
+            $ref: '#/components/schemas/Action'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionAdminView'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /subscription-service/governance/subscriptions/{name}/cloud-type:
+    post:
+      tags:
+        - subscription-service
+      description: Adds cloud type to a new Tessell subscription
+      summary: Adds cloud type to a new Tessell subscription
+      operationId: addCloudTypeToSubscription
+      parameters:
+        - $ref: '#/components/parameters/subscription-name'
+      requestBody:
+        description: "Cloud details"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionCloudConfigMap"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionAdminView"
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /subscription-service/governance/subscriptions/{name}/cloud-type/{cloud-type}/{action}:
+    patch:
+      tags:
+        - subscription-service
+      summary: Enables or disables a cloud type in a Tessell Subscription
+      description: Enables or disables a cloud type in a Tessell Subscription
+      operationId: actionOnSubscriptionCloudType
+      parameters:
+        - $ref: '#/components/parameters/subscription-name'
+        - name: cloud-type
+          in: path
+          description: Cloud type
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 16
+        - name: action
+          in: path
+          description: Action on the subscription. Eg. enable/disable
+          required: true
+          schema:
+            $ref: '#/components/schemas/Action'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionAdminView'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /subscription-service/governance/subscriptions/{name}/cloud-type/{cloud-type}/regions:
+    put:
+      tags:
+        - subscription-service
+      summary: Update regions for a cloud type in a Tessell Subscription
+      description: Update regions for a cloud type in a Tessell Subscription
+      operationId: updateRegionsInSubscription
+      parameters:
+        - $ref: '#/components/parameters/subscription-name'
+        - name: cloud-type
+          in: path
+          description: Cloud type
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 16
+      requestBody:
+        description: "Region list"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRegionsPayload"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionAdminView'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /subscription-service/governance/subscriptions/{name}/add-regions:
+    put:
+      tags:
+        - subscription-service
+      summary: Add regions for a cloud type in a Tessell Subscription
+      description: Add regions for a cloud type in a Tessell Subscription
+      operationId: addRegionsInSubscription
+      parameters:
+        - $ref: '#/components/parameters/subscription-name'
+      requestBody:
+        description: "Cloud config map"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionCloudConfigMap"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionAdminView'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /subscription-service/governance/subscriptions/{name}/acls:
+    patch:
+      tags:
+        - subscription-service
+      summary: Adds users to a Tessell subscription
+      description: Adds users to a Tessell subscription
+      operationId: addUsersToSubscription
+      parameters:
+        - $ref: '#/components/parameters/subscription-name'
+      requestBody:
+        description: "Add Users To Subscription Request"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "common-specification.yaml#/components/schemas/AclPayload"
+      responses:
+        204:
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+    delete:
+      tags:
+        - subscription-service
+      summary: Removes users from a Tessell subscription
+      description: Removes users from a Tessell subscription
+      operationId: removeUsersFromSubscription
+      parameters:
+        - $ref: '#/components/parameters/subscription-name'
+      requestBody:
+        description: "Remove Users To Subscription Request"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "common-specification.yaml#/components/schemas/AclRevokePayload"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionAdminView"
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /subscription-service/governance/subscriptions/{name}/users:
+    get:
+      tags:
+        - subscription-service
+      summary: Get subscription's users' details
+      description: Get the details of subscription's users
+      operationId: getSubscriptionUsersDetails
+      parameters:
+        - $ref: '#/components/parameters/subscription-name'
+        - $ref: "common-specification.yaml#/components/parameters/timeZone"
+        - $ref: "common-specification.yaml#/components/parameters/pageSize"
+        - $ref: "common-specification.yaml#/components/parameters/pageOffset"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionUsersAdminView"
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /subscription-service/governance/subscriptions/{name}/acls/eligible-users:
+    get:
+      tags:
+        - subscription-service
+      summary: Get users which can be added to the subscription
+      description: Returns a list of users which can be added to the subscription
+      operationId: getEligibleUsersForSubscription
+      parameters:
+        - $ref: '#/components/parameters/subscription-name'
+        - name: role
+          in: query
+          description: User role
+          required: false
+          schema:
+            $ref: "#/components/schemas/SubscriptionUserRole"
+        - $ref: "common-specification.yaml#/components/parameters/timeZone"
+        - $ref: "common-specification.yaml#/components/parameters/pageSize"
+        - $ref: "common-specification.yaml#/components/parameters/pageOffset"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "common-specification.yaml#/components/schemas/AclEligibleUser"
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /subscription-service/governance/subscription-metadata/byoa:
+    get:
+      tags:
+        - subscription-service
+      description: Get subscription related metadata
+      operationId: getSubscriptionByoaStaticMetadata
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionByoaStaticMetadata"
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /subscription-service/governance/subscriptions/azureauth/callback:
+    get:
+      tags:
+        - subscription-service
+      description: Verify the azure oauth code.
+      operationId: verifyAzureTenantId
+      parameters:
+        - in: query
+          name: code
+          schema:
+            type: string
+          required: true
+          description: "Azure auth code"
+        - in: query
+          name: azure-tenant-id
+          schema:
+            type: string
+            minLength: 36
+            maxLength: 36
+          required: true
+          description: "Azure tenant ID"
+      responses:
+        200:
+          description: "200 response"
+          headers: {}
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tessell-ops/subscriptions:
+    post:
+      tags:
+        - subscription-ops
+      description: Create a new Tessell subscription
+      summary: Create a new Tessell subscription.
+      operationId: createSubscriptionOps
+      parameters:
+        - in: query
+          name: default
+          schema:
+            type: boolean
+            default: false
+          required: false
+          description: "Specify if this is the default subscription"
+      requestBody:
+        description: "Subscription Information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSubscriptionPayload"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    get:
+      tags:
+        - subscription-ops
+      summary: Returns details about the Tessell Subscriptions
+      description: Returns details about the Tessell Subscriptions
+      operationId: getSubscriptionsOps
+      parameters:
+        - name: name
+          in: query
+          description: Subscription name
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: statuses
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/subscriptionStatus'
+          required: false
+          description: "List of subscription statuses"
+        - in: query
+          name: default
+          schema:
+            type: boolean
+          required: false
+          description: "Specify if this is the default subscription"
+        - $ref: "common-specification.yaml#/components/parameters/timeZone"
+        - $ref: "common-specification.yaml#/components/parameters/pageSize"
+        - $ref: "common-specification.yaml#/components/parameters/pageOffset"
+        - $ref: "common-specification.yaml#/components/parameters/tenantId"
+      responses:
+        200:
+          description: List of subscriptions
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/SubscriptionApiResponseOps'
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/v2/subscriptions:
+    get:
+      tags:
+        - subscription-ops
+      summary: Returns details about the Tessell Subscriptions
+      description: Returns details about the Tessell Subscriptions
+      operationId: getSubscriptionsOpsV2
+      parameters:
+        - name: name
+          in: query
+          description: Subscription name
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: statuses
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/subscriptionStatus'
+          required: false
+          description: "List of subscription statuses"
+        - in: query
+          name: default
+          schema:
+            type: boolean
+          required: false
+          description: "Specify if this is the default subscription"
+        - $ref: "common-specification.yaml#/components/parameters/pageSize"
+        - $ref: "common-specification.yaml#/components/parameters/pageOffset"
+        - $ref: "common-specification.yaml#/components/parameters/tenantId"
+      responses:
+        200:
+          description: List of subscriptions
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/SubscriptionApiResponseOpsV2'
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/subscriptions/{id}:
+    get:
+      tags:
+        - subscription-ops
+      summary: Get subscription by Id
+      description: Get subscription by Id
+      operationId: getSubscriptionId
+      parameters:
+        - name: id
+          in: path
+          description: Subscription Id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: include-shared-with
+          in: query
+          description: Whether to include shared with users details
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - $ref: "common-specification.yaml#/components/parameters/timeZone"
+        - $ref: "common-specification.yaml#/components/parameters/tenantId"
+      responses:
+        200:
+          description: Details of a subscriptions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    patch:
+      tags:
+        - subscription-ops
+      summary: Update a Tessell Subscription
+      operationId: updateSubscriptionOps
+      parameters:
+        - name: id
+          in: path
+          description: Subscription Id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: "Update Subscription Body"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Subscription'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    delete:
+      summary: Submits a delete subscription workflow
+      tags:
+        - subscription-ops
+      operationId: deleteSubscriptionOps
+      parameters:
+        - name: id
+          in: path
+          description: Subscription Id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/soft-delete'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/v2/subscriptions/{id}:
+    get:
+      tags:
+        - subscription-ops
+      summary: Get subscription by Id light weight api
+      description: Get subscription by Id light weight api
+      operationId: getSubscriptionV2
+      parameters:
+        - name: id
+          in: path
+          description: Subscription Id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: include-shared-with
+          in: query
+          description: Whether to include shared with users details
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - $ref: "common-specification.yaml#/components/parameters/tenantId"
+      responses:
+        200:
+          description: Details of a subscriptions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionV2'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/subscriptions/{id}/delete-metadata:
+    put:
+      summary: Delete Subscription metadata entry
+      tags:
+        - subscription-ops
+      operationId: deleteSubscriptionMetadataOps
+      parameters:
+        - name: id
+          in: path
+          description: Subscription Id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/soft-delete'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "common-specification.yaml#/components/schemas/apiStatus"
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/subscriptions/bulk-delete:
+    post:
+      tags:
+        - subscription-ops
+      summary: Bulk delete subscriptions status
+      operationId: getBulkDeleteSubscriptionStatus
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkDeleteSubscriptionsStatusPayload'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeleteResponseOps'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    delete:
+      tags:
+        - subscription-ops
+      summary: Bulk delete Tessell subscriptions
+      operationId: bulkDeleteSubscription
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkDeleteSubscriptionsPayload'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeleteResponseOps'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-internal/subscriptions/bulk/add-users:
+    post:
+      tags:
+        - subscription-internal
+      summary: Adds users to multiple Tessell subscriptions
+      operationId: addUsersToSubscriptions
+      requestBody:
+        description: "Add Users To Subscriptions Request"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddUsersToSubscriptionsInternalRequest"
+      responses:
+        204:
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-internal/get-user-subscription-mappings:
+    post:
+      tags:
+        - subscription-internal
+      summary: Get user subscriptions mappings
+      operationId: getUserSubscriptionMappings
+      requestBody:
+        description: "User list for which the mapping is required"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetUserSubscriptionsMappingsRequest"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSubscriptionsMappings"
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-internal/subscriptions:
+    get:
+      tags:
+        - subscription-internal
+      summary: Get subscriptions
+      description: Get subscriptions for a user
+      operationId: getSubscriptions
+      parameters:
+        - name: name
+          in: query
+          description: Subscription Name
+          required: false
+          schema:
+            type: string
+        - $ref: "common-specification.yaml#/components/parameters/pageSize"
+        - $ref: "common-specification.yaml#/components/parameters/pageOffset"
+      responses:
+        200:
+          description: Details of a subscriptions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionApiResponseOps'
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-internal/v2/subscriptions:
+    get:
+      tags:
+        - subscription-internal
+      description: Get subscriptions for a user light weight api
+      operationId: getSubscriptionsV2
+      parameters:
+        - name: name
+          in: query
+          description: Subscription Name
+          required: false
+          schema:
+            type: string
+        - $ref: "common-specification.yaml#/components/parameters/pageSize"
+        - $ref: "common-specification.yaml#/components/parameters/pageOffset"
+      responses:
+        200:
+          description: Details of a subscriptions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionApiResponseOpsV2'
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-internal/subscriptions/{subscription-id}/enable-ecr-access:
+    post:
+      tags:
+        - subscription-ops
+      summary: Enable ECR access for provisioning different services for the subscription
+      description: Enable ECR access for provisioning different services for the subscription
+      operationId: enableECRAccess
+      parameters:
+        - name: subscription-id
+          in: path
+          description: Tessell subscription that is to be enabled for the different service provisioning
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": '#/components/schemas/EnableECRAccessPayload'
+      responses:
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /byoa/template-metadata:
+    post:
+      tags:
+        - byoa
+      description: Create BYOA template related metadata
+      summary: Create BYOA template related metadata.
+      operationId: createBYOAMetadata
+      parameters:
+        - in: header
+          name: tenant-id
+          schema:
+            type: string
+          required: true
+          description: "Tenant Id"
+      requestBody:
+        description: "BYOA template metadata"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ByoaTemplateMetadata"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ByoaTemplateMetadata"
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /byoa/template/{id}:
+    get:
+      tags:
+        - byoa
+      summary: Get BYOA template from template ID
+      description: Get BYOA template from template ID
+      operationId: getBYOATemplate
+      parameters:
+        - name: id
+          in: path
+          description: Template ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Generated BYOA Template
+          content:
+            application/json:
+              schema:
+                type: string
+                format: binary
+
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+components:
+  schemas:
+    # -------------------
+    # Convoy
+    # -------------------
+    ConvoyDeploymentConfig:
+      title: ConvoyDeploymentConfig
+      description: |
+        Deployment related configuration required by Convoy.
+        Any missing values will fall back to values provided via env variables to tenant-worker.
+      type: object
+      properties:
+        baseConfigBranch:
+          type: string
+          description: Base Config Branch to use from tenant-deployment-configs
+        releaseLabel:
+          type: string
+          description: Either "latest-main" or "x.y.z"
+        releaseManifestOverride:
+          $ref: '#/components/schemas/ReleaseManifestOverride'
+
+    ReleaseManifestOverride:
+      title: ReleaseManifestOverride
+      description: Refer tessell-tenant-release-manifests GitHub repository for the keys to use.
+      type: object
+      properties:
+        dockerImages:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ReleaseManifestOverrideDockerImageConfig'
+        helmCharts:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ReleaseManifestOverrideHelmChartConfig'
+        artifacts:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ReleaseManifestOverrideArtifactConfig'
+
+    ReleaseManifestOverrideItemConfig:
+      title: ReleaseManifestOverrideItemConfig
+      type: object
+      properties:
+        name:
+          type: string
+        tag:
+          type: string
+
+    ReleaseManifestOverrideDockerImageConfig:
+      title: ReleaseManifestOverrideDockerImageConfig
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/ReleaseManifestOverrideItemConfig'
+        - type: object
+          properties:
+            repository:
+              description: Which DockerHub repository to pull from
+              type: string
+              enum:
+                - tesselldev
+                - tessellprod
+
+    ReleaseManifestOverrideHelmChartConfig:
+      title: ReleaseManifestOverrideHelmChartConfig
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/ReleaseManifestOverrideItemConfig'
+        - type: object
+          properties:
+            repository:
+              description: Which Nexus repository to pull from
+              type: string
+              enum:
+                - nexus-dev
+                - nexus-prod
+
+    ReleaseManifestOverrideArtifactConfig:
+      title: ReleaseManifestOverrideArtifactConfig
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/ReleaseManifestOverrideItemConfig'
+        - type: object
+          properties:
+            s3Url:
+              type: string
+              description: S3 URL path to the artifact
+
+    # -------------------
+    # Tenant
+    # -------------------
+    Tenant:
+      title: Tenant
+      description: This is a definition for Tessell Tenant
+      type: object
+      properties:
+        company:
+          type: string
+          description: Tenant user's company name
+        country:
+          type: string
+          description: Tenant user's country
+        dateCreated:
+          type: string
+          format: date-time
+          example: '2020-02-02 10:10:10'
+          description: Timestamp when the tenant was registered
+        dateModified:
+          type: string
+          format: date-time
+          example: '2020-02-02 10:10:10'
+          description: Timestamp when the Tenant entry was last modified
+        domain:
+          type: string
+          example: If code is 'xyz', API gateway URL would be xyz.tessell.com
+          description: Tessell API Gateway sub-domain code
+        emailAddress:
+          type: string
+          description: Tenant user's email address
+        firstName:
+          type: string
+          description: Tenant user's first name
+        id:
+          type: string
+          format: uuid
+          description: Tessell generated ID for the Tenant user
+        tenantId:
+          type: string
+          description: Value to be used for tenant-id header
+        lastName:
+          type: string
+          description: Tenant user's last name
+        metadata:
+          description: Tenant user metadata information (for internal use)
+          "$ref": "#/components/schemas/TenantMetadata"
+        onboardingInfo:
+          description: Tenant user's onboarding information
+          "$ref": "#/components/schemas/TenantOnboardingInfo"
+        status:
+          $ref: "#/components/schemas/tenantStatus"
+        type:
+          $ref: "#/components/schemas/TenantType"
+        servicePlan:
+          type: string
+        infraDeploymentId:
+          type: string
+          format: uuid
+        seedDataVersion:
+          type: integer
+        supportPlanId:
+          type: string
+          format: uuid
+        associatedCloudAccountIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        tenantPhase:
+          $ref: '#/components/schemas/TenantPhase'
+    tenantStatus:
+      description: Tessell Tenant Status
+      type: string
+      enum:
+        - EMAIL_UNVERIFIED
+        - ONBOARDING
+        - ACTIVATION_PENDING
+        - ACTIVATION_STARTED
+        - ACTIVATION_FAILED
+        - ONBOARDED
+        - FAILED
+        - DELETING
+        - DELETION_FAILED
+        - DELETED
+    UpgradeStatus:
+      type: string
+      enum:
+        - UPGRADING
+        - UPGRADED
+        - UPGRADE_FAILED
+    GetTenantsApiResponse:
+      title: GetTenantsApiResponse
+      type: object
+      properties:
+        metadata:
+          "$ref": "common-specification.yaml#/components/schemas/apiMetadata"
+        response:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tenant"
+
+    TenantOnboardingResponse:
+      title: TenantOnboardingResponse
+      description: Onboarding response for tenant sign up and get tenant by email
+      type: object
+      properties:
+        domainUrl:
+          type: string
+          example: http://xyz.tessell.com
+          description: Domain URL
+        apiGatewayUrl:
+          type: string
+          example: api.xyz.tessell.com
+          description: Api gateway URL
+        status:
+          $ref: "#/components/schemas/tenantStatus"
+    TenantServiceConsumer:
+      type: object
+      properties:
+        company:
+          type: string
+          description: Tenant's company name
+        country:
+          type: string
+          description: Tenant's country
+        domain:
+          type: string
+          example: If code is 'xyz', API gateway URL would be xyz.tessell.com
+          description: Tenant domain code
+        domainUrl:
+          type: string
+          example: http://xyz.tessell.com
+          description: Domain URL
+        apiGatewayUrl:
+          type: string
+          example: api.xyz.tessell.com
+          description: Api gateway URL
+        emailId:
+          type: string
+        firstName:
+          type: string
+          description: Tenant's first name
+        lastName:
+          type: string
+          description: Tenant's last name
+        status:
+          $ref: "#/components/schemas/tenantStatus"
+        servicePlan:
+          type: string
+        customerType:
+          $ref: '#/components/schemas/CustomerType'
+      title: TenantServiceConsumer
+      description: This is a definition for Tessell Tenant
+    TenantConfigServiceView:
+      type: object
+      properties:
+        customerType:
+          $ref: '#/components/schemas/CustomerType'
+        billingDisabled:
+          type: boolean
+          default: false
+          description: Whether to disable billing for the tenant
+        enabledClouds:
+          type: array
+          items:
+            $ref: 'common-specification.yaml#/components/schemas/cloudType'
+      title: TenantConfigServiceView
+      description: Service view of the tenant config
+
+    TenantMetadata:
+      type: object
+      properties:
+        upgradeStatus:
+          $ref: "#/components/schemas/UpgradeStatus"
+        infraInfo:
+          "$ref": "#/components/schemas/TenantOnboardInfraMetadata"
+        authType:
+          $ref: "#/components/schemas/AuthenticationType"
+        customerType:
+          $ref: '#/components/schemas/CustomerType'
+        deleteProtected:
+          type: boolean
+          description: If the tenant is delete protected
+        jobTitle:
+          type: string
+        emailVerificationCode:
+          type: string
+        verificationCodeExpireAt:
+          type: number
+          format: long
+        billingInfo:
+          $ref: "#/components/schemas/BillingInfo"
+        enablePrivateCpDpCommunication:
+          type: boolean
+          default: false
+          description: Flag for enabling private communication between Control Plane and Data Plane
+        isMinIoEnabled:
+          type: boolean
+          default: false
+          description: Whether to use minio for db lib artifacts. To be deprecated in future.
+        enabledClouds:
+          type: array
+          items:
+            $ref: 'common-specification.yaml#/components/schemas/cloudType'
+      title: TenantMetadata
+
+    TenantOnboardInfraMetadata:
+      type: object
+      properties:
+        cloudAccountId:
+          type: string
+          format: uuid
+        deploymentType:
+          type: string
+        isSharedControlPlane:
+          type: boolean
+        lastOnboardingWorkflowId:
+          type: string
+        eksNamespace:
+          type: string
+        apiGatewayId:
+          type: string
+        apiGatewayStageName:
+          type: string
+        webUiS3BucketName:
+          type: string
+        webUiS3Endpoint:
+          type: string
+        webUiCfdId:
+          type: string
+        webUiCfdDomainName:
+          type: string
+      title: TenantOnboardInfraMetadata
+
+    TenantOnboardingInfo:
+      type: object
+      properties:
+        apiGatewayUrl:
+          type: string
+        domainUrl:
+          type: string
+        domainUrlForOps:
+          type: string
+        domainUrlForPrivate:
+          type: string
+        apiDomainProtocol:
+          type: string
+      title: TenantOnboardingInfo
+    SetupTenantGenieConfig:
+      title: SetupTenantGenieConfig
+      type: object
+      properties:
+        installFrp:
+          type: boolean
+          default: true
+          description: If FRP client software can be installed or updated on the provisioned VMs
+        vmAccessForCustomer:
+          type: boolean
+          default: false
+          description: Check if Genie for customer feature is enabled
+        approvalForGenieExternal:
+          type: boolean
+          default: true
+          description: If approval from Tessell is required when Genie is requested by external customer
+        approvalForGenieInternal:
+          type: boolean
+          default: true
+          description: If approval from Customer is required when Genie is requested by internal support team
+    BillingInfo:
+      title: BillingInfo
+      type: object
+      properties:
+        paymentGWCustomerId:
+          type: string
+        discountPercentage:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+          description: Discount percentage for the tenant
+        effectiveStartDate:
+          type: string
+          format: date-time
+          description: Date when the discount rate becomes effective
+        endDate:
+          type: string
+          format: date-time
+          description: Date when the discount rate ends
+        skipBillGeneration:
+          type: boolean
+          default: false
+          description: Skip bill and invoice generation for tenant if set
+        skipInvoiceFinalize:
+          type: boolean
+          default: false
+          description: Flag to skip finalizing invoices and keep them in draft state
+        fixedBillAmount:
+          type: number
+          format: double
+          description: Fixed bill amount to bill the tenant
+        hideBillingCreditsUnit:
+          type: boolean
+          default: false
+          description: Whether to hide the billing credits unit for the tenant
+    UpgradeTenantRequest:
+      title: UpgradeTenantRequest
+      type: object
+      properties:
+        convoyDeploymentConfig:
+          $ref: '#/components/schemas/ConvoyDeploymentConfig'
+        upgradeBaseTenantOnly:
+          type: boolean
+          description: Whether to update only the base/console tenant
+          default: false
+        updateServices:
+          type: boolean
+          description: Whether to update the services as part of the update
+          default: true
+        updateUi:
+          type: boolean
+          description: Whether to update the UI as part of the update
+          default: true
+        updateSeedData:
+          type: boolean
+          description: Whether to update the seed data as part of the update
+          default: true
+    VersionType:
+      description: Version type
+      type: string
+      enum:
+        - LATEST_MAIN
+        - RELEASE_CANDIDATE
+        - FIXED
+    DeboardTenantRequest:
+      title: DeboardTenantRequest
+      type: object
+      properties:
+        subscriptionsToKeep:
+          type: array
+          items:
+            type: string
+        retainTenant:
+          type: boolean
+          description: Whether to retain tenant or not
+          default: false
+    EntityDeleteConfig:
+      title: EntityDeleteConfig
+      type: object
+      description: Represents the object of each entity that needs to be cleaned up during tenant deletion
+      properties:
+        entityType:
+          $ref: 'common-specification.yaml#/components/schemas/entityType'
+        dependentEntities:
+          type: array
+          items:
+            $ref: 'common-specification.yaml#/components/schemas/entityType'
+          description: List of entity types which needs to be deleted after the entities of current type
+        global:
+          type: boolean
+          description: False, if the entity type gets created within a subscription
+        entityDeleteUrl:
+          type: string
+          description: Url for submitting a bulk delete api
+        entityDeleteStatusUrl:
+          type: string
+          description: Url for getting the status of entity bulk delete api
+        timeout:
+          type: integer
+          description: Timeout in secs for bulk delete operation
+        sleepTime:
+          type: integer
+          description: Sleep time in secs between bulk status calls
+    DeboardingCleanupEntitiesResponse:
+      title: DeboardingCleanupEntitiesResponse
+      type: object
+      description: Represents the response for the cleanup entities object
+      properties:
+        entities:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityDeleteConfig'
+
+    # -------------------
+    # Seed data
+    # -------------------
+    RepositoryComputeConfigPayload:
+      title: RepositoryComputeConfigPayload
+      type: object
+      properties:
+        amiId:
+          type: string
+        instanceType:
+          type: string
+        dbUsername:
+          type: string
+        dbPassword:
+          type: string
+        dbPort:
+          type: string
+        schemaName:
+          type: string
+        schemaS3Url:
+          type: string
+    InfraLambdaPayload:
+      title: InfraLambdaPayload
+      type: object
+      properties:
+        name:
+          type: string
+        purpose:
+          type: string
+        handler:
+          type: string
+        location:
+          type: string
+        runtime:
+          type: string
+        forAccountType:
+          type: string
+    InfraK8sNodeGroupConfigPayload:
+      title: InfraK8sNodeGroupConfigPayload
+      type: object
+      required:
+        - name
+        - min
+        - max
+        - desired
+        - instanceTypes
+      properties:
+        name:
+          type: string
+        min:
+          type: string
+        max:
+          type: string
+        desired:
+          type: string
+        instanceTypes:
+          type: array
+          minItems: 1
+          items:
+            type: string
+    InfraQueuePayload:
+      title: InfraQueuePayload
+      type: object
+      properties:
+        name:
+          type: string
+        purpose:
+          type: string
+        type:
+          type: string
+    InfraGenericPayload:
+      title: InfraQueuePayload
+      type: object
+      properties:
+        parameters:
+          type: object
+          additionalProperties:
+            type: object
+    SeedData:
+      title: SeedData
+      type: object
+      required:
+        - genericConfig
+        - subscriptionConfig
+        - tenantConfig
+        - harnessConfig
+        - dockerConfig
+        - tailscaleConfig
+        - deploymentConfig
+        - terraformConfig
+        - elasticConfig
+        - initialDefaultCreditConfig
+        - libraryVersionConfig
+      properties:
+        repositoryComputeConfig:
+          $ref: "#/components/schemas/RepositoryComputeConfigPayload"
+        genericConfig:
+          $ref: "#/components/schemas/InfraGenericPayload"
+        subscriptionConfig:
+          $ref: "#/components/schemas/SubscriptionStaticConfig"
+        tenantConfig:
+          $ref: "#/components/schemas/TenantStaticConfig"
+        harnessConfig:
+          $ref: "#/components/schemas/HarnessConfig"
+        dockerConfig:
+          $ref: "#/components/schemas/DockerConfig"
+        tailscaleConfig:
+          $ref: "#/components/schemas/TailscaleConfig"
+        deploymentConfig:
+          $ref: "#/components/schemas/DeploymentConfig"
+        terraformConfig:
+          type: string
+          additionalProperties:
+            type: string
+        elasticConfig:
+          $ref: "#/components/schemas/ElkConfigCloud"
+        initialDefaultCreditConfig:
+          $ref: "#/components/schemas/CreditConfig"
+        libraryVersionConfig:
+          $ref: "#/components/schemas/LibraryVersionConfig"
+    TenantStaticConfig:
+      title: TenantStaticConfig
+      type: object
+      required:
+        - customerType
+      properties:
+        customerType:
+          $ref: '#/components/schemas/CustomerType'
+    HarnessConfig:
+      title: HarnessConfig
+      type: object
+      required:
+        - apiKey
+        - url
+        - accountId
+      properties:
+        apiKey:
+          type: string
+        url:
+          type: string
+        accountId:
+          type: string
+    DockerConfig:
+      title: DockerConfig
+      type: object
+      required:
+        - registry
+        - credentialsJsonBase64
+      properties:
+        registry:
+          type: string
+        credentialsJsonBase64:
+          type: string
+        tagOverride:
+          type: object
+          additionalProperties:
+            type: string
+    TailscaleConfig:
+      title: TailscaleConfig
+      type: object
+      required:
+        - authKey
+      properties:
+        authKey:
+          type: string
+        k8sProxyAuthKey:
+          type: string
+    DeploymentConfig:
+      title: DeploymentConfig
+      type: object
+      required:
+        - defaultCloudLocationId
+      properties:
+        defaultCloudLocationId:
+          type: string
+        deploymentSelectionStrategyOrder:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeploymentSelectionStrategy"
+    ElkConfigCloud:
+      title: ElkConfigCloud
+      type: object
+      required:
+        - aws
+        - azure
+        - default
+      properties:
+        aws:
+          $ref: "#/components/schemas/ElkConfigRegion"
+        azure:
+          $ref: "#/components/schemas/ElkConfigRegion"
+        default:
+          $ref: "#/components/schemas/ElkConfig"
+    ElkConfigRegion:
+      title: ElkConfigRegion
+      type: string
+      additionalProperties:
+        $ref: "#/components/schemas/ElkConfig"
+    ElkConfig:
+      title: ElkConfig
+      type: object
+      required:
+        - elasticUrl
+        - elasticUsername
+        - elasticPassword
+      properties:
+        elasticServiceName:
+          type: string
+          description: Service name to create VPC endpoint
+        elasticPrivateDomainName:
+          type: string
+          description: Private Hosted Zone
+        kibanaUrl:
+          type: string
+        elasticUrl:
+          type: string
+        elasticUsername:
+          type: string
+        elasticPassword:
+          type: string
+        elasticDeploymentId:
+          type: string
+          description: Elastic Deployment Id
+        elasticRegion:
+          type: string
+          description: Elastic Deployment Region
+        elasticKey:
+          type: string
+          description: Elastic Cloud API Key
+
+    CreditConfig:
+      title: CreditConfig
+      type: object
+      required:
+        - name
+        - amount
+      properties:
+        name:
+          type: string
+        amount:
+          type: number
+          format: double
+    LibraryVersionConfig:
+      title: LibraryVersionConfig
+      type: object
+      required:
+        - filebeat
+        - taskHandler
+        - tessellAgent
+        - tessellUpgrader
+        - tessellDBPlugin
+        - dbExporter
+        - pushProxClient
+        - tessellDBTool
+        - tessellFrpClient
+        - victoriaMetrics
+        - dbPerfInsightsExporter
+        - nodeExporter
+      properties:
+        filebeat:
+          $ref: "#/components/schemas/LibraryVersionInfoByOS"
+        taskHandler:
+          $ref: "#/components/schemas/TaskHandlerVersionInfo"
+        tessellAgent:
+          $ref: "#/components/schemas/LibraryVersionInfoByOS"
+        tessellUpgrader:
+          $ref: "#/components/schemas/LibraryVersionInfoByOS"
+        tessellDBPlugin:
+          $ref: "#/components/schemas/DBPluginVersionInfo"
+        tessellDBPluginImages:
+          $ref: "#/components/schemas/DBPluginImagesVersionInfo"
+        dbExporter:
+          $ref: "#/components/schemas/LibraryVersionInfoByEngine"
+        pushProxClient:
+          $ref: "#/components/schemas/LibraryVersionInfoByOS"
+        tessellDBTool:
+          $ref: "#/components/schemas/DBToolVersionInfo"
+        tessellFrpClient:
+          $ref: "#/components/schemas/LibraryVersionInfoByOS"
+        victoriaMetrics:
+          $ref: "#/components/schemas/LibraryVersionInfoByOS"
+        dbPerfInsightsExporter:
+          $ref: "#/components/schemas/LibraryVersionInfoByEngine"
+        nodeExporter:
+          $ref: "#/components/schemas/LibraryVersionInfoByOS"
+    DBToolVersionInfo:
+      title: DBToolVersionInfo
+      type: object
+      required:
+        - mysql
+      properties:
+        mysql:
+          $ref: "#/components/schemas/LibraryVersionInfo"
+    
+    DBPluginVersionInfo:
+      title: DBPluginVersionInfo
+      type: object
+      required:
+        - oracle
+        - postgresql
+        - mysql
+        - sqlserver
+        - apache_kafka
+        - mongodb
+      properties:
+        oracle:
+          $ref: "#/components/schemas/LibraryVersionInfo"
+        postgresql:
+          $ref: "#/components/schemas/LibraryVersionInfo"
+        mysql:
+          $ref: "#/components/schemas/LibraryVersionInfo"
+        sqlserver:
+          $ref: "#/components/schemas/LibraryVersionInfo"
+        apache_kafka:
+          $ref: "#/components/schemas/LibraryVersionInfo"
+        mongodb:
+          $ref: "#/components/schemas/LibraryVersionInfo"
+        
+    
+    DBPluginImagesVersionInfo:
+      title: DBPluginImagesVersionInfo
+      type: object
+      required:
+        - milvus
+      properties:
+        milvus:
+          $ref: "#/components/schemas/MilvusDBPluginImagesVersionInfoByCloud"
+
+    MilvusDBPluginImagesVersionInfoByCloud:
+      title: MilvusDBPluginImagesVersionInfoByCloud
+      type: object
+      required:
+        - aws
+        - azure
+      properties:
+        aws:
+          $ref: "#/components/schemas/MilvusPluginInfo"
+        azure:
+          $ref: "#/components/schemas/MilvusPluginInfo"
+    
+    MilvusPluginInfo:
+      title: MilvusPluginInfo
+      type: object
+      required:
+        - pluginImage
+        - etcdImage
+        - pulsarImage
+        - milvusBaseImage
+        - bookieImage
+        - zookeeperImage
+        - minioImage
+      properties:
+        pluginImage:
+          $ref: "#/components/schemas/ImageTagInfo"
+        etcdImage:
+          $ref: "#/components/schemas/ImageTagInfo"
+        pulsarImage:
+          $ref: "#/components/schemas/ImageTagInfo"
+        milvusBaseImage:
+          $ref: "#/components/schemas/ImageTagInfo"
+        bookieImage:
+          $ref: "#/components/schemas/ImageTagInfo"
+        zookeeperImage:
+          $ref: "#/components/schemas/ImageTagInfo"
+        minioImage:
+          $ref: "#/components/schemas/ImageTagInfo"
+
+    TaskHandlerVersionInfo:
+      title: TaskHandlerVersionInfo
+      type: object
+      properties:
+        aws:
+          $ref: "#/components/schemas/LibraryVersionInfoByOS"
+        azure:
+          $ref: "#/components/schemas/LibraryVersionInfoByOS"
+
+    LibraryVersionInfoByOS:
+      title: LibraryVersionInfoByOS
+      type: object
+      required:
+        - linux
+      properties:
+        windows:
+          $ref: "#/components/schemas/LibraryVersionInfo"
+        linux:
+          $ref: "#/components/schemas/LibraryVersionInfo"
+
+    LibraryVersionInfoByEngine:
+      title: LibraryVersionInfoByEngine
+      type: object
+      required:
+        - oracle
+        - postgresql
+        - mysql
+        - sqlserver
+      properties:
+        oracle:
+          $ref: "#/components/schemas/LibraryVersionInfo"
+        postgresql:
+          $ref: "#/components/schemas/LibraryVersionInfo"
+        mysql:
+          $ref: "#/components/schemas/LibraryVersionInfo"
+        sqlserver:
+          $ref: "#/components/schemas/LibraryVersionInfo"
+        apache_kafka:
+          $ref: "#/components/schemas/LibraryVersionInfo"
+        mongodb:
+          $ref: "#/components/schemas/LibraryVersionInfo"
+
+    LibraryVersionInfo:
+      title: LibraryVersionInfo
+      type: object
+      required:
+        - version
+        - checksum
+        - url
+      properties:
+        version:
+          type: string
+        checksum:
+          type: string
+        url:
+          type: string
+    ImageTagInfo:
+      title: ImageTagInfo
+      type: object
+      required:
+        - tag
+      properties:
+        tag:
+          type: string
+    SeedInfoOverride:
+      title: SeedInfoOverride
+      type: object
+      properties:
+        terraformConfig:
+          type: string
+          additionalProperties:
+            type: string
+        libraryVersionConfig:
+          $ref: "#/components/schemas/LibraryVersionConfigOverride"
+
+    LibraryVersionConfigOverride:
+      title: LibraryVersionConfigOverride
+      type: object
+      properties:
+        filebeat:
+          $ref: "#/components/schemas/LibraryVersionInfoByOSOverride"
+        taskHandler:
+          $ref: "#/components/schemas/TaskHandlerVersionInfoOverride"
+        tessellAgent:
+          $ref: "#/components/schemas/LibraryVersionInfoByOSOverride"
+        tessellUpgrader:
+          $ref: "#/components/schemas/LibraryVersionInfoByOSOverride"
+        tessellDBPlugin:
+          $ref: "#/components/schemas/DBPluginVersionInfoOverride"
+        dbExporter:
+          $ref: "#/components/schemas/LibraryVersionInfoByEngineOverride"
+        pushProxClient:
+          $ref: "#/components/schemas/LibraryVersionInfoByOSOverride"
+        tessellDBTool:
+          $ref: "#/components/schemas/DBToolVersionInfoOverride"
+        tessellFrpClient:
+          $ref: "#/components/schemas/LibraryVersionInfoByOSOverride"
+        victoriaMetrics:
+          $ref: "#/components/schemas/LibraryVersionInfoByOSOverride"
+        dbPerfInsightsExporter:
+          $ref: "#/components/schemas/LibraryVersionInfoByEngineOverride"
+    DBToolVersionInfoOverride:
+      title: DBToolVersionInfoOverride
+      type: object
+      properties:
+        mysql:
+          type: string
+    DBPluginVersionInfoOverride:
+      title: DBPluginVersionInfoOverride
+      type: object
+      properties:
+        oracle:
+          type: string
+        postgresql:
+          type: string
+        mysql:
+          type: string
+        sqlserver:
+          type: string
+        apache_kafka:
+          type: string
+        mongodb:
+          type: string
+
+    TaskHandlerVersionInfoOverride:
+      title: TaskHandlerVersionInfoOverride
+      type: object
+      properties:
+        aws:
+          $ref: "#/components/schemas/LibraryVersionInfoByOSOverride"
+        azure:
+          $ref: "#/components/schemas/LibraryVersionInfoByOSOverride"
+    LibraryVersionInfoByOSOverride:
+      title: LibraryVersionInfoByOSOverride
+      type: object
+      properties:
+        windows:
+          type: string
+        linux:
+          type: string
+    LibraryVersionInfoByEngineOverride:
+      title: LibraryVersionInfoByEngineOverride
+      type: object
+      properties:
+        oracle:
+          type: string
+        postgresql:
+          type: string
+        mysql:
+          type: string
+        sqlserver:
+          type: string
+        apache_kafka:
+          type: string
+        mongodb:
+          type: string
+
+    SeedDataWrapper:
+      title: SeedDataWrapper
+      type: object
+      required:
+        - version
+        - status
+        - data
+        - dateCreated
+        - dateModified
+        - modifiedBy
+      properties:
+        version:
+          type: integer
+        status:
+          $ref: "#/components/schemas/SeedDataStatus"
+        data:
+          $ref: "#/components/schemas/SeedData"
+        dateCreated:
+          type: string
+          format: date-time
+          description: Timestamp when the seed data was created
+        dateModified:
+          type: string
+          format: date-time
+          description: Timestamp when the seed data entry was last modified
+        modifiedBy:
+          type: string
+          description: User who modified/created the seed data
+
+    # -------------------
+    # Infra Deployment
+    # -------------------
+    InfraDeployment:
+      title: InfraDeployment
+      type: object
+      required:
+        - id
+        - name
+        - displayName
+        - cloudAccountId
+        - cloudLocationId
+        - status
+        - forTenantType
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        displayName:
+          type: string
+          minLength: 3
+          maxLength: 128
+          description: display name for the infra deployment which can be consumed while onboarding the tenant
+        cloudAccountId:
+          type: string
+          format: uuid
+        cloudLocationId:
+          type: string
+        status:
+          $ref: '#/components/schemas/InfraDeploymentStatus'
+        workflowId:
+          type: string
+        infraResources:
+          $ref: '#/components/schemas/InfraResources'
+        forTenantType:
+          $ref: '#/components/schemas/TenantType'
+        metadata:
+          $ref: '#/components/schemas/InfraDeploymentMetadata'
+        dateCreated:
+          type: string
+          format: date-time
+          description: Timestamp when the infra deployment was created
+        dateModified:
+          type: string
+          format: date-time
+          description: Timestamp when the infra deployment entry was last modified
+        modifiedBy:
+          type: string
+          description: User who modified/created the infra deployment
+    InfraResources:
+      title: InfraDeploymentMetadata
+      type: object
+      required:
+        - k8sCloudResourceUrl
+      properties:
+        k8sCloudResourceUrl:
+          type: string
+        vpcCloudResourceUrl:
+          type: string
+        ec2RepoCloudResourceUrl:
+          type: string
+        gtwCloudResourceUrl:
+          type: string
+        keyVaultCloudResourceUrl:
+          type: string
+        eksCloudResourceUrl:
+          type: string
+    InfraDeploymentMetadata:
+      title: InfraDeploymentMetadata
+      type: object
+      properties:
+        enablePrivateCpDpCommunication:
+          type: boolean
+          description: Exhibits if private communication is enabled between Control Plane and Data Plane
+        upgradeStatus:
+          $ref: "#/components/schemas/UpgradeStatus"
+        domains:
+          type: array
+          items:
+            type: string
+        proxyRegions:
+          $ref: "#/components/schemas/InfraDeploymentProxyRegionsMap"
+    InfraDeploymentsResponse:
+      title: InfraDeploymentsResponse
+      type: object
+      properties:
+        metadata:
+          "$ref": "common-specification.yaml#/components/schemas/apiMetadata"
+        response:
+          type: array
+          items:
+            $ref: "#/components/schemas/InfraDeployment"
+    UpgradeInfraDeploymentRequest:
+      title: UpgradeInfraDeploymentRequest
+      type: object
+      required:
+        - upgradeType
+        - versionType
+      properties:
+        upgradeType:
+          $ref: '#/components/schemas/UpgradeType'
+        versionType:
+          $ref: '#/components/schemas/VersionType'
+        majorVersion:
+          type: integer
+          description: To be defined if the version type is FIXED
+        minorVersion:
+          type: integer
+          description: To be defined if the version type is FIXED
+        serviceManifest:
+          type: object
+          description: Override the service versions
+          additionalProperties:
+            type: string
+    UpgradeType:
+      description: Upgrade type
+      type: string
+      enum:
+        - FULL
+        - PARTIAL
+    InfraDeploymentProxyRegionsPayload:
+      title: InfraDeploymentProxyRegionsPayload
+      type: object
+      description: Payload for updating proxy regions in Infra Deployment
+      properties:
+        proxyRegions:
+          type: array
+          description: List of proxy regions for Infra Deployment
+          minItems: 1
+          maxItems: 100
+          items:
+            type: string
+            minLength: 1
+            maxLength: 36
+    InfraDeploymentProxyRegionsMap:
+      title: InfraDeploymentProxyRegionsMap
+      type: object
+      description: List of proxy regions with their deployment status for Infra Deployment
+      additionalProperties:
+        $ref: "#/components/schemas/ProxyRegionStatus"
+    ProxyRegionStatus:
+      title: ProxyRegionStatus
+      description: Status of Control Plane proxy artifacts deployment in the region
+      type: string
+      enum:
+        - CREATING
+        - ACTIVE
+        - DELETING
+        - DELETED
+        - CREATION_FAILED
+        - DELETION_FAILED
+
+    # -------------------
+    # Data Plane Account
+    # -------------------
+
+    DataPlaneAccountRequestPayload:
+      title: DataPlaneAccountRequestPayload
+      description: This is a definition for Create/Register Tessell Data Plane Account Payload
+      type: object
+      required:
+        - name
+        - cloudConfigs
+        - managedType
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Tessell generated ID for the data plane account
+        name:
+          type: string
+          description: Data Plane Account name
+          minLength: 1
+          maxLength: 80
+        description:
+          type: string
+          description: Data Plane Account description
+          minLength: 1
+          maxLength: 256
+        cloudConfigs:
+          $ref: "#/components/schemas/DataPlaneAccountCloudConfigMap"
+        externalId:
+          type: string
+          description: External ID
+        accountId:
+          type: string
+          description: Account ID
+        managedType:
+          $ref: "common-specification.yaml#/components/schemas/cloudAccountManagedType"
+
+    DataPlaneAccount:
+      title: DataPlaneAccount
+      description: This is a definition for Tessell Data Plane Account
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Tessell generated ID for the data plane account
+        name:
+          type: string
+          description: Data Plane Account name
+          minLength: 1
+          maxLength: 80
+        description:
+          type: string
+          description: Data Plane Account description
+          minLength: 1
+          maxLength: 256
+        cloudConfigs:
+          $ref: "#/components/schemas/DataPlaneAccountCloudConfigMap"
+        externalId:
+          type: string
+          description: External ID
+        accountId:
+          type: string
+          description: Account ID
+        managedType:
+          $ref: "common-specification.yaml#/components/schemas/cloudAccountManagedType"
+        status:
+          $ref: "#/components/schemas/dataPlaneAccountStatus"
+        dateCreated:
+          type: string
+          format: date-time
+          example: '2020-02-02 10:10:10'
+          description: Timestamp when the subscription was created
+        dateModified:
+          type: string
+          format: date-time
+          example: '2020-02-02 10:10:10'
+          description: Timestamp when the subscription entry was last modified
+
+    ReplicateDataPlaneAccountPayload:
+      title: ReplicateDataPlaneAccountPayload
+      description: This is a definition for Replicate Tessell Data Plane Account Payload
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Tessell generated ID for the data plane account
+        name:
+          type: string
+          description: Data Plane Account name
+          minLength: 1
+          maxLength: 80
+        description:
+          type: string
+          description: Data Plane Account description
+          minLength: 1
+          maxLength: 256
+        externalId:
+          type: string
+          description: External ID
+        managedType:
+          $ref: "common-specification.yaml#/components/schemas/cloudAccountManagedType"
+        deploymentRegion:
+          type: string
+          description: Deployment Region
+          minLength: 1
+          maxLength: 36
+
+    UpdateDataPlaneAccountPayload:
+      title: UpdateDataPlaneAccountPayload
+      description: This is a definition for Update Tessell Data Plane Account Payload
+      type: object
+      properties:
+        executionOutput:
+          type: object
+        deploymentRegion:
+          type: string
+          description: Deployment Region
+          minLength: 1
+          maxLength: 36
+
+    UpdateTenantCloudAccountAssociationPayload:
+      title: UpdateTenantCloudAccountAssociationPayload
+      description: This is a definition for Update Tenant Cloud Account Association Payload
+      type: object
+      properties:
+        newCloudAccountId:
+          type: string
+          description: Cloud Account ID to which the tenants need to be mapped
+
+    DataPlaneAccountCloudConfigMap:
+      title: DataPlaneAccountCloudConfigMap
+      description: Cloud specific data plane account config
+      type: object
+      properties:
+        aws:
+          $ref: "#/components/schemas/DataPlaneAccountAwsConfig"
+        azure:
+          $ref: "#/components/schemas/DataPlaneAccountAzureConfig"
+
+    DataPlaneAccountAwsConfig:
+      title: DataPlaneAccountRegisterAwsConfig
+      description: AWS Data plane account config
+      type: object
+      properties:
+        credentials:
+          $ref: "#/components/schemas/AWSCredentials"
+        executionOutput:
+          type: object
+          description: Execution output from Cloud Formation Run
+        createRoleArn:
+          type: boolean
+          default: false
+          description: Flag whether to create a role to be assumed on data plane
+        deploymentRegion:
+          type: string
+          description: Deployment Region
+          default: "us-east-1"
+          minLength: 1
+          maxLength: 36
+
+    DataPlaneAccountAzureConfig:
+      title: DataPlaneAccountRegisterAzureConfig
+      description: Azure Data plane account config
+      type: object
+      properties:
+        credentials:
+          $ref: "#/components/schemas/AzureCredentials"
+        executionOutput:
+          type: object
+          description: Execution output from ARM Template Run
+        deploymentRegion:
+          type: string
+          description: Deployment Region
+          default: "eastUS"
+          minLength: 1
+          maxLength: 36
+
+    BulkDeleteDataPlaneAccountsPayload:
+      $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeletePayloadOps'
+
+    BulkDeleteDataPlaneAccountsStatusPayload:
+      $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeleteResponseOps'
+
+    BulkDeleteDataPlaneAccountsContext:
+      title: BulkDeleteDataPlaneAccountsContext
+      description: Bulk Delete Data Plane Account Context
+      type: object
+      properties:
+        dataPlaneAccountId:
+          type: string
+          format: uuid
+          description: id of the tessell data plane account
+        dataPlaneAccountStatus:
+          $ref: '#/components/schemas/dataPlaneAccountStatus'
+        deletionStatus:
+          $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeleteStatusOps'
+
+    AWSCredentials:
+      title: AWSCredentials
+      type: object
+      description: AWS Credentials
+      required:
+        - accessKey
+        - secretKey
+      properties:
+        accessKey:
+          type: string
+          description: AWS Access Key
+        secretKey:
+          type: string
+          description: AWS Secret Key
+        securityGroup:
+          type: string
+          description: AWS Security Group
+        roleArn:
+          type: string
+          description: AWS Role ARN to be assumed
+
+    AzureCredentials:
+      title: AzureCredentials
+      description: Azure Credentials
+      type: object
+      required:
+        - azureClientId
+        - azureClientSecret
+        - azureSubscriptionId
+        - azureTenantId
+        - auxiliaryTenantId
+        - resourceGroupName
+      properties:
+        azureClientId:
+          type: string
+          description: Azure Client ID
+        azureClientSecret:
+          type: string
+          description: Azure Client Secret
+        azureSubscriptionId:
+          type: string
+          description: Azure Subscription ID
+        azureTenantId:
+          type: string
+          description: Azure Tenant ID
+        auxiliaryTenantId:
+          type: string
+          description: Azure Auxiliary Tenant ID
+        resourceGroupName:
+          type: string
+          description: Azure Resource Group Name where images are hosted
+        azureNetworkClientId:
+          type: string
+          description: Azure Network Client ID
+        azureNetworkClientSecret:
+          type: string
+          description: Azure Network Client Secret
+        tessellAppObjectId:
+          type: string
+          description: Azure Tessell Application Object ID
+
+    dataPlaneAccountStatus:
+      type: string
+      description: Data Plane Account Status
+      enum:
+        - ACTIVE
+        - DELETED
+        - DELETING
+        - ONBOARDING
+        - UPDATING
+        - DELETION_FAILED
+    # -------------------
+    # Subscription
+    # -------------------
+    SubscriptionV2:
+      title: SubscriptionV2
+      description: This is a definition for Tessell Subscription V2
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Tessell generated ID for the subscription
+        name:
+          type: string
+          description: Subscription name
+        description:
+          type: string
+          description: Subscription description
+        tenantId:
+          type: string
+          format: uuid
+          description: Associated tenant ID for the subscription
+        isDefault:
+          type: boolean
+          default: false
+          description: Specifies if this is the default subscription
+        deploymentType:
+          $ref: "#/components/schemas/subscriptionDeploymentType"
+        status:
+          $ref: "#/components/schemas/subscriptionStatus"
+        metadata:
+          description: Subscription metadata information (for internal use)
+          "$ref": "#/components/schemas/subscriptionMetadata"
+        infraInfo:
+          description: Subscription's infra information
+          "$ref": "#/components/schemas/subscriptionInfraInfo"
+        owner:
+          type: string
+        sharedWith:
+          $ref: "common-specification.yaml#/components/schemas/EntityAclSharingInfo"
+        dateCreated:
+          type: string
+          format: date-time
+          example: '2020-02-02 10:10:10'
+          description: Timestamp when the subscription was created
+        dateModified:
+          type: string
+          format: date-time
+          example: '2020-02-02 10:10:10'
+          description: Timestamp when the subscription entry was last modified
+    Subscription:
+      title: Subscription
+      description: This is a definition for Tessell Subscription
+      allOf:
+        - $ref: "#/components/schemas/SubscriptionV2"
+        - type: object
+          properties:
+            internalName:
+              type: string
+              description: Subscription internal name
+            userId:
+              type: string
+              format: uuid
+              description: The Id of the user who created this subscription
+            associatedCloudAccounts:
+              type: array
+              items:
+                $ref: "#/components/schemas/AssociatedCloudAccount"
+
+    SubscriptionAdminView:
+      title: SubscriptionConsumerView
+      description: Admin view of the subscription
+      type: object
+      properties:
+        name:
+          type: string
+          description: Subscription name
+        description:
+          type: string
+          description: Subscription description
+        isDefault:
+          type: boolean
+          default: false
+          description: Specifies if this is the default subscription
+        deploymentType:
+          $ref: "#/components/schemas/subscriptionDeploymentType"
+        status:
+          $ref: "#/components/schemas/subscriptionStatus"
+        associatedCloudTypes:
+          type: array
+          items:
+            $ref: "#/components/schemas/AssociatedCloudTypeServiceConsumer"
+        dateCreated:
+          type: string
+          format: date-time
+          example: '2020-02-02 10:10:10'
+          description: Timestamp when the subscription was created
+        owner:
+          type: string
+          description: Owner of the subscription
+        sharedWith:
+          $ref: "common-specification.yaml#/components/schemas/EntityAclSharingInfo"
+        isTessellAllowedToCreateKeyAndVnet:
+          type: boolean
+          default: true
+          description: Specifies if Tessell is allowed to create resources in the selected resource group
+
+    SubscriptionUserView:
+      title: SubscriptionUserView
+      description: User view of the subscription
+      type: object
+      properties:
+        name:
+          type: string
+          description: Subscription name
+        description:
+          type: string
+          description: Subscription description
+        isDefault:
+          type: boolean
+          default: false
+          description: Specifies if this is the default subscription
+        deploymentType:
+          $ref: "#/components/schemas/subscriptionDeploymentType"
+        status:
+          $ref: "#/components/schemas/subscriptionStatus"
+        associatedCloudTypes:
+          type: array
+          description: List of cloud specific details associated with the subscription
+          items:
+            $ref: "#/components/schemas/AssociatedCloudTypeServiceConsumer"
+        owner:
+          type: string
+          description: Owner of the subscription
+        isTessellAllowedToCreateKeyAndVnet:
+          type: boolean
+          default: true
+    SubscriptionUserAdminView:
+      title: SubscriptionUserAdminView
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        emailId:
+          type: string
+        role:
+          $ref: "#/components/schemas/SubscriptionUserRoleExtended"
+        status:
+          type: string
+        persona:
+          type: string
+    SubscriptionUsersAdminView:
+      title: SubscriptionUsersAdminView
+      type: object
+      description: Details of the subscription users
+      properties:
+        metadata:
+          "$ref": "common-specification.yaml#/components/schemas/apiMetadata"
+        response:
+          type: array
+          description: List of user details
+          items:
+            $ref: "#/components/schemas/SubscriptionUserAdminView"
+
+    AssociatedCloudAccount:
+      title: AssociatedCloudAccount
+      allOf:
+        - $ref: "governance.yaml#/components/schemas/CloudAccount"
+        - type: object
+          properties:
+            associationStatus:
+              $ref: '#/components/schemas/AssociationStatus'
+            associatedCloudResources:
+              type: object
+              additionalProperties:
+                type: object
+            regions:
+              type: array
+              items:
+                $ref: '#/components/schemas/TenantRegion'
+            associatingRegions:
+              type: array
+              items:
+                $ref: '#/components/schemas/TenantRegion'
+    AssociatedCloudTypeServiceConsumer:
+      title: AssociatedCloudTypeServiceConsumer
+      type: object
+      description: Cloud specific details
+      properties:
+        cloudType:
+          $ref: 'common-specification.yaml#/components/schemas/cloudType'
+        associationStatus:
+          $ref: '#/components/schemas/AssociationStatus'
+        regions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TenantRegion'
+        associatingRegions:
+          type: array
+          description: List of associated regions with the subscription
+          items:
+            $ref: '#/components/schemas/TenantRegion'
+        resourceGroupName:
+          type: string
+          description: This is specific to azure. It is the resource group name used when onboarding the subscription
+    TenantRegion:
+      title: Region
+      type: object
+      description: Region specific details
+      properties:
+        name:
+          type: string
+        region:
+          type: string
+    UserRoleInternalView:
+      title: UserRoleInternalView
+      type: object
+      properties:
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubscriptionUserRole'
+        emailId:
+          type: string
+    AddUsersToSubscriptionsInternalRequest:
+      title: AddUsersToSubscriptionsInternalRequest
+      type: object
+      required:
+        - subscriptions
+        - users
+      properties:
+        subscriptions:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRoleInternalView'
+          minItems: 1
+    GetUserSubscriptionsMappingsRequest:
+      title: GetUserSubscriptionsMappingsRequest
+      type: object
+      required:
+        - userIds
+      properties:
+        userIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+    UserSubscriptionsMapping:
+      title: UserSubscriptionsMapping
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        subscriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subscription'
+    UserSubscriptionsMappings:
+      title: UserSubscriptionsMappings
+      type: object
+      properties:
+        metadata:
+          "$ref": "common-specification.yaml#/components/schemas/apiMetadata"
+        response:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserSubscriptionsMapping"
+    subscriptionStatus:
+      description: Tessell Subscription Status
+      type: string
+      enum:
+        - creating
+        - active
+        - inactive
+        - failed
+        - expired
+        - deleting
+        - deletion_failed
+        - deleted
+
+    subscriptionDeploymentType:
+      description: Tessell Subscription Deployment Type
+      type: string
+      enum:
+        - shared
+        - dedicated
+        - byoa
+
+    subscriptionMetadata:
+      type: object
+      properties:
+        allowTessellToCreateKeyAndVnet:
+          type: boolean
+          default: true
+      title: SubscriptionMetadata
+
+    subscriptionInfraInfo:
+      type: object
+      properties:
+        associatedClouds:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: "#/components/schemas/AssociatedCloudInfo"
+        info:
+          type: object
+        onboardingInfo:
+          type: object
+
+    AssociatedCloudInfo:
+      title: AssociatedCloudInfo
+      type: object
+      properties:
+        cloudAccountId:
+          type: string
+          format: uuid
+          description: Cloud Account Id
+        associationStatus:
+          $ref: '#/components/schemas/AssociationStatus'
+        regions:
+          type: array
+          items:
+            type: string
+        associatingRegions:
+          type: array
+          items:
+            type: string
+        resourceDeploymentRegion:
+          type: string
+          description: Region where the cloud resources for the subscription will be deployed (like Lambda etc.)
+        objectIdOfTessellApp:
+          type: string
+          description: This is specific to azure. It is the object id of tessell app in customer's azure account
+        associatedCloudResources:
+          type: object
+          additionalProperties:
+            type: object
+        dnsUsedForServices:
+          $ref: '#/components/schemas/DnsService'
+
+    UpdateRegionsPayload:
+      title: UpdateRegionsPayload
+      type: object
+      description: Payload for updating regions in the subscription
+      required:
+        - regions
+      properties:
+        regions:
+          description: Final set of regions which will be enabled
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            type: string
+            minLength: 1
+            maxLength: 36
+
+    UpdateSubscriptionServicePayload:
+      title: UpdateSubscriptionServicePayload
+      type: object
+      description: Payload for updating subscription
+      required:
+        - name
+      properties:
+        name:
+          description: Subscription name
+          type: string
+          minLength: 3
+          maxLength: 64
+
+    CreateSubscriptionPayload:
+      title: CreateSubscriptionPayload
+      type: object
+      description: Payload for subscription creation
+      required:
+        - name
+        - deploymentType
+        - cloudConfigs
+      properties:
+        name:
+          type: string
+          description: Subscription name
+          minLength: 3
+          maxLength: 64
+        description:
+          type: string
+          description: Subscription description
+          minLength: 0
+          maxLength: 256
+        deploymentType:
+          $ref: "#/components/schemas/subscriptionDeploymentType"
+        cloudConfigs:
+          $ref: "#/components/schemas/SubscriptionCloudConfigMap"
+        owner:
+          type: string
+          description: Owner of the subscription
+          minLength: 0
+          maxLength: 256
+
+    SubscriptionCloudConfigMap:
+      title: SubscriptionCloudConfigMap
+      type: object
+      description: Cloud configurations for the subscription
+      properties:
+        aws:
+          $ref: "#/components/schemas/SubscriptionAwsConfig"
+        azure:
+          $ref: "#/components/schemas/SubscriptionAzureConfig"
+
+    SubscriptionCloudConfig:
+      title: SubscriptionCloudConfig
+      type: object
+      description: List of cloud regions
+      required:
+        - regions
+      properties:
+        regions:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 36
+          minItems: 1
+          maxItems: 100
+        cloudAccountId:
+          type: string
+          format: uuid
+
+    SubscriptionAwsConfig:
+      allOf:
+        - "$ref": "#/components/schemas/SubscriptionCloudConfig"
+        - title: SubscriptionAwsConfig
+          type: object
+          description: AWS configuration for the subscription
+          properties:
+            onboardingInfo:
+              $ref: '#/components/schemas/SubscriptionAwsOnboardingConfig'
+
+    SubscriptionAwsOnboardingConfig:
+      title: SubscriptionAwsOnboardingConfig
+      required:
+        - onboardingType
+        - executionOutput
+      type: object
+      description: AWS onboarding configuration
+      properties:
+        onboardingType:
+          type: string
+          enum:
+            - CLOUD_FORMATION
+            - SCRIPT
+        executionOutput:
+          description: Output from the cloud formation stack creation operation
+          $ref: '#/components/schemas/AwsByoaExecutionOutput'
+
+    AwsByoaExecutionOutput:
+      type: object
+      description: Output from the execution done at customer's account either via cloud formation or via script
+      required:
+        - region
+        - tenantAccountId
+        - resources
+      properties:
+        allowTessellCreation:
+          type: boolean
+          description: Whether Tessell is given create permissions or not
+          default: false
+        resources:
+          $ref: '#/components/schemas/AwsByoaExecutionOutputResources'
+          description: Resources created as part of the cloud formation deployment
+        region:
+          type: string
+          description: Region in which the stack was deployed
+          minLength: 1
+          maxLength: 36
+        tenantAccountId:
+          type: string
+          description: Aws Account id of the tenant
+          minLength: 12
+          maxLength: 12
+
+    AwsByoaExecutionOutputResources:
+      type: object
+      description: Resources created as part of the cloud formation deployment
+      properties:
+        crossAccountAccessRoleARN:
+          type: string
+          description: Role ARN which provides access to the tessell account for accessing the customer's cloud account
+          minLength: 20
+          maxLength: 2048
+        tessellDbVmMgmtRoleARN:
+          type: string
+          description: Role ARN which provides access to the tessell services for performing operations on data plane
+          minLength: 20
+          maxLength: 2048
+        vpc:
+          $ref: "#/components/schemas/AwsByoaExecutionOutputVpc"
+          description: Vpc details
+        security:
+          $ref: "#/components/schemas/AwsByoaExecutionOutputSecurity"
+          description: Security details
+
+    AwsByoaExecutionOutputVpc:
+      type: object
+      description: VPC resources created as part of the cloud formation deployment
+      required:
+        - name
+        - vpcId
+        - subnets
+      properties:
+        name:
+          type: string
+          description: Name of the VPC
+          minLength: 3
+          maxLength: 64
+        vpcId:
+          type: string
+          description: Virtual network Id of the VPC
+          minLength: 10
+        enablePublicAccess:
+          type: boolean
+          description: Whether Public Access is enabled or not
+          default: true
+        subnets:
+          $ref: '#/components/schemas/AwsByoaExecutionOutputSubnets'
+
+    AwsByoaExecutionOutputSubnets:
+      type: object
+      properties:
+        privateSubnets:
+          type: array
+          description: Private subnets created as part of the cloud formation deployment
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/AwsByoaExecutionOutputSubnet'
+        publicSubnets:
+          type: array
+          description: Public subnets created as part of the cloud formation deployment
+          minItems: 0
+          items:
+            $ref: '#/components/schemas/AwsByoaExecutionOutputSubnet'
+
+    AwsByoaExecutionOutputSubnet:
+      type: object
+      description: VPC subnet created as part of the cloud formation deployment
+      required:
+        - subnetId
+      properties:
+        subnetId:
+          type: string
+          description: Subnet Id of the VPC
+          minLength: 10
+
+    AwsByoaExecutionOutputSecurity:
+      type: object
+      description: Security level resources created as part of the cloud formation deployment
+      required:
+        - keyId
+        - keyName
+      properties:
+        keyId:
+          type: string
+          description: Id of the key
+          minLength: 3
+          maxLength: 127
+        keyName:
+          type: string
+          description: Name of the key
+          minLength: 1
+          maxLength: 127
+
+    SubscriptionAzureConfig:
+      allOf:
+        - "$ref": "#/components/schemas/SubscriptionCloudConfig"
+        - title: SubscriptionAzureConfig
+          type: object
+          description: Azure configuration for the subscription
+          properties:
+            onboardingInfo:
+              $ref: '#/components/schemas/SubscriptionAzureOnboardingConfig'
+
+    SubscriptionAzureOnboardingConfig:
+      title: SubscriptionAzureOnboardingConfig
+      type: object
+      required:
+        - onboardingType
+        - executionOutput
+      description: Azure onboarding configuration for the subscription
+      properties:
+        onboardingType:
+          type: string
+          enum:
+            - ARM_DEPLOYMENT
+            - SCRIPT
+        executionOutput:
+          $ref: "#/components/schemas/AzureByoaExecutionOutput"
+
+    AzureByoaExecutionOutput:
+      type: object
+      description: Output from the execution done at customer's account either via arm deployment or via script
+      required:
+        - subscriptionId
+        - tenantId
+        - location
+        - resourceGroup
+        - resources
+      properties:
+        subscriptionId:
+          type: string
+          description: Subscription Id of the customer's account
+          minLength: 36
+          maxLength: 36
+        tenantId:
+          type: string
+          description: Tenant Id of the customer's account
+          minLength: 36
+          maxLength: 36
+        objectIdOfTessellApp:
+          type: string
+          description: Object id of the tessell app in customer's env
+          minLength: 36
+          maxLength: 36
+        allowTessellCreation:
+          type: boolean
+          description: Whether Tessell is given create permissions or not
+          default: false
+        location:
+          type: string
+          description: Azure Region
+          minLength: 1
+          maxLength: 36
+        resourceGroup:
+          type: string
+          description: Resource Group Name
+          minLength: 1
+          maxLength: 64
+        resources:
+          $ref: '#/components/schemas/AzureByoaExecutionOutputResources'
+          description: Resources created as part of the arm template deployment
+    AzureByoaExecutionOutputResources:
+      type: object
+      description: Resources created as part of the arm template deployment
+      required:
+        - virtualNetwork
+        - security
+      properties:
+        logAnalyticsWorkspace:
+          type: string
+          description: Log Analytics Workspace Name
+          minLength: 4
+          maxLength: 63
+        managedIdentity:
+          type: string
+          description: Managed Identity Name
+          minLength: 3
+          maxLength: 128
+        virtualNetwork:
+          $ref: "#/components/schemas/AzureByoaExecutionOutputVirtualNetwork"
+          description: Virtual network details
+        security:
+          $ref: "#/components/schemas/AzureByoaExecutionOutputSecurity"
+          description: Security details
+    AzureByoaExecutionOutputVirtualNetwork:
+      type: object
+      description: Virtual network resources created as part of the arm template deployment
+      required:
+        - name
+        - virtualNetworkId
+        - privateSubnetId
+      properties:
+        name:
+          type: string
+          description: Name of the VPC
+          minLength: 3
+          maxLength: 64
+        virtualNetworkId:
+          type: string
+          description: Virtual network Id of the VPC
+          minLength: 128
+        privateSubnetId:
+          type: string
+          description: Private Subnet Id of the VPC
+          minLength: 128
+        publicSubnetId:
+          type: string
+          description: Public Subnet Id of the VPC
+          minLength: 128
+    AzureByoaExecutionOutputSecurity:
+      type: object
+      description: Security level resources created as part of the arm template deployment
+      required:
+        - keyVaultName
+        - keyName
+        - diskEncryptionSetId
+      properties:
+        keyVaultName:
+          type: string
+          description: Id of the key vault
+          minLength: 3
+          maxLength: 24
+        keyName:
+          type: string
+          description: Name of the key
+          minLength: 1
+          maxLength: 127
+        diskEncryptionSetId:
+          type: string
+          description: Id of the disk encryption set
+          minLength: 117
+
+    SubscriptionsAdminApiResponse:
+      title: SubscriptionsAdminApiResponse
+      type: object
+      description: Api response for admin view of subscription
+      properties:
+        metadata:
+          "$ref": "common-specification.yaml#/components/schemas/apiMetadata"
+        response:
+          type: array
+          items:
+            $ref: "#/components/schemas/SubscriptionAdminView"
+
+    SubscriptionsUserViewApiResponse:
+      title: SubscriptionsUserViewApiResponse
+      type: object
+      description: Api response for user view of subscription
+      properties:
+        metadata:
+          "$ref": "common-specification.yaml#/components/schemas/apiMetadata"
+        response:
+          type: array
+          items:
+            $ref: "#/components/schemas/SubscriptionUserView"
+
+    SubscriptionApiResponseOps:
+      title: SubscriptionApiResponseOps
+      type: object
+      properties:
+        metadata:
+          "$ref": "common-specification.yaml#/components/schemas/apiMetadata"
+        response:
+          type: array
+          items:
+            $ref: "#/components/schemas/Subscription"
+    SubscriptionApiResponseOpsV2:
+      title: SubscriptionApiResponseOpsV2
+      type: object
+      properties:
+        metadata:
+          "$ref": "common-specification.yaml#/components/schemas/apiMetadata"
+        response:
+          type: array
+          items:
+            $ref: "#/components/schemas/SubscriptionV2"
+
+    BulkDeleteSubscriptionsPayload:
+      $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeletePayloadOps'
+
+    BulkDeleteSubscriptionsStatusPayload:
+      $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeleteResponseOps'
+
+    BulkDeleteSubscriptionsContext:
+      title: BulkDeleteSubscriptionsContext
+      type: object
+      properties:
+        subscriptionId:
+          type: string
+          format: uuid
+          description: id of the tessell subscription
+        subscriptionStatus:
+          $ref: '#/components/schemas/subscriptionStatus'
+        deletionStatus:
+          $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeleteStatusOps'
+
+    RegisterTenantRequest:
+      title: RegisterTenantRequest
+      description: This is the payload definition for signing up a new tenant via Email
+      type: object
+      required:
+        - emailId
+        - firstName
+        - lastName
+      properties:
+        emailId:
+          type: string
+          description: Tenant user's email address
+        firstName:
+          type: string
+          description: Tenant user's first name
+        lastName:
+          type: string
+          description: Tenant user's last name
+        company:
+          type: string
+          description: Tenant user's company name
+        jobTitle:
+          type: string
+          description: Tenant user's job title
+        country:
+          type: string
+          description: Tenant user's country
+    RegisterTenantResponse:
+      title: RegisterTenantResponse
+      description: This is the response for tenant signed up using email
+      type: object
+      properties:
+        emailId:
+          type: string
+        message:
+          type: string
+        status:
+          $ref: "#/components/schemas/tenantStatus"
+    BaseSetupTenantRequest:
+      title: BaseSetupTenantRequest
+      type: object
+      required:
+        - emailId
+        - deploymentConfig
+        - enabledClouds
+      properties:
+        emailId:
+          type: string
+          description: Tenant user's email address
+        initialCredits:
+          type: number
+          format: double
+          description: Override the initial default credits
+        discount:
+          $ref: '#/components/schemas/Discount'
+          description: To be deprecated
+        supportPlan:
+          type: string
+          description: Override the default support plan for the tenant
+        billingDisabled:
+          type: boolean
+          default: false
+          description: To be deprecated
+        billingConfig:
+          $ref: '#/components/schemas/SetupTenantBillingConfig'
+          description: Billing config to be set at the time of onboarding
+        genieConfig:
+          $ref: '#/components/schemas/SetupTenantGenieConfig'
+          description: Genie config to be set at the time of onboarding
+        firstName:
+          type: string
+          description: Tenant user's first name
+        lastName:
+          type: string
+          description: Tenant user's last name
+        company:
+          type: string
+          description: Tenant user's company name
+        jobTitle:
+          type: string
+          description: Tenant user's job title
+        country:
+          type: string
+          description: Tenant user's country
+        domain:
+          type: string
+          description: Tenant's sub domain
+        customerType:
+          $ref: '#/components/schemas/CustomerType'
+        deleteProtected:
+          type: boolean
+          default: false
+          description: Whether to make the tenant delete protected
+        deploymentConfig:
+          $ref: '#/components/schemas/InfraDeploymentSetupConfig'
+        convoyDeploymentConfig:
+          $ref: '#/components/schemas/ConvoyDeploymentConfig'
+        enabledClouds:
+          type: array
+          minItems: 1
+          items:
+            $ref: 'common-specification.yaml#/components/schemas/cloudType'
+        dedicatedCloudAccounts:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            title: DedicatedCloudAccount
+            required:
+              - cloudType
+              - cloudAccountId
+            properties:
+              cloudType:
+                $ref: "common-specification.yaml#/components/schemas/cloudType"
+              cloudAccountId:
+                type: string
+                format: uuid
+        tenantPhase:
+          $ref: '#/components/schemas/TenantPhase'
+    SetupTenantRequest:
+      title: SetupTenantRequest
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BaseSetupTenantRequest'
+        - type: object
+          properties:
+            skipVerificationEmail:
+              type: boolean
+              description: Whether to skip sending verification email
+            verificationCodeExpiry:
+              $ref: 'common-specification.yaml#/components/schemas/TimeUnit'
+              description: Expiry time for verification code
+            registerTenant:
+              type: boolean
+              default: false
+              description: include the tenant registration in this request itself. If true, then below details needs to be passed.
+    OnboardTenantRequest:
+      title: OnboardTenantRequest
+      type: object
+      required:
+        - password
+        - emailId
+        - firstName
+        - lastName
+      allOf:
+        - $ref: '#/components/schemas/BaseSetupTenantRequest'
+        - type: object
+          properties:
+            password:
+              type: string
+              description: Tenant user's email address
+    InfraDeploymentSetupConfig:
+      title: InfraDeploymentSetupConfig
+      type: object
+      required:
+        - deploymentPlan
+      properties:
+        deploymentName:
+          type: string
+          description: optional infra deployment name where the tenant will be onboarded
+        deploymentPlan:
+          type: string
+        isSharedControlPlane:
+          type: boolean
+          default: false
+        dedicatedCloudAccountId:
+          type: string
+          format: uuid
+          description: Cloud account id in case the deployment plan has dedicated cloud account to be used for
+        metadataRepoResourceId:
+          type: string
+          description: The identifier of the metadata repository to be used
+        namespace:
+          type: string
+          description: Namespace in which the PE or SCP tenant is to be onboarded
+    SetupTenantBillingConfig:
+      title: SetupTenantBillingConfig
+      type: object
+      properties:
+        skipInvoiceFinalize:
+          type: boolean
+          default: false
+          description: Flag to skip finalizing invoices and keep them in draft state
+        fixedBillAmount:
+          type: number
+          format: double
+          description: Fixed bill amount to bill the tenant
+        disabled:
+          type: boolean
+          default: false
+          description: Whether to disable billing for the tenant
+        hideBillingCreditsUnit:
+          type: boolean
+          default: false
+          description: Whether to hide the billing credits unit for the tenant
+        discount:
+          $ref: '#/components/schemas/Discount'
+          description: Specify the initial discount given to the customer with a mandatory end date
+    Discount:
+      title: Discount
+      type: object
+      required:
+        - percentage
+        - endDate
+      properties:
+        percentage:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+          description: Discount percentage for the tenant
+        effectiveStartDate:
+          type: string
+          format: date-time
+          description: Date when the discount rate becomes effective
+        endDate:
+          type: string
+          format: date-time
+          description: Date when the discount rate ends
+    SetupSharedControlPlaneBaseInfraRequest:
+      title: SetupSharedControlPlaneBaseInfraRequest
+      type: object
+      required:
+        - emailId
+        - domain
+        - forTenantType
+        - deploymentConfig
+      properties:
+        emailId:
+          type: string
+          description: Tenant user's email address
+        domain:
+          type: string
+          description: Tenant's sub domain
+        forTenantType:
+          $ref: '#/components/schemas/TenantType'
+        customerType:
+          $ref: '#/components/schemas/CustomerType'
+        deploymentConfig:
+          $ref: '#/components/schemas/InfraDeploymentSetupConfig'
+        convoyDeploymentConfig:
+          $ref: '#/components/schemas/ConvoyDeploymentConfig'
+        deleteProtected:
+          type: boolean
+          default: true
+          description: Whether to make the tenant delete protected. Base scp should always be delete protected by default.
+
+    VerifyCodeRequest:
+      title: VerifyCodeRequest
+      type: object
+      required:
+        - code
+        - emailId
+      properties:
+        code:
+          type: string
+          description: Code sent via email
+        emailId:
+          type: string
+          description: Tenant user's email address
+    ActivateTenantRequest:
+      title: ActivateTenantRequest
+      type: object
+      required:
+        - code
+        - emailId
+        - authType
+      properties:
+        code:
+          type: string
+          description: Code sent via email
+        emailId:
+          type: string
+          description: Tenant user's email address
+        authType:
+          $ref: '#/components/schemas/AuthenticationType'
+        password:
+          type: string
+          description: Tenant user's login password
+          minLength: 8
+          maxLength: 50
+        oauthToken:
+          type: string
+          description: Oauth Token from the IDP
+
+    SharedInfraCreationRequestPayload:
+      type: object
+      required:
+        - cloudLocation
+        - cloudAccountId
+        - name
+        - displayName
+        - forTenantType
+        - k8sConfig
+      properties:
+        convoyDeploymentConfig:
+          $ref: '#/components/schemas/ConvoyDeploymentConfig'
+        cloudLocation:
+          type: string
+        cloudAccountId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 3
+          maxLength: 64
+          pattern: "^[a-z][a-z0-9-]*$"
+        displayName:
+          type: string
+          minLength: 3
+          maxLength: 128
+          description: display name for the infra which can be consumed while onboarding the tenant
+        forTenantType:
+          $ref: "#/components/schemas/TenantType"
+        k8sConfig:
+          $ref: '#/components/schemas/InfraCreationRequestK8sConfig'
+        repoConfig:
+          $ref: '#/components/schemas/InfraCreationRequestRepoConfig'
+        enablePrivateCpDpCommunication:
+          type: boolean
+          default: false
+          description: Flag for enabling private communication between Control Plane and Data Plane        
+      title: SharedInfraCreationRequestPayload
+      description: This is the payload definition for shared tenant infra creation
+
+    InfraCreationRequestK8sConfig:
+      title: InfraCreationRequestK8sConfig
+      description: This is the k8s cluster config for shared infra creation
+      type: object
+      properties:
+        metadataRepoCloudResourceUrl:
+          type: string
+          description: EC2 Repo to be used while creating infra deployment
+        eksConfig:
+          $ref: '#/components/schemas/InfraCreationRequestEksConfig'
+        aksConfig:
+          $ref: '#/components/schemas/InfraCreationRequestAksConfig'
+        nodeGroups:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/InfraK8sNodeGroupConfigPayload'
+
+    InfraCreationRequestEksConfig:
+      title: InfraCreationRequestAwsEksConfig
+      description: This is the eks cluster config for shared infra creation
+      type: object
+      properties:
+        tgsSslCertArn:
+          type: string
+          description: TGS SSL certificate to be used while creating nats load balancer
+        pushproxSslCertArn:
+          type: string
+          description: Pushprox SSL certificate to be used while creating pushprox load balancer
+
+    InfraCreationRequestAksConfig:
+      title: InfraCreationRequestAksConfig
+      description: This is the aks cluster config for shared infra creation
+      type: object
+      properties:
+        gtwCloudResourceUrl:
+          type: string
+          description: Application Gateway to be used while creating infra deployment
+
+    InfraCreationRequestRepoConfig:
+      title: InfraCreationRequestRepoConfig
+      type: object
+      properties:
+        amiId:
+          type: string
+          description: AMI Id to be used for creation of the repo
+        instanceType:
+          type: string
+          description: Instance type of the repo instance to be created
+
+    ManagedCloudAssetAccountDetails:
+      type: object
+      properties:
+        shared:
+          type: boolean
+      title: ManagedCloudAssetAccountDetails
+
+    SubscriptionStaticConfig:
+      title: SubscriptionStaticConfig
+      required:
+        - byoa
+        - defaultRegionsMap
+      properties:
+        byoa:
+          $ref: '#/components/schemas/SubscriptionByoaStaticConfig'
+        defaultRegionsMap:
+          type: object
+          required:
+            - aws
+            - azure
+          properties:
+            aws:
+              type: array
+              items:
+                type: string
+            azure:
+              type: array
+              items:
+                type: string
+    SubscriptionByoaStaticConfig:
+      title: SubscriptionByoaStaticConfig
+      required:
+        - aws
+        - azure
+      properties:
+        aws:
+          $ref: '#/components/schemas/SubscriptionByoaAwsStaticConfig'
+        azure:
+          $ref: '#/components/schemas/SubscriptionByoaAzureStaticConfig'
+    SubscriptionByoaAwsStaticConfig:
+      title: SubscriptionByoaAwsStaticConfig
+      required:
+        - cloudFormationUrl
+        - command
+      properties:
+        cloudFormationUrl:
+          type: string
+        command:
+          type: string
+    SubscriptionByoaAzureStaticConfig:
+      title: SubscriptionByoaAzureStaticConfig
+      required:
+        - authorizeTessellUrl
+        - authorizeTessellNetworkUrl
+        - deployResourceUrl
+        - tessellAppId
+        - tessellNetworkAppId
+        - command
+      properties:
+        authorizeTessellUrl:
+          type: string
+        authorizeTessellNetworkUrl:
+          type: string
+        deployResourceUrl:
+          type: string
+        tessellAppId:
+          type: string
+        tessellNetworkAppId:
+          type: string
+        command:
+          type: string
+    SubscriptionByoaStaticMetadata:
+      title: SubscriptionByoaStaticMetadata
+      description: Metadata for BYOA subscription
+      required:
+        - aws
+      properties:
+        aws:
+          $ref: '#/components/schemas/SubscriptionByoaAwsStaticMetadata'
+        azure:
+          $ref: '#/components/schemas/SubscriptionByoaAzureStaticMetadata'
+    SubscriptionByoaAwsStaticMetadata:
+      title: SubscriptionByoaAwsStaticMetadata
+      description: AWS metadata for BYOA
+      required:
+        - cloudFormationUrl
+        - command
+      properties:
+        cloudFormationUrl:
+          type: string
+        command:
+          type: string
+    SubscriptionByoaAzureStaticMetadata:
+      title: SubscriptionByoaAzureStaticMetadata
+      description: Azure metadata for BYOA
+      required:
+        - authorizeTessellUrl
+        - authorizeTessellNetworkUrl
+        - deployResourceUrl
+        - tessellAppId
+        - tessellNetworkAppId
+        - command
+      properties:
+        authorizeTessellUrl:
+          type: string
+        authorizeTessellNetworkUrl:
+          type: string
+        deployResourceUrl:
+          type: string
+        tessellAppId:
+          type: string
+        tessellNetworkAppId:
+          type: string
+        command:
+          type: string
+
+    Action:
+      description: Action on any entity for enabling/disabling
+      type: string
+      enum:
+        - enable
+        - disable
+      x-enum-varnames:
+        - enable
+        - disable
+    AssociationStatus:
+      description: Cloud account Association Status with the subscription
+      type: string
+      enum:
+        - ACTIVE
+        - INACTIVE
+        - FAILED
+        - ASSOCIATING
+    TenantType:
+      description: Tenant type whether it is a business customer or personal edition customer
+      type: string
+      enum:
+        - PERSONAL
+        - BUSINESS
+        - CONSOLE
+    AuthenticationType:
+      description: Type of authentication
+      type: string
+      enum:
+        - PASSWORD
+        - GOOGLE
+    SeedDataStatus:
+      description: Seed Data Status
+      type: string
+      enum:
+        - ACTIVE
+        - INACTIVE
+    InfraDeploymentStatus:
+      description: Infra Deployment Status
+      type: string
+      enum:
+        - CREATING
+        - CREATED
+        - DISABLED
+        - DELETING
+        - DELETED
+        - FAILED
+        - UPDATING
+        - UPDATE_FAILED
+
+    CustomerType:
+      description: Customer Type
+      type: string
+      enum:
+        - INTERNAL
+        - EXTERNAL
+    DeploymentSelectionStrategy:
+      description: Customer Type
+      type: string
+      enum:
+        - FIRST_MATCH
+        - ROUND_ROBIN
+        - LEAST_TENANTS
+        - GEOGRAPHICALLY_CLOSEST
+    SubscriptionUserRole:
+      description: Subscription user role
+      type: string
+      enum:
+        - MEMBER
+        - CO_OWNER
+    SubscriptionUserRoleExtended:
+      description: Subscription user role extended to include owner as well
+      type: string
+      enum:
+        - MEMBER
+        - CO_OWNER
+        - OWNER
+    TenantPhase:
+      description: Tenant's business status
+      type: string
+      default: LIVE
+      enum:
+        - POC
+        - LIVE
+    # -------------------
+    # BYOA
+    # -------------------
+    ByoaTemplateMetadata:
+      title: CreateTemplateMetadataPayload
+      description: Template for BYOA metadata
+      properties:
+        templateId:
+          type: string
+          description: Template Id
+          minLength: 36
+          maxLength: 36
+        subscriptionName:
+          type: string
+          description: Name of the subscription
+          minLength: 3
+          maxLength: 64
+        operationType:
+          description: Operation type
+          $ref: '#/components/schemas/OperationType'
+        region:
+          type: string
+          description: Deployment Region
+          minLength: 1
+          maxLength: 36
+        allowTessellManagement:
+          type: boolean
+          description: Allow Tessell to create resources
+          default: false
+        azure:
+          $ref: '#/components/schemas/ByoaTemplateAzureMetadata'
+        aws:
+          $ref: '#/components/schemas/ByoaTemplateAwsMetadata'
+
+    ByoaTemplateAzureMetadata:
+      title: ByoaTemplateAzureMetadata
+      description: Template for Azure BYOA metadata
+      properties:
+        managedIdentityName:
+          type: string
+          description: Name of the managed identity
+          minLength: 3
+          maxLength: 128
+        logAnalyticsWorkspaceName:
+          type: string
+          description: Name of the log analytics workspace
+          minLength: 4
+          maxLength: 63
+        logAnalyticsWorkspaceId:
+          type: string
+          description: Id of the log analytics workspace
+          minLength: 4
+          maxLength: 256
+        managedIdentityId:
+          type: string
+          description: Id of the managed identity
+          minLength: 3
+          maxLength: 256
+        objectIdOfTessellApp:
+          type: string
+          description: Tessell Application's object ID on Azure Tenant
+          minLength: 36
+          maxLength: 36
+        virtualNetwork:
+          description: Virtual network details
+          $ref: '#/components/schemas/AzureVirtualNetwork'
+        securityResources:
+          description: Security details
+          $ref: '#/components/schemas/AzureSecurityResources'
+
+    AzureVirtualNetwork:
+      title: AzureVirtualNetwork
+      description: Details of Azure virtual network
+      properties:
+        virtualNetworkName:
+          type: string
+          description: Name of the virtual network
+          minLength: 2
+          maxLength: 64
+        virtualNetworkId:
+          type: string
+          description: Id of the virtual network
+          minLength: 2
+          maxLength: 256
+        virtualNetworkCidrBlock:
+          type: string
+          minLength: 4
+          maxLength: 18
+          description: cidr block of the virtual network
+          example: 10.0.0.4/24
+        publicSubnet:
+          description: Public subnet
+          $ref: '#/components/schemas/AzureSubnet'
+        privateSubnet:
+          description: Private subnet
+          $ref: '#/components/schemas/AzureSubnet'
+    AzureSubnet:
+      title: AzureSubnet
+      properties:
+        subnetName:
+          type: string
+          description: Name of the subnet
+          minLength: 1
+          maxLength: 80
+        subnetId:
+          type: string
+          description: Id of the subnet
+          minLength: 1
+          maxLength: 256
+        subnetCidrBlock:
+          type: string
+          description: cidr block of the subnet
+          example: 10.0.0.4/24
+          minLength: 4
+          maxLength: 18
+    AzureSecurityResources:
+      title: AzureSecurityResources
+      description: Details of azure security resources
+      properties:
+        keyVaultName:
+          type: string
+          description: Name of the key vault
+          minLength: 3
+          maxLength: 24
+        keyVaultId:
+          type: string
+          description: Id of the key vault
+          minLength: 3
+          maxLength: 256
+        keyName:
+          type: string
+          description: Name of the key
+          minLength: 1
+          maxLength: 127
+        diskEncryptionSetName:
+          type: string
+          description: Name of the disk encryption set
+        diskEncryptionSetId:
+          type: string
+          description: Id of the disk encryption set
+
+    ByoaTemplateAwsMetadata:
+      title: ByoaTemplateAwsMetadata
+      description: Template for Aws BYOA metadata
+      properties:
+        s3Path:
+          type: string
+          description: S3 path of the Cloud Formation template
+          minLength: 1
+          maxLength: 256
+        tenantId:
+          type: string
+          description: Tenant Id
+          minLength: 36
+          maxLength: 36
+        crossAccountAccessRoleName:
+          type: string
+          description: Name of the cross account role
+          minLength: 3
+          maxLength: 64
+        crossAccountAccessRoleArn:
+          type: string
+          description: Arn of the cross account role
+          minLength: 3
+          maxLength: 256
+        dbVmMgmtRoleName:
+          type: string
+          description: Name of the role for DB VM Management
+          minLength: 3
+          maxLength: 64
+        dbVmMgmtRoleArn:
+          type: string
+          description: Arn of the role for DB VM Management
+          minLength: 3
+          maxLength: 256
+        vpc:
+          description: VPC details
+          $ref: '#/components/schemas/AwsVpc'
+        securityResources:
+          description: Security details
+          $ref: '#/components/schemas/AwsSecurityResources'
+
+    AwsVpc:
+      title: AwsVpc
+      description: Details of AWS VPC
+      properties:
+        vpcName:
+          type: string
+          description: Name of the VPC
+          minLength: 2
+          maxLength: 64
+        vpcId:
+          type: string
+          description: Id of the vpc
+          minLength: 2
+          maxLength: 64
+        vpcCidrBlock:
+          type: string
+          minLength: 4
+          maxLength: 18
+          description: cidr block of the vpc
+          example: 10.0.0.4/24
+        enablePublicAccess:
+          type: boolean
+          description: Whether VPC is public or not
+          default: true
+        publicSubnets:
+          type: array
+          description: Public subnets
+          minItems: 0
+          items:
+            $ref: '#/components/schemas/AwsSubnet'
+        privateSubnets:
+          type: array
+          description: Private subnets
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/AwsSubnet'
+    AwsSubnet:
+      title: AwsSubnet
+      properties:
+        subnetName:
+          type: string
+          description: Name of the subnet
+          minLength: 1
+          maxLength: 80
+        cloudId:
+          type: string
+          description: Id of the subnet
+          minLength: 1
+          maxLength: 80
+        availabilityZone:
+          type: string
+          description: Availability Zone
+          minLength: 1
+          maxLength: 80
+        subnetCidrBlock:
+          type: string
+          description: cidr block of the subnet
+          example: 10.0.0.4/24
+          minLength: 4
+          maxLength: 18
+    AwsSecurityResources:
+      title: AwsSecurityResources
+      description: Details of aws security resources
+      properties:
+        keyId:
+          type: string
+          description: Id of the key
+          minLength: 1
+          maxLength: 127
+        keyName:
+          type: string
+          description: Name of the key
+          minLength: 1
+          maxLength: 127
+
+    OperationType:
+      description: ARM Template Operation type
+      type: string
+      enum:
+        - CREATE_SUBSCRIPTION
+        - ADD_REGION
+        - ADD_NETWORK
+        - ADD_KEY
+    ServicesList:
+      description: Services to be considered for whitelist ECR access
+      type: array
+      items:
+        type: string
+        enum:
+          - MILVUS
+    EnableECRAccessPayload:
+      description: Payload for whitelisting services at subscription level
+      type: object
+      properties:
+        services:
+          $ref: '#/components/schemas/ServicesList'
+    DnsService:
+      type: string
+      default: ROUTE_53
+      enum:
+        - ROUTE_53
+        - AZURE_DNS
+        - NO_DNS
+
+  parameters:
+    subscription-name:
+      name: name
+      in: path
+      description: Subscription Name
+      required: true
+      schema:
+        type: string
+        minLength: 3
+        maxLength: 64
+    soft-delete:
+      name: soft-delete
+      in: query
+      description: Specifies whether to retain the subscription metadata
+      required: false
+      schema:
+        type: boolean
+        default: true
+    queryParamStatus:
+      name: status
+      in: query
+      description: Tenant status
+      required: false
+      schema:
+        type: string
+    infraName:
+      in: path
+      name: name
+      schema:
+        type: string
+      required: true
+      description: "Infra name"

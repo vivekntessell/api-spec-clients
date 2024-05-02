@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.tessell</groupId>
+    <artifactId>api-spec-clients</artifactId>
+    <version>local</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>clients</module>
+    </modules>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.5.14</version>
+        <relativePath/>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.tessell</groupId>
+            <artifactId>tessell-java-common</artifactId>
+            <version>${tessell-java-common-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.yaml</groupId>
+                    <artifactId>snakeyaml</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>2.0</version>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <tessell-java-common-version>0.7.46</tessell-java-common-version>
+        <tessell-java-openapi-generator-version>1.0.3</tessell-java-openapi-generator-version>
+        <tessell-common-auth-version>0.4.1</tessell-common-auth-version>
+        <okhttp3.version>4.9.1</okhttp3.version>
+        <java.version>17</java.version>
+        <apispec-repo-url>
+            https://${github-token}@raw.githubusercontent.com/TessellDevelopment/tessell-api-specifications
+        </apispec-repo-url>
+        <apispec-branch>0.116.13</apispec-branch>
+    </properties>
+
+</project>

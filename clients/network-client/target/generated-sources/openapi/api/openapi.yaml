@@ -1,0 +1,4712 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: support@tessell.com
+    name: Inc
+    url: https://www.tessell.com
+  description: REST API Documentation
+  termsOfService: https://www.tessell.com/terms
+  title: REST API Documentation
+  version: "1.0"
+servers:
+- description: Inferred Url
+  url: http://localhost:8084
+paths:
+  /network/vpcs:
+    get:
+      operationId: getVpcs
+      parameters:
+      - description: Name of the Subscription
+        example: default
+        explode: true
+        in: query
+        name: subscriptionName
+        required: false
+        schema:
+          maxLength: 255
+          minLength: 1
+          type: string
+        style: form
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: false
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Cloud Region
+        examples:
+          aws:
+            summary: aws region example
+            value: us-east-1
+          azure:
+            summary: azure region example
+            value: eastUS
+        in: query
+        name: region
+        required: false
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Boolean flag to specify if Subnet details are required in response
+        explode: true
+        in: query
+        name: include-subnets
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/VpcServiceConsumer'
+                type: array
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get a list of VPCs
+      tags:
+      - TessellVpcServiceView
+      x-accepts: application/json
+  /network/vpcs/{name}:
+    get:
+      operationId: getVpcByName
+      parameters:
+      - description: Name of the Entity
+        example: entity-123
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          maxLength: 512
+          minLength: 1
+          type: string
+        style: simple
+      - description: Name of the Subscription
+        example: default
+        explode: true
+        in: query
+        name: subscriptionName
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 1
+          type: string
+        style: form
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: true
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Cloud Region
+        examples:
+          aws:
+            summary: aws region example
+            value: us-east-1
+          azure:
+            summary: azure region example
+            value: eastUS
+        in: query
+        name: region
+        required: true
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VpcServiceConsumer'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get VPC by Name
+      tags:
+      - TessellVpcServiceView
+      x-accepts: application/json
+  /network/governance/vpcs:
+    get:
+      operationId: getVpcsGovernance
+      parameters:
+      - description: Name of the Subscription
+        example: default
+        explode: true
+        in: query
+        name: subscriptionName
+        required: false
+        schema:
+          maxLength: 255
+          minLength: 1
+          type: string
+        style: form
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: false
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Cloud Region
+        examples:
+          aws:
+            summary: aws region example
+            value: us-east-1
+          azure:
+            summary: azure region example
+            value: eastUS
+        in: query
+        name: region
+        required: false
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Boolean flag to specify if Subnet details are required in response
+        explode: true
+        in: query
+        name: include-subnets
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: Include Shared with Info
+        explode: true
+        in: query
+        name: includeSharedWith
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: List of Email Addresses for entity or resource owners
+        in: query
+        name: owners
+        required: false
+        schema:
+          items:
+            type: string
+          type: array
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/VpcServiceConsumer'
+                type: array
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get a list of VPCs as an administrator
+      tags:
+      - TessellVpcAdminView
+      x-accepts: application/json
+    post:
+      operationId: createVpcGovernance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVpcServiceConsumerPayload'
+        description: VPC Information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VpcServiceConsumer'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Create a VPC
+      tags:
+      - TessellVpcAdminView
+      x-contentType: application/json
+      x-accepts: application/json
+  /network/governance/vpcs/{name}:
+    delete:
+      operationId: deleteVpcGovernance
+      parameters:
+      - description: Name of the Entity
+        example: entity-123
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          maxLength: 512
+          minLength: 1
+          type: string
+        style: simple
+      - description: Name of the Subscription
+        example: default
+        explode: true
+        in: query
+        name: subscriptionName
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 1
+          type: string
+        style: form
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: true
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Cloud Region
+        examples:
+          aws:
+            summary: aws region example
+            value: us-east-1
+          azure:
+            summary: azure region example
+            value: eastUS
+        in: query
+        name: region
+        required: true
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Delete a VPC
+      tags:
+      - TessellVpcAdminView
+      x-accepts: application/json
+    get:
+      operationId: getVpcByNameGovernance
+      parameters:
+      - description: Name of the Entity
+        example: entity-123
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          maxLength: 512
+          minLength: 1
+          type: string
+        style: simple
+      - description: Name of the Subscription
+        example: default
+        explode: true
+        in: query
+        name: subscriptionName
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 1
+          type: string
+        style: form
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: true
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Cloud Region
+        examples:
+          aws:
+            summary: aws region example
+            value: us-east-1
+          azure:
+            summary: azure region example
+            value: eastUS
+        in: query
+        name: region
+        required: true
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Include Shared with Info
+        explode: true
+        in: query
+        name: includeSharedWith
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VpcServiceConsumer'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get VPC as an administrator by Name
+      tags:
+      - TessellVpcAdminView
+      x-accepts: application/json
+  /network/governance/vpcs/discovery:
+    post:
+      operationId: getVpcsToRegisterGovernance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DiscoverVpcPayload'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ClientVpc'
+                type: array
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: List VPCs from a BYOA Subscription to register in Tessell
+      tags:
+      - TessellVpcAdminView
+      x-contentType: application/json
+      x-accepts: application/json
+  /network/governance/vpcs/register:
+    post:
+      operationId: registerVpcGovernance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterClientVpcServiceConsumerPayload'
+        description: VPC Information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VpcServiceConsumer'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Register VPC from a BYOA subscription
+      tags:
+      - TessellVpcAdminView
+      x-contentType: application/json
+      x-accepts: application/json
+  /network/governance/vpcs/{name}/acls:
+    delete:
+      operationId: deleteVpcAcls
+      parameters:
+      - description: Name of the Entity
+        example: entity-123
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          maxLength: 512
+          minLength: 1
+          type: string
+        style: simple
+      - description: Name of the Subscription
+        example: default
+        explode: true
+        in: query
+        name: subscriptionName
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 1
+          type: string
+        style: form
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: true
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Cloud Region
+        examples:
+          aws:
+            summary: aws region example
+            value: us-east-1
+          azure:
+            summary: azure region example
+            value: eastUS
+        in: query
+        name: region
+        required: true
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AclRevokePayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Delete ACL (Access Control List) of a VPC
+      tags:
+      - TessellVpcAdminView
+      x-contentType: application/json
+      x-accepts: application/json
+    get:
+      operationId: getVpcAcls
+      parameters:
+      - description: Name of the Entity
+        example: entity-123
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          maxLength: 512
+          minLength: 1
+          type: string
+        style: simple
+      - description: Name of the Subscription
+        example: default
+        explode: true
+        in: query
+        name: subscriptionName
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 1
+          type: string
+        style: form
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: true
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Cloud Region
+        examples:
+          aws:
+            summary: aws region example
+            value: us-east-1
+          azure:
+            summary: azure region example
+            value: eastUS
+        in: query
+        name: region
+        required: true
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntityAclSharingInfo'
+          description: Ok
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get ACL (Access Control List) of a VPC
+      tags:
+      - TessellVpcAdminView
+      x-accepts: application/json
+    patch:
+      operationId: modifyVpcAcls
+      parameters:
+      - description: Name of the Entity
+        example: entity-123
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          maxLength: 512
+          minLength: 1
+          type: string
+        style: simple
+      - description: Name of the Subscription
+        example: default
+        explode: true
+        in: query
+        name: subscriptionName
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 1
+          type: string
+        style: form
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: true
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Cloud Region
+        examples:
+          aws:
+            summary: aws region example
+            value: us-east-1
+          azure:
+            summary: azure region example
+            value: eastUS
+        in: query
+        name: region
+        required: true
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AclPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AclPayload'
+          description: OK
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Modify ACL (Access Control List) of a VPC
+      tags:
+      - TessellVpcAdminView
+      x-contentType: application/json
+      x-accepts: application/json
+  /network/governance/vpcs/{name}/acls/eligible-users:
+    get:
+      operationId: getVpcEligibleUserList
+      parameters:
+      - description: Name of the Entity
+        example: entity-123
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          maxLength: 512
+          minLength: 1
+          type: string
+        style: simple
+      - description: Name of the Subscription
+        example: default
+        explode: true
+        in: query
+        name: subscriptionName
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 1
+          type: string
+        style: form
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: true
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Cloud Region
+        examples:
+          aws:
+            summary: aws region example
+            value: us-east-1
+          azure:
+            summary: azure region example
+            value: eastUS
+        in: query
+        name: region
+        required: true
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Roles for the entity
+        explode: true
+        in: query
+        name: roles
+        required: false
+        schema:
+          items:
+            $ref: '#/components/schemas/Roles'
+          maxItems: 32
+          minItems: 1
+          type: array
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AclEligibleUser'
+                type: array
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get a list of Users with allowed accesses for a VPC
+      tags:
+      - TessellVpcAdminView
+      x-accepts: application/json
+  /network/governance/vpcs/{name}/{action}:
+    patch:
+      operationId: applyActionOnVpc
+      parameters:
+      - description: Name of the Entity
+        example: entity-123
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          maxLength: 512
+          minLength: 1
+          type: string
+        style: simple
+      - description: Name of the Subscription
+        example: default
+        explode: true
+        in: query
+        name: subscriptionName
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 1
+          type: string
+        style: form
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: true
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Cloud Region
+        examples:
+          aws:
+            summary: aws region example
+            value: us-east-1
+          azure:
+            summary: azure region example
+            value: eastUS
+        in: query
+        name: region
+        required: true
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Action to be performed
+        explode: false
+        in: path
+        name: action
+        required: true
+        schema:
+          $ref: '#/components/schemas/NetworkAction'
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Apply action on a VPC
+      tags:
+      - TessellVpcAdminView
+      x-accepts: application/json
+  /tessell-internal/network/vpcs:
+    get:
+      operationId: getVpcInternal
+      parameters:
+      - description: Name of the Entity
+        example: example-123
+        in: query
+        name: name
+        required: false
+        schema:
+          maxLength: 512
+          minLength: 1
+          type: string
+      - description: Id of the Subscription
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: true
+        in: query
+        name: subscriptionId
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: form
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: false
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Cloud Region
+        examples:
+          aws:
+            summary: aws region example
+            value: us-east-1
+          azure:
+            summary: azure region example
+            value: eastUS
+        in: query
+        name: region
+        required: false
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Disable Acl Check
+        explode: true
+        in: query
+        name: disableAclCheck
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: Include Shared with Info
+        explode: true
+        in: query
+        name: includeSharedWith
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: Include Subnet Groups Information
+        explode: true
+        in: query
+        name: include-subnet-groups
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Vpc'
+                type: array
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get a list of VPCs
+      tags:
+      - TessellVpcInternalView
+      x-accepts: application/json
+    post:
+      operationId: createVpcInternal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVpcPayload'
+        description: VPC Information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vpc'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Create a VPC
+      tags:
+      - TessellVpcInternalView
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-internal/network/vpcs/register:
+    post:
+      operationId: registerVpcInternal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterClientVpcServiceConsumerPayload'
+        description: VPC Information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VpcServiceConsumer'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Register a VPC
+      tags:
+      - TessellVpcInternalView
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-internal/network/vpcs/{id}:
+    delete:
+      operationId: deleteVpcInternal
+      parameters:
+      - description: Tessell Generated UUID for the Entity
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Disable Acl Check
+        explode: true
+        in: query
+        name: disableAclCheck
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: Soft delete an entity
+        in: query
+        name: softDelete
+        required: false
+        schema:
+          default: true
+          type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Delete a VPC
+      tags:
+      - TessellVpcInternalView
+      x-accepts: application/json
+    get:
+      operationId: getVpcByIdInternal
+      parameters:
+      - description: Tessell Generated UUID for the Entity
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Include Subnet Groups Information
+        explode: true
+        in: query
+        name: include-subnet-groups
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: Disable Acl Check
+        explode: true
+        in: query
+        name: disableAclCheck
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vpc'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get VPC by Id
+      tags:
+      - TessellVpcInternalView
+      x-accepts: application/json
+    patch:
+      operationId: updateVpcInternal
+      parameters:
+      - description: Tessell Generated UUID for the Entity
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateVpcPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vpc'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Update a VPC
+      tags:
+      - TessellVpcInternalView
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-ops/network/vpcs/{id}:
+    patch:
+      operationId: updateVpcMetadataInternal
+      parameters:
+      - description: Tessell Generated UUID for the Entity
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateVpcPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vpc'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Update VPC metadata
+      tags:
+      - TessellVpcOpsView
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-ops/network/subnets/{id}:
+    delete:
+      operationId: deleteSubnetMetadataInternal
+      parameters:
+      - description: Tessell Generated UUID for the Entity
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Delete subnet metadata
+      tags:
+      - TessellVpcOpsView
+      x-accepts: application/json
+    get:
+      operationId: getSubnetByIdInternal
+      parameters:
+      - description: Tessell Generated UUID for the Entity
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subnet'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get Subnet by Id
+      tags:
+      - TessellVpcOpsView
+      x-accepts: application/json
+    patch:
+      operationId: updateSubnetMetadataInternal
+      parameters:
+      - description: Tessell Generated UUID for the Entity
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSubnetPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subnet'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Update Subnet metadata by Id
+      tags:
+      - TessellVpcOpsView
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-internal/network/vpcs/{id}/trigger-vpc-creation:
+    get:
+      operationId: triggerVpcCreationInternal
+      parameters:
+      - description: Tessell Generated UUID for the Entity
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Trigger VPC Creation if not Created
+      tags:
+      - TessellVpcInternalView
+      x-accepts: application/json
+  /tessell-internal/network/vpcs/{id}/create-vpc-cloud-resources:
+    post:
+      operationId: CreateVpcCloudResourcesConfig
+      parameters:
+      - description: Tessell Generated UUID for the Entity
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVpcCloudResourcesConfig'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Trigger VPC Creation if not Created
+      tags:
+      - TessellVpcInternalView
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-internal/network/vpcs/{id}/acls:
+    delete:
+      operationId: deleteVpcAclsInternal
+      parameters:
+      - description: Tessell Generated UUID for the Entity
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AclRevokePayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Delete Vpc Acls
+      tags:
+      - TessellVpcInternalView
+      x-contentType: application/json
+      x-accepts: application/json
+    get:
+      operationId: getVpcAclsInternal
+      parameters:
+      - description: Tessell Generated UUID for the Entity
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntityAclSharingInfo'
+          description: Ok
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get Vpc Acls
+      tags:
+      - TessellVpcInternalView
+      x-accepts: application/json
+    patch:
+      operationId: modifyVpcAclsInternal
+      parameters:
+      - description: Tessell Generated UUID for the Entity
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AclPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AclPayload'
+          description: OK
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Modify Vpc Acls
+      tags:
+      - TessellVpcInternalView
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-internal/network/vpcs/{id}/acls/eligible-users:
+    get:
+      operationId: getVpcEligibleUserListInternal
+      parameters:
+      - description: Tessell Generated UUID for the Entity
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Roles for the entity
+        explode: true
+        in: query
+        name: roles
+        required: false
+        schema:
+          items:
+            $ref: '#/components/schemas/Roles'
+          maxItems: 32
+          minItems: 1
+          type: array
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AclEligibleUser'
+                type: array
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get List of Users With Allowed Acls
+      tags:
+      - TessellVpcInternalView
+      x-accepts: application/json
+  /tessell-internal/network/vpcs/{id}/{action}:
+    get:
+      operationId: applyActionOnVpcInternal
+      parameters:
+      - description: Tessell Generated UUID for the Entity
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Action to be performed
+        explode: false
+        in: path
+        name: action
+        required: true
+        schema:
+          $ref: '#/components/schemas/NetworkAction'
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Apply given action on a VPC
+      tags:
+      - TessellVpcInternalView
+      x-accepts: application/json
+  /tessell-ops/network/vpcs/{id}/vpc-endpoints:
+    put:
+      operationId: setVpcEndpointsMetadataInternal
+      parameters:
+      - description: Tessell Generated UUID for the Entity
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties:
+                $ref: '#/components/schemas/VpcEndpoint'
+              type: object
+        required: true
+      responses:
+        "200":
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Set VPC Endpoints metadata
+      tags:
+      - TessellVpcOpsView
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-internal/network/network-profiles:
+    get:
+      operationId: getNetworkProfilesInternal
+      parameters:
+      - description: Name of the Entity
+        example: example-123
+        in: query
+        name: name
+        required: false
+        schema:
+          maxLength: 512
+          minLength: 1
+          type: string
+      - description: Id of the Subscription
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: true
+        in: query
+        name: subscriptionId
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: form
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: false
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Cloud Region
+        examples:
+          aws:
+            summary: aws region example
+            value: us-east-1
+          azure:
+            summary: azure region example
+            value: eastUS
+        in: query
+        name: region
+        required: false
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Disable Acl Check
+        explode: true
+        in: query
+        name: disableAclCheck
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NetworkProfile'
+                type: array
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get a list of Network Profiles
+      tags:
+      - TessellNetworkProfileInternalView
+      x-accepts: application/json
+  /tessell-internal/network/network-profiles/{id}:
+    get:
+      operationId: getNetworkProfileByIdInternal
+      parameters:
+      - description: Tessell Generated UUID for the Entity
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Disable Acl Check
+        explode: true
+        in: query
+        name: disableAclCheck
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NetworkProfile'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get Network Profile by Id
+      tags:
+      - TessellNetworkProfileInternalView
+      x-accepts: application/json
+  /network/governance/vpc/{vpcName}/subnets:
+    get:
+      operationId: getVpcSubnetsGovernance
+      parameters:
+      - description: VPC Name
+        explode: false
+        in: path
+        name: vpcName
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Name of the Subscription
+        example: default
+        explode: true
+        in: query
+        name: subscriptionName
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 1
+          type: string
+        style: form
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: true
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Cloud Region
+        examples:
+          aws:
+            summary: aws region example
+            value: us-east-1
+          azure:
+            summary: azure region example
+            value: eastUS
+        in: query
+        name: region
+        required: true
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VpcSubnetServiceConsumer'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get a list of Subnets of a VPC
+      tags:
+      - TessellVpcAdminView
+      x-accepts: application/json
+  /network/governance/vpc/{vpcName}/vpc-peerings:
+    get:
+      operationId: getVpcPeeringsGovernance
+      parameters:
+      - description: VPC Name
+        explode: false
+        in: path
+        name: vpcName
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Name of the Subscription
+        example: default
+        explode: true
+        in: query
+        name: subscriptionName
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 1
+          type: string
+        style: form
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: true
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Cloud Region
+        examples:
+          aws:
+            summary: aws region example
+            value: us-east-1
+          azure:
+            summary: azure region example
+            value: eastUS
+        in: query
+        name: region
+        required: true
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: status
+        explode: true
+        in: query
+        name: status
+        required: false
+        schema:
+          $ref: '#/components/schemas/VpcPeeringStatus'
+        style: form
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/VpcPeeringServiceConsumer'
+                type: array
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get a list of VPC Peerings of a VPC
+      tags:
+      - TessellVpcPeeringAdminView
+      x-accepts: application/json
+    post:
+      operationId: createVpcPeeringGovernance
+      parameters:
+      - description: VPC Name
+        explode: false
+        in: path
+        name: vpcName
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVpcPeeringServiceConsumerPayload'
+        description: VPC Peering Information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VpcPeeringServiceConsumer'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Create a Peering between VPCs
+      tags:
+      - TessellVpcPeeringAdminView
+      x-contentType: application/json
+      x-accepts: application/json
+  /network/governance/vpc/{vpcName}/vpc-peerings/{name}:
+    delete:
+      operationId: deleteVpcPeeringGovernance
+      parameters:
+      - description: Name of the Entity
+        example: entity-123
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          maxLength: 512
+          minLength: 1
+          type: string
+        style: simple
+      - description: VPC Name
+        explode: false
+        in: path
+        name: vpcName
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Name of the Subscription
+        example: default
+        explode: true
+        in: query
+        name: subscriptionName
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 1
+          type: string
+        style: form
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: true
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Cloud Region
+        examples:
+          aws:
+            summary: aws region example
+            value: us-east-1
+          azure:
+            summary: azure region example
+            value: eastUS
+        in: query
+        name: region
+        required: true
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Delete Vpc Peering
+      tags:
+      - TessellVpcPeeringAdminView
+      x-accepts: application/json
+    get:
+      operationId: getVpcPeeringByNameGovernance
+      parameters:
+      - description: Name of the Entity
+        example: entity-123
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          maxLength: 512
+          minLength: 1
+          type: string
+        style: simple
+      - description: VPC Name
+        explode: false
+        in: path
+        name: vpcName
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Name of the Subscription
+        example: default
+        explode: true
+        in: query
+        name: subscriptionName
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 1
+          type: string
+        style: form
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: true
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Cloud Region
+        examples:
+          aws:
+            summary: aws region example
+            value: us-east-1
+          azure:
+            summary: azure region example
+            value: eastUS
+        in: query
+        name: region
+        required: true
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VpcPeeringServiceConsumer'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get VPC Peering by Name for a given VPC
+      tags:
+      - TessellVpcPeeringAdminView
+      x-accepts: application/json
+  /network/governance/vpc/{vpcName}/vpc-peerings/aws-cloudformation:
+    post:
+      operationId: createVpcPeeringAwsCloudformation
+      parameters:
+      - description: VPC Name
+        explode: false
+        in: path
+        name: vpcName
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVpcPeeringAwsCloudformationPayload'
+        description: VPC Peering Information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VpcPeeringServiceConsumer'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Create a VPC Peering using AWS Cloudformation
+      tags:
+      - TessellVpcPeeringAdminView
+      x-contentType: application/json
+      x-accepts: application/json
+  /network/governance/vpc/{vpcName}/vpc-peerings-cloudformation-url:
+    get:
+      operationId: getVpcPeeringCloudformationUrlGovernance
+      parameters:
+      - description: VPC Name
+        explode: false
+        in: path
+        name: vpcName
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Name of the Subscription
+        example: default
+        explode: true
+        in: query
+        name: subscriptionName
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 1
+          type: string
+        style: form
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: true
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Cloud Region
+        examples:
+          aws:
+            summary: aws region example
+            value: us-east-1
+          azure:
+            summary: azure region example
+            value: eastUS
+        in: query
+        name: region
+        required: true
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Region of the Client VPC to be peered
+        explode: true
+        in: query
+        name: clientVpcRegion
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VpcPeeringAwsCloudformationLink'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get Cloudformation URL for VPC Peering
+      tags:
+      - TessellVpcPeeringAdminView
+      x-accepts: application/json
+  /tessell-internal/network/vpc/{vpcId}/vpc-peerings:
+    get:
+      operationId: getVpcPeeringsInternal
+      parameters:
+      - description: VPC Id
+        explode: false
+        in: path
+        name: vpcId
+        required: true
+        schema:
+          format: UUID
+          type: string
+        style: simple
+      - description: status
+        explode: true
+        in: query
+        name: status
+        required: false
+        schema:
+          $ref: '#/components/schemas/VpcPeeringStatus'
+        style: form
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/VpcPeering'
+                type: array
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get a list of VPC Peerings of the VPC
+      tags:
+      - TessellVpcPeeringInternalView
+      x-accepts: application/json
+    post:
+      operationId: createVpcPeeringInternal
+      parameters:
+      - description: VPC Id
+        explode: false
+        in: path
+        name: vpcId
+        required: true
+        schema:
+          format: UUID
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVpcPeeringPayload'
+        description: VPC Peering Information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VpcPeering'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Create a VPC Peering
+      tags:
+      - TessellVpcPeeringInternalView
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-internal/network/vpc-peerings/{id}:
+    delete:
+      operationId: deleteVpcPeeringInternal
+      parameters:
+      - description: Tessell Generated UUID for the Entity
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Delete a VPC Peering
+      tags:
+      - TessellVpcPeeringInternalView
+      x-accepts: application/json
+    get:
+      operationId: getVpcPeeringByIdInternal
+      parameters:
+      - description: Tessell Generated UUID for the Entity
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VpcPeering'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get VPC Peering by Id for the VPC
+      tags:
+      - TessellVpcPeeringInternalView
+      x-accepts: application/json
+  /tessell-internal/network/private-link:
+    post:
+      operationId: createPrivateLinkInternal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePrivateLinkPayload'
+        description: Private Link Information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivateLink'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Create a Private Link
+      tags:
+      - TessellPrivateLinkInternalView
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-internal/network/private-link/{id}:
+    delete:
+      operationId: deletePrivateLinkInternal
+      parameters:
+      - description: Tessell Generated UUID for the Entity
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Delete Private Link
+      tags:
+      - TessellPrivateLinkInternalView
+      x-accepts: application/json
+    get:
+      operationId: getPrivateLinkByIdInternal
+      parameters:
+      - description: Tessell Generated UUID for the Entity
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivateLink'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get Private Link by ID
+      tags:
+      - TessellPrivateLinkInternalView
+      x-accepts: application/json
+    patch:
+      operationId: updatePrivateLinkInternal
+      parameters:
+      - description: Tessell Generated UUID for the Entity
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePrivateLinkPayload'
+        description: Private Link Update Information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivateLink'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Update Private Link
+      tags:
+      - TessellPrivateLinkInternalView
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-internal/network/private-link/{id}/deletable:
+    get:
+      operationId: isPrivateLinkDeletableInternal
+      parameters:
+      - description: Tessell Generated UUID for the Entity
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Is Private Link Service Deletable
+      tags:
+      - TessellPrivateLinkInternalView
+      x-accepts: application/json
+  /tessell-internal/network/bulk-delete/vpcs:
+    delete:
+      operationId: bulkDeleteVpcs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkDeleteVpcsPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceBulkDeleteResponseOps'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Delete the vpcs for subscription.
+      tags:
+      - TessellVpcInternalView
+      x-contentType: application/json
+      x-accepts: application/json
+    post:
+      operationId: getBulkDeleteVpcStatus
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkDeleteVpcsStatusPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceBulkDeleteResponseOps'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: get status of bulk delete api
+      tags:
+      - TessellVpcInternalView
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-internal/network/bulk-delete/vpc-peerings:
+    delete:
+      operationId: bulkDeleteVpcPeering
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkDeleteVpcPeeringPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceBulkDeleteResponseOps'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Delete all vpc peering between vpcs for a subscription.
+      tags:
+      - TessellVpcPeeringInternalView
+      x-contentType: application/json
+      x-accepts: application/json
+    post:
+      operationId: getBulkDeleteVpcPeeringStatus
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkDeleteVpcPeeringStatusPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceBulkDeleteResponseOps'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: get status of bulk delete api
+      tags:
+      - TessellVpcPeeringInternalView
+      x-contentType: application/json
+      x-accepts: application/json
+components:
+  parameters:
+    includeSubnets:
+      description: Boolean flag to specify if Subnet details are required in response
+      explode: true
+      in: query
+      name: include-subnets
+      required: false
+      schema:
+        default: false
+        type: boolean
+      style: form
+    subscriptionName:
+      description: Name of the Subscription
+      example: default
+      explode: true
+      in: query
+      name: subscriptionName
+      required: false
+      schema:
+        maxLength: 255
+        minLength: 1
+        type: string
+      style: form
+    subscriptionId:
+      description: Id of the Subscription
+      example: 12345678-abcd-1234-abcd-1234abcd5678
+      explode: true
+      in: query
+      name: subscriptionId
+      required: false
+      schema:
+        format: uuid
+        type: string
+      style: form
+    subscriptionNameMandatoryOldConvention:
+      description: Name of the Subscription
+      example: default
+      explode: true
+      in: query
+      name: subscriptionName
+      required: true
+      schema:
+        maxLength: 255
+        minLength: 1
+        type: string
+      style: form
+    nameInPath:
+      description: Name of the Entity
+      example: entity-123
+      explode: false
+      in: path
+      name: name
+      required: true
+      schema:
+        maxLength: 512
+        minLength: 1
+        type: string
+      style: simple
+    disableAclCheck:
+      description: Disable Acl Check
+      explode: true
+      in: query
+      name: disableAclCheck
+      required: false
+      schema:
+        default: false
+        type: boolean
+      style: form
+    idInPath:
+      description: Tessell Generated UUID for the Entity
+      example: 12345678-abcd-1234-abcd-1234abcd5678
+      explode: false
+      in: path
+      name: id
+      required: true
+      schema:
+        format: uuid
+        type: string
+      style: simple
+    roles:
+      description: Roles for the entity
+      explode: true
+      in: query
+      name: roles
+      required: false
+      schema:
+        items:
+          $ref: '#/components/schemas/Roles'
+        maxItems: 32
+        minItems: 1
+        type: array
+      style: form
+    includeSharedWith:
+      description: Include Shared with Info
+      explode: true
+      in: query
+      name: includeSharedWith
+      required: false
+      schema:
+        default: false
+        type: boolean
+      style: form
+    includeSubnetGroups:
+      description: Include Subnet Groups Information
+      explode: true
+      in: query
+      name: include-subnet-groups
+      required: false
+      schema:
+        default: false
+        type: boolean
+      style: form
+    actionInPath:
+      description: Action to be performed
+      explode: false
+      in: path
+      name: action
+      required: true
+      schema:
+        $ref: '#/components/schemas/NetworkAction'
+      style: simple
+  schemas:
+    Subnet:
+      example:
+        isOld: false
+        eligibleForPrivate: false
+        dateCreated: 2000-01-23T04:56:07.000+00:00
+        cloudId: subnet-1a2b3c4d
+        cidrBlock: 10.0.0.4/24
+        name: Default Subnet
+        subnetGroupIds:
+        - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        dateModified: 2000-01-23T04:56:07.000+00:00
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        isPrivate: false
+        cloudLocationId: cloudLocationId
+      properties:
+        cloudLocationId:
+          description: Cloud Location Id of the Subnet
+          type: string
+        id:
+          description: Tessell generated UUID of the subnet
+          format: uuid
+          type: string
+        cloudId:
+          description: Id of the subnet cloud entity
+          example: subnet-1a2b3c4d
+          type: string
+        cidrBlock:
+          description: cidr block of the subnet
+          example: 10.0.0.4/24
+          type: string
+        name:
+          description: Name of the subnet
+          example: Default Subnet
+          type: string
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+        isPrivate:
+          default: false
+          type: boolean
+        eligibleForPrivate:
+          default: false
+          type: boolean
+        isOld:
+          default: false
+          type: boolean
+        subnetGroupIds:
+          items:
+            format: uuid
+            type: string
+          type: array
+      title: Subnet
+      type: object
+    UpdateSubnetPayload:
+      properties:
+        isPrivate:
+          type: boolean
+        eligibleForPrivate:
+          type: boolean
+        isOld:
+          type: boolean
+      title: UpdateSubnetPayload
+      type: object
+    SubnetServiceConsumer:
+      example:
+        privateSubnets:
+        - cloudId: Default Subnet
+          cidrBlock: 10.0.0.4/24
+          name: Default Subnet
+          subnetGroupIds:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          availabilityZone: availabilityZone
+        - cloudId: Default Subnet
+          cidrBlock: 10.0.0.4/24
+          name: Default Subnet
+          subnetGroupIds:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          availabilityZone: availabilityZone
+        publicSubnets:
+        - cloudId: Default Subnet
+          cidrBlock: 10.0.0.4/24
+          name: Default Subnet
+          subnetGroupIds:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          availabilityZone: availabilityZone
+        - cloudId: Default Subnet
+          cidrBlock: 10.0.0.4/24
+          name: Default Subnet
+          subnetGroupIds:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          availabilityZone: availabilityZone
+      properties:
+        publicSubnets:
+          items:
+            $ref: '#/components/schemas/SubnetBasicDetails'
+          type: array
+        privateSubnets:
+          items:
+            $ref: '#/components/schemas/SubnetBasicDetails'
+          type: array
+      title: Subnet
+      type: object
+    SubnetBasicDetails:
+      example:
+        cloudId: Default Subnet
+        cidrBlock: 10.0.0.4/24
+        name: Default Subnet
+        subnetGroupIds:
+        - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        availabilityZone: availabilityZone
+      properties:
+        name:
+          description: Name of the subnet
+          example: Default Subnet
+          type: string
+        cloudId:
+          description: cloudId of the subnet
+          example: Default Subnet
+          type: string
+        cidrBlock:
+          description: cidr block of the VPC
+          example: 10.0.0.4/24
+          type: string
+        availabilityZone:
+          description: Availability Zone
+          type: string
+        type:
+          $ref: '#/components/schemas/SubnetType'
+        subnetGroupIds:
+          items:
+            format: uuid
+            type: string
+          type: array
+      title: Subnet
+      type: object
+    SubnetType:
+      description: Subnet Connectivity Type
+      enum:
+      - PRIVATE
+      - PUBLIC
+      - UNKNOWN
+      title: SubnetType
+      type: string
+    SubnetGroup:
+      properties:
+        id:
+          description: Unique Id of the Subnet Group
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          format: uuid
+          type: string
+        name:
+          description: Name of the Subnet Group
+          example: Group-1
+          type: string
+        vpcId:
+          description: Id of the VPC
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          format: uuid
+          type: string
+        dateCreated:
+          description: Timestamp when the group was created
+          format: date-time
+          type: string
+        dateModified:
+          description: Timestamp when the group was last modified
+          format: date-time
+          type: string
+      title: SubnetGroup
+      type: object
+    SubnetGroupMapping:
+      example:
+        name: Group-1
+        id: 12345678-abcd-1234-abcd-1234abcd5678
+      properties:
+        id:
+          description: Unique Id of the Subnet Group
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          format: uuid
+          type: string
+        name:
+          description: Name of the Subnet Group
+          example: Group-1
+          type: string
+      title: SubnetGroupMapping
+      type: object
+    VpcSubnetServiceConsumer:
+      example:
+        subnetGroups:
+        - name: Group-1
+          id: 12345678-abcd-1234-abcd-1234abcd5678
+        - name: Group-1
+          id: 12345678-abcd-1234-abcd-1234abcd5678
+        vpc: Default vpc
+        subnets:
+          privateSubnets:
+          - cloudId: Default Subnet
+            cidrBlock: 10.0.0.4/24
+            name: Default Subnet
+            subnetGroupIds:
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            availabilityZone: availabilityZone
+          - cloudId: Default Subnet
+            cidrBlock: 10.0.0.4/24
+            name: Default Subnet
+            subnetGroupIds:
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            availabilityZone: availabilityZone
+          publicSubnets:
+          - cloudId: Default Subnet
+            cidrBlock: 10.0.0.4/24
+            name: Default Subnet
+            subnetGroupIds:
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            availabilityZone: availabilityZone
+          - cloudId: Default Subnet
+            cidrBlock: 10.0.0.4/24
+            name: Default Subnet
+            subnetGroupIds:
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            availabilityZone: availabilityZone
+        region: region
+      properties:
+        vpc:
+          description: Name of the vpc
+          example: Default vpc
+          type: string
+        cloudType:
+          $ref: '#/components/schemas/cloudType'
+        region:
+          description: Region of the VPC
+          type: string
+        subnetGroups:
+          items:
+            $ref: '#/components/schemas/SubnetGroupMapping'
+          type: array
+        subnets:
+          $ref: '#/components/schemas/SubnetServiceConsumer'
+      title: Subnet
+      type: object
+    Vpc:
+      example:
+        owner: owner
+        metadata:
+          vpcEndpoints:
+            key:
+              privateDnsEnabled: true
+              dnsEntries:
+              - dnsName: dnsName
+              - dnsName: dnsName
+              - dnsName: dnsName
+              - dnsName: dnsName
+              - dnsName: dnsName
+          validationFailureReason: validationFailureReason
+        onlyForPrivateAccess: false
+        cidrBlock: 10.0.0.4/24
+        dateModified: 2000-01-23T04:56:07.000+00:00
+        isPrivate: false
+        sharedWith:
+          users:
+          - role: role
+            emailId: emailId
+          - role: role
+            emailId: emailId
+        isDefault: false
+        dateCreated: 2000-01-23T04:56:07.000+00:00
+        subnetGroups:
+        - name: Group-1
+          id: 12345678-abcd-1234-abcd-1234abcd5678
+        - name: Group-1
+          id: 12345678-abcd-1234-abcd-1234abcd5678
+        cloudId: vpc-123421
+        name: Default VPC
+        tenantId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        subnets:
+        - isOld: false
+          eligibleForPrivate: false
+          dateCreated: 2000-01-23T04:56:07.000+00:00
+          cloudId: subnet-1a2b3c4d
+          cidrBlock: 10.0.0.4/24
+          name: Default Subnet
+          subnetGroupIds:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          dateModified: 2000-01-23T04:56:07.000+00:00
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          isPrivate: false
+          cloudLocationId: cloudLocationId
+        - isOld: false
+          eligibleForPrivate: false
+          dateCreated: 2000-01-23T04:56:07.000+00:00
+          cloudId: subnet-1a2b3c4d
+          cidrBlock: 10.0.0.4/24
+          name: Default Subnet
+          subnetGroupIds:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          dateModified: 2000-01-23T04:56:07.000+00:00
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          isPrivate: false
+          cloudLocationId: cloudLocationId
+        isTessellCreated: true
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        subscriptionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        region: region
+      properties:
+        id:
+          description: Tessell generated UUID of the VPC
+          format: uuid
+          type: string
+        subscriptionId:
+          description: Id of the subscription
+          format: uuid
+          type: string
+        cloudId:
+          description: Id of the vpc cloud entity
+          example: vpc-123421
+          type: string
+        cloudType:
+          $ref: '#/components/schemas/cloudType'
+        region:
+          description: Region of the VPC
+          type: string
+        cidrBlock:
+          description: cidr block of the VPC
+          example: 10.0.0.4/24
+          type: string
+        name:
+          description: Name of the VPC
+          example: Default VPC
+          type: string
+        subnets:
+          items:
+            $ref: '#/components/schemas/Subnet'
+          type: array
+        subnetGroups:
+          items:
+            $ref: '#/components/schemas/SubnetGroupMapping'
+          type: array
+        status:
+          $ref: '#/components/schemas/VpcStatus'
+        internalStatus:
+          $ref: '#/components/schemas/VpcInternalStatus'
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+        isDefault:
+          default: false
+          type: boolean
+        isTessellCreated:
+          default: true
+          type: boolean
+        metadata:
+          $ref: '#/components/schemas/VpcMetadata'
+        tenantId:
+          format: uuid
+          type: string
+        owner:
+          format: email
+          type: string
+        loggedInUserRole:
+          $ref: '#/components/schemas/LoggedInUserRoles'
+        sharedWith:
+          $ref: '#/components/schemas/EntityAclSharingInfo'
+        maturityStatus:
+          $ref: '#/components/schemas/MaturityStatus'
+        isPrivate:
+          default: false
+          type: boolean
+        onlyForPrivateAccess:
+          default: false
+          type: boolean
+      title: Vpc
+      type: object
+    VpcServiceConsumer:
+      example:
+        owner: owner
+        metadata:
+          vpcEndpoints:
+            key:
+              privateDnsEnabled: true
+              dnsEntries:
+              - dnsName: dnsName
+              - dnsName: dnsName
+              - dnsName: dnsName
+              - dnsName: dnsName
+              - dnsName: dnsName
+          validationFailureReason: validationFailureReason
+        onlyForPrivateAccess: false
+        cidrBlock: cidrBlock
+        sharedWith:
+          users:
+          - role: role
+            emailId: emailId
+          - role: role
+            emailId: emailId
+        isDefault: true
+        dateCreated: 2000-01-23T04:56:07.000+00:00
+        subscriptionName: subscriptionName
+        name: name
+        isTessellCreated: true
+        subnets:
+          privateSubnets:
+          - cloudId: Default Subnet
+            cidrBlock: 10.0.0.4/24
+            name: Default Subnet
+            subnetGroupIds:
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            availabilityZone: availabilityZone
+          - cloudId: Default Subnet
+            cidrBlock: 10.0.0.4/24
+            name: Default Subnet
+            subnetGroupIds:
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            availabilityZone: availabilityZone
+          publicSubnets:
+          - cloudId: Default Subnet
+            cidrBlock: 10.0.0.4/24
+            name: Default Subnet
+            subnetGroupIds:
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            availabilityZone: availabilityZone
+          - cloudId: Default Subnet
+            cidrBlock: 10.0.0.4/24
+            name: Default Subnet
+            subnetGroupIds:
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            availabilityZone: availabilityZone
+        region: region
+      properties:
+        name:
+          description: Name of the VPC
+          type: string
+        cidrBlock:
+          description: Cidr block of the VPC
+          type: string
+        cloudType:
+          $ref: '#/components/schemas/cloudType'
+        region:
+          description: Region of the VPC
+          type: string
+        status:
+          $ref: '#/components/schemas/VpcStatus'
+        subscriptionName:
+          description: Subscription of the VPC
+          type: string
+        metadata:
+          $ref: '#/components/schemas/VpcMetadata'
+        isDefault:
+          type: boolean
+        isTessellCreated:
+          type: boolean
+        owner:
+          format: email
+          type: string
+        loggedInUserRole:
+          $ref: '#/components/schemas/LoggedInUserRoles'
+        sharedWith:
+          $ref: '#/components/schemas/EntityAclSharingInfo'
+        maturityStatus:
+          $ref: '#/components/schemas/MaturityStatus'
+        onlyForPrivateAccess:
+          default: false
+          type: boolean
+        subnets:
+          $ref: '#/components/schemas/SubnetServiceConsumer'
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+      title: VpcServiceConsumer
+      type: object
+    DiscoverVpcPayload:
+      properties:
+        subscription:
+          description: Name of the subscription
+          example: byoa-sub-1
+          maxLength: 255
+          minLength: 1
+          type: string
+        cloud:
+          $ref: '#/components/schemas/cloudType'
+        region:
+          description: Region
+          example: us-east-1
+          maxLength: 128
+          minLength: 1
+          type: string
+        vpcId:
+          description: Cloud Id of the VPC
+          example: vpc-a1b2c3d4
+          maxLength: 500
+          minLength: 1
+          type: string
+      required:
+      - cloud
+      - region
+      - subscription
+      title: DiscoverVpcPayload
+      type: object
+    ClientVpc:
+      example:
+        reason: reason
+        cidrBlock: cidrBlock
+        cloudId: cloudId
+        name: name
+        subnets:
+        - cloudId: Default Subnet
+          cidrBlock: 10.0.0.4/24
+          name: Default Subnet
+          subnetGroupIds:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          availabilityZone: availabilityZone
+        - cloudId: Default Subnet
+          cidrBlock: 10.0.0.4/24
+          name: Default Subnet
+          subnetGroupIds:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          availabilityZone: availabilityZone
+        region: region
+        registrable: true
+      properties:
+        name:
+          description: Name of the VPC
+          type: string
+        cidrBlock:
+          description: Cidr block of the VPC
+          type: string
+        cloudId:
+          description: Cloud Id of the VPC
+          type: string
+        region:
+          description: Region of the VPC
+          type: string
+        subnets:
+          items:
+            $ref: '#/components/schemas/SubnetBasicDetails'
+          type: array
+        registrable:
+          description: Whether the VPC is registrable or not
+          type: boolean
+        reason:
+          description: Reason for which VPC is not registrable
+          type: string
+      title: ClientVpc
+      type: object
+    CreateVpcServiceConsumerPayload:
+      properties:
+        name:
+          description: Name of the VPC
+          example: Prod-VPC-01
+          maxLength: 80
+          minLength: 3
+          type: string
+        cidrBlock:
+          description: cidr block of the VPC
+          example: 10.10.0.0/16
+          type: string
+        cloudType:
+          $ref: '#/components/schemas/cloudType'
+        region:
+          description: Region of the VPC
+          example: us-east-1
+          maxLength: 128
+          minLength: 1
+          type: string
+        subscriptionName:
+          description: Name of the subscription
+          example: default
+          maxLength: 255
+          minLength: 1
+          type: string
+      required:
+      - cidrBlock
+      - cloudType
+      - name
+      - region
+      - subscriptionName
+      title: CreateVpcServiceConsumerPayload
+      type: object
+    CreateVpcPayload:
+      properties:
+        name:
+          description: Name of the VPC
+          type: string
+        cidrBlock:
+          description: cidr block of the VPC
+          type: string
+        cloudType:
+          $ref: '#/components/schemas/cloudType'
+        region:
+          description: Region of the VPC
+          type: string
+        subscriptionId:
+          description: Id of the subscription
+          format: UUID
+          type: string
+        isDefault:
+          default: false
+          description: Is VPC Default
+          type: boolean
+      title: CreateVpcPayload
+      type: object
+    UpdateVpcPayload:
+      properties:
+        name:
+          description: Name of the VPC
+          example: Default VPC
+          type: string
+        cloudId:
+          description: Id of the vpc cloud entity
+          example: vpc-1a2b3c4d
+          type: string
+        status:
+          $ref: '#/components/schemas/VpcStatus'
+        internalStatus:
+          $ref: '#/components/schemas/VpcInternalStatus'
+        isDefault:
+          type: boolean
+        isTessellCreated:
+          type: boolean
+        isPrivate:
+          type: boolean
+        onlyForPrivateAccess:
+          type: boolean
+      title: UpdateVpcPayload
+      type: object
+    RegisterClientVpcServiceConsumerPayload:
+      properties:
+        name:
+          description: Name of the VPC
+          example: Prod-VPC-01
+          maxLength: 80
+          minLength: 1
+          type: string
+        cloudId:
+          description: Cloud Id of the VPC
+          example: vpc-1a2b3c4d
+          maxLength: 512
+          minLength: 1
+          type: string
+        owner:
+          description: Owner of the Tessell client VPC
+          maxLength: 250
+          type: string
+        cloudType:
+          $ref: '#/components/schemas/cloudType'
+        region:
+          description: Region of the VPC
+          example: us-east-1
+          maxLength: 128
+          minLength: 1
+          type: string
+        subscriptionName:
+          description: Name of the Tessell Subscription
+          example: default
+          maxLength: 255
+          minLength: 1
+          type: string
+        subnets:
+          $ref: '#/components/schemas/RegisterClientSubnetServiceConsumer'
+      required:
+      - cloudId
+      - cloudType
+      - name
+      - region
+      - subnets
+      - subscriptionName
+      title: RegisterClientVpcServiceConsumerPayload
+      type: object
+    RegisterClientSubnetServiceConsumer:
+      properties:
+        publicSubnets:
+          items:
+            $ref: '#/components/schemas/RegisterClientSubnet'
+          type: array
+        privateSubnets:
+          items:
+            $ref: '#/components/schemas/RegisterClientSubnet'
+          type: array
+      required:
+      - privateSubnets
+      title: Subnet
+      type: object
+    RegisterClientSubnet:
+      properties:
+        cloudId:
+          description: Cloud id of the subnet
+          example: subnet-1a2b3c4d
+          maxLength: 512
+          minLength: 1
+          type: string
+        subnetGroups:
+          items:
+            example: '["group-1"]'
+            maxItems: 1
+            type: string
+          type: array
+      required:
+      - cloudId
+      title: Subnet
+      type: object
+    NetworkProfile:
+      example:
+        vpcName: Default Vpc
+        allowedIpAddresses:
+        - allowedIpAddresses
+        - allowedIpAddresses
+        accessPort: 0
+        description: description
+        dateModified: 2000-01-23T04:56:07.000+00:00
+        isTessellManaged: true
+        publicAccessEnabled: true
+        vpcEndpoints:
+          key:
+            privateDnsEnabled: true
+            dnsEntries:
+            - dnsName: dnsName
+            - dnsName: dnsName
+            - dnsName: dnsName
+            - dnsName: dnsName
+            - dnsName: dnsName
+        dateCreated: 2000-01-23T04:56:07.000+00:00
+        subnetGroups:
+        - name: Group-1
+          id: 12345678-abcd-1234-abcd-1234abcd5678
+        - name: Group-1
+          id: 12345678-abcd-1234-abcd-1234abcd5678
+        vpcId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        name: Default Network Profile
+        vpcCidrBlock: 10.0.0.3/16
+        vpcCloudId: vpc-234342
+        subnets:
+        - isOld: false
+          eligibleForPrivate: false
+          dateCreated: 2000-01-23T04:56:07.000+00:00
+          cloudId: subnet-1a2b3c4d
+          cidrBlock: 10.0.0.4/24
+          name: Default Subnet
+          subnetGroupIds:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          dateModified: 2000-01-23T04:56:07.000+00:00
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          isPrivate: false
+          cloudLocationId: cloudLocationId
+        - isOld: false
+          eligibleForPrivate: false
+          dateCreated: 2000-01-23T04:56:07.000+00:00
+          cloudId: subnet-1a2b3c4d
+          cidrBlock: 10.0.0.4/24
+          name: Default Subnet
+          subnetGroupIds:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          dateModified: 2000-01-23T04:56:07.000+00:00
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          isPrivate: false
+          cloudLocationId: cloudLocationId
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        subscriptionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        region: region
+      properties:
+        name:
+          description: Name of Network Profile
+          example: Default Network Profile
+          type: string
+        id:
+          description: Id of Network Profile
+          format: uuid
+          type: string
+        subscriptionId:
+          description: Id of the subscription
+          format: uuid
+          type: string
+        cloudType:
+          $ref: '#/components/schemas/cloudType'
+        region:
+          description: Region of the Network Profile
+          type: string
+        databaseEngineType:
+          $ref: '#/components/schemas/databaseEngineType'
+        vpcId:
+          description: Id of the VPC
+          format: uuid
+          type: string
+        vpcCloudId:
+          description: ID of the vpc cloud component of network profile
+          example: vpc-234342
+          type: string
+        vpcCidrBlock:
+          description: cidr block of the vpc
+          example: 10.0.0.3/16
+          type: string
+        vpcName:
+          description: Name of the vpc
+          example: Default Vpc
+          type: string
+        subnetGroups:
+          items:
+            $ref: '#/components/schemas/SubnetGroupMapping'
+          type: array
+        subnets:
+          items:
+            $ref: '#/components/schemas/Subnet'
+          type: array
+        publicAccessEnabled:
+          type: boolean
+        accessPort:
+          format: int32
+          type: integer
+        allowedIpAddresses:
+          items:
+            type: string
+          type: array
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+        description:
+          type: string
+        isTessellManaged:
+          type: boolean
+        vpcInternalStatus:
+          $ref: '#/components/schemas/VpcInternalStatus'
+        vpcStatus:
+          $ref: '#/components/schemas/VpcStatus'
+        vpcEndpoints:
+          additionalProperties:
+            $ref: '#/components/schemas/VpcEndpoint'
+          type: object
+      title: NetworkProfile
+      type: object
+    CreateVpcCloudResourcesConfig:
+      properties:
+        private_subnet:
+          default: false
+          type: boolean
+        tags:
+          description: Additional tags to be applied
+          items:
+            $ref: '#/components/schemas/TessellTag'
+          type: array
+      title: CreateVpcCloudResourcesConfig
+      type: object
+    Roles:
+      description: Tessell Role Types
+      enum:
+      - CO_OWNER
+      type: string
+    LoggedInUserRoles:
+      description: Tessell Logged In User Role Types
+      enum:
+      - OWNER
+      - CO_OWNER
+      type: string
+    NetworkAction:
+      description: Action to be performed on Entity
+      enum:
+      - publish
+      - unpublish
+      - draft
+      type: string
+      x-enum-varnames:
+      - publish
+      - unpublish
+      - draft
+    VpcStatus:
+      description: Tessell Vpc Status
+      enum:
+      - ACTIVE
+      - CREATING
+      - CREATION_FAILED
+      - VALIDATING
+      - VALIDATION_FAILED
+      - DELETING
+      - DELETED
+      type: string
+    VpcInternalStatus:
+      description: Tessell Vpc Internal Status
+      enum:
+      - INACTIVE
+      - CREATING
+      - UPDATING
+      - ACTIVE
+      - FAILED
+      - DELETING
+      - DELETION_FAILED
+      - DELETED
+      type: string
+    VpcEndpointTargetServiceType:
+      description: Type of target service of a VPC Endpoint
+      enum:
+      - EC2
+      - CLOUDWATCH_LOGS
+      - SECRET_MANAGER
+      - SQS
+      - S3
+      - TESSELL_PROXY_NLB
+      - TESSELL_NATS
+      - TESSELL_PUSHPROX
+      - TESSELL_FRPS
+      - TESSELL_MINIO
+      type: string
+    VpcEndpointDnsEntry:
+      example:
+        dnsName: dnsName
+      properties:
+        dnsName:
+          maxLength: 1000
+          minLength: 1
+          type: string
+      required:
+      - dnsName
+      type: object
+    VpcEndpoint:
+      example:
+        privateDnsEnabled: true
+        dnsEntries:
+        - dnsName: dnsName
+        - dnsName: dnsName
+        - dnsName: dnsName
+        - dnsName: dnsName
+        - dnsName: dnsName
+      properties:
+        targetServiceType:
+          $ref: '#/components/schemas/VpcEndpointTargetServiceType'
+        privateDnsEnabled:
+          type: boolean
+        dnsEntries:
+          items:
+            $ref: '#/components/schemas/VpcEndpointDnsEntry'
+          maxItems: 20
+          minItems: 1
+          type: array
+      required:
+      - privateDnsEnabled
+      - targetServiceType
+      type: object
+    VpcMetadata:
+      description: Tessell Metadata for Vpc
+      example:
+        vpcEndpoints:
+          key:
+            privateDnsEnabled: true
+            dnsEntries:
+            - dnsName: dnsName
+            - dnsName: dnsName
+            - dnsName: dnsName
+            - dnsName: dnsName
+            - dnsName: dnsName
+        validationFailureReason: validationFailureReason
+      properties:
+        validationFailureReason:
+          type: string
+        vpcEndpoints:
+          additionalProperties:
+            $ref: '#/components/schemas/VpcEndpoint'
+          type: object
+      type: object
+    VpcPeeringServiceConsumer:
+      description: VPC Peering details for Service Consumer
+      example:
+        metadata:
+          azurePendingPeerMetadata:
+            tenantId: tenantId
+            vnetResourceId: vnetResourceId
+        cloudId: cloudId
+        name: name
+        azureClientInfo:
+          clientSubscriptionId: clientSubscriptionId
+          clientResourceGroup: clientResourceGroup
+          clientVpcName: clientVpcName
+        clientVpcInfo:
+          owner: owner
+          subscriptionName: default
+          name: tessell-default-a1b2c3
+          region: us-east-1
+        awsClientInfo:
+          clientVpcRegion: clientVpcRegion
+          clientAccountId: clientAccountId
+          clientVpcId: clientVpcId
+      properties:
+        name:
+          type: string
+        cloudId:
+          description: CloudId of Peering Connection
+          type: string
+        metadata:
+          $ref: '#/components/schemas/VpcPeeringMetadata'
+        status:
+          $ref: '#/components/schemas/VpcPeeringStatus'
+        awsClientInfo:
+          $ref: '#/components/schemas/AwsClientInfoServiceConsumer'
+        azureClientInfo:
+          $ref: '#/components/schemas/AzureClientInfoServiceConsumer'
+        clientVpcInfo:
+          $ref: '#/components/schemas/ClientVpcInfo'
+      type: object
+    VpcPeering:
+      description: VPC Peering details
+      example:
+        metadata:
+          azurePendingPeerMetadata:
+            tenantId: tenantId
+            vnetResourceId: vnetResourceId
+        cloudId: cloudId
+        vpcId: vpcId
+        azureClientVpcInfo:
+          clientSubscriptionId: 12345678-abcd-1234-abcd-1234abcd5678
+          clientResourceGroup: prod-resources-ab1234cd
+          clientVpcName: prod-eastUS-default-vnet-01
+          clientApplicationObjectId: 12345678-abcd-1234-abcd-1234abcd5678
+          clientActiveDirectoryTenantId: 12345678-abcd-1234-abcd-1234abcd5678
+        name: name
+        awsClientVpcInfo:
+          clientVpcRegion: clientVpcRegion
+          clientAcceptRoleArn: clientAcceptRoleArn
+          clientAccountId: clientAccountId
+          clientVpcId: clientVpcId
+        id: id
+        clientVpcId: clientVpcId
+      properties:
+        name:
+          type: string
+        id:
+          format: UUID
+          type: string
+        cloudId:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/VpcPeeringMetadata'
+        vpcId:
+          format: UUID
+          type: string
+        status:
+          $ref: '#/components/schemas/VpcPeeringStatus'
+        awsClientVpcInfo:
+          $ref: '#/components/schemas/AwsClientVpcInfo'
+        azureClientVpcInfo:
+          $ref: '#/components/schemas/AzureClientVpcInfo'
+        clientVpcId:
+          description: Id of Tessell created peered VPC
+          format: UUID
+          type: string
+      type: object
+    VpcPeeringMetadata:
+      description: Metadata about Vpc Peering
+      example:
+        azurePendingPeerMetadata:
+          tenantId: tenantId
+          vnetResourceId: vnetResourceId
+      properties:
+        azurePendingPeerMetadata:
+          $ref: '#/components/schemas/AzurePendingPeerVpcPeeringMetadata'
+      type: object
+    AzurePendingPeerVpcPeeringMetadata:
+      description: Metadata about Azure VPC Peering in Pending Peer Status
+      example:
+        tenantId: tenantId
+        vnetResourceId: vnetResourceId
+      properties:
+        tenantId:
+          type: string
+        vnetResourceId:
+          type: string
+      type: object
+    CreateVpcPeeringServiceConsumerPayload:
+      description: Create VPC Peering Payload for Service Consumer
+      properties:
+        subscriptionName:
+          description: Name of the subscription
+          example: default
+          maxLength: 255
+          minLength: 1
+          type: string
+        cloudType:
+          $ref: '#/components/schemas/cloudType'
+        region:
+          description: Region of the Tessell VPC
+          example: us-east-1
+          maxLength: 128
+          minLength: 1
+          type: string
+        awsClientVpcInfo:
+          $ref: '#/components/schemas/CreateAwsClientVpcInfoPayload'
+        azureClientVpcInfo:
+          $ref: '#/components/schemas/AzureClientVpcInfo'
+        clientVpcInfo:
+          $ref: '#/components/schemas/ClientVpcInfo'
+      required:
+      - cloudType
+      - region
+      - subscriptionName
+      type: object
+    CreateVpcPeeringAwsCloudformationPayload:
+      description: Create VPC Peering Payload using AWS Cloudformation Payload for
+        Service Consumer
+      properties:
+        subscriptionName:
+          description: Name of the subscription
+          example: default
+          maxLength: 255
+          minLength: 1
+          type: string
+        cloudType:
+          $ref: '#/components/schemas/cloudType'
+        region:
+          description: Region of the Tessell VPC
+          example: us-east-1
+          maxLength: 128
+          minLength: 1
+          type: string
+        clientAccountId:
+          description: Account Id of the Client VPC
+          example: "123456789"
+          maxLength: 64
+          minLength: 1
+          type: string
+        clientVpcId:
+          description: Id of the Client VPC
+          example: vpc-1a2b3c4d
+          maxLength: 255
+          minLength: 1
+          type: string
+        clientVpcRegion:
+          description: Region of the Client VPC
+          example: us-east-2
+          maxLength: 128
+          minLength: 1
+          type: string
+        clientAcceptRoleArn:
+          description: ARN of the client AWS Role to accept Peering
+          maxLength: 255
+          minLength: 1
+          type: string
+      required:
+      - clientAcceptRoleArn
+      - clientAccountId
+      - clientVpcId
+      - clientVpcRegion
+      - cloudType
+      - region
+      - subscriptionName
+      type: object
+    CreateVpcPeeringPayload:
+      description: Create AWS VPC Peering
+      properties:
+        cloudType:
+          $ref: '#/components/schemas/cloudType'
+        awsClientVpcInfo:
+          $ref: '#/components/schemas/CreateAwsClientVpcInfoPayload'
+        azureClientVpcInfo:
+          $ref: '#/components/schemas/AzureClientVpcInfo'
+        clientVpcId:
+          description: UUID of the Tessell created VPC
+          format: UUID
+          type: string
+      type: object
+    CreateAwsClientVpcInfoPayload:
+      description: AWS VPC Peering Client Info
+      properties:
+        clientAccountId:
+          description: AWS Account Id of the client VPC
+          example: "123456789"
+          maxLength: 64
+          minLength: 1
+          type: string
+        clientVpcId:
+          description: Id of the client VPC
+          example: vpc-1a2b3c4d
+          maxLength: 255
+          minLength: 1
+          type: string
+        clientVpcRegion:
+          description: Region of the client VPC
+          example: us-east-2
+          maxLength: 128
+          minLength: 1
+          type: string
+      required:
+      - clientAccountId
+      - clientVpcId
+      - clientVpcRegion
+      type: object
+    AwsClientVpcInfo:
+      description: AWS VPC Peering Client Info
+      example:
+        clientVpcRegion: clientVpcRegion
+        clientAcceptRoleArn: clientAcceptRoleArn
+        clientAccountId: clientAccountId
+        clientVpcId: clientVpcId
+      properties:
+        clientAccountId:
+          description: AWS Account Id of the client VPC
+          type: string
+        clientVpcId:
+          description: Id of the client VPC
+          type: string
+        clientVpcRegion:
+          description: Region of the client VPC
+          type: string
+        clientAcceptRoleArn:
+          description: Role to Accept Peering Connection
+          type: string
+      type: object
+    AwsClientInfoServiceConsumer:
+      description: AWS VPC Peering Client Info for Service Consumer
+      example:
+        clientVpcRegion: clientVpcRegion
+        clientAccountId: clientAccountId
+        clientVpcId: clientVpcId
+      properties:
+        clientVpcId:
+          description: Id of the client VPC
+          type: string
+        clientVpcRegion:
+          description: Region of the client VPC
+          type: string
+        clientAccountId:
+          description: Account Id of the client VPC
+          type: string
+      type: object
+    AzureClientVpcInfo:
+      description: Azure VPC Peering Client Info
+      example:
+        clientSubscriptionId: 12345678-abcd-1234-abcd-1234abcd5678
+        clientResourceGroup: prod-resources-ab1234cd
+        clientVpcName: prod-eastUS-default-vnet-01
+        clientApplicationObjectId: 12345678-abcd-1234-abcd-1234abcd5678
+        clientActiveDirectoryTenantId: 12345678-abcd-1234-abcd-1234abcd5678
+      properties:
+        clientSubscriptionId:
+          description: Azure Subscription Id of the client VPC
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 512
+          minLength: 1
+          type: string
+        clientResourceGroup:
+          description: Azure Resource Group of the client VPC
+          example: prod-resources-ab1234cd
+          maxLength: 512
+          minLength: 1
+          type: string
+        clientVpcName:
+          description: Name of the client VPC
+          example: prod-eastUS-default-vnet-01
+          maxLength: 512
+          minLength: 1
+          type: string
+        clientActiveDirectoryTenantId:
+          description: Tenant Id of the client Active Directory
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 512
+          minLength: 1
+          type: string
+        clientApplicationObjectId:
+          description: Id of the client AD App Object
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 512
+          minLength: 1
+          type: string
+      required:
+      - clientActiveDirectoryTenantId
+      - clientApplicationObjectId
+      - clientResourceGroup
+      - clientSubscriptionId
+      - clientVpcName
+      type: object
+    ClientVpcInfo:
+      description: Information about the Tessell created VPC to be peered
+      example:
+        owner: owner
+        subscriptionName: default
+        name: tessell-default-a1b2c3
+        region: us-east-1
+      properties:
+        subscriptionName:
+          description: Subscription name of the Tessell client VPC
+          example: default
+          maxLength: 255
+          minLength: 1
+          type: string
+        cloudType:
+          $ref: '#/components/schemas/cloudType'
+        region:
+          description: Region of the Tessell VPC
+          example: us-east-1
+          maxLength: 128
+          minLength: 1
+          type: string
+        name:
+          description: Name of the Tessell VPC
+          example: tessell-default-a1b2c3
+          maxLength: 512
+          minLength: 1
+          type: string
+        owner:
+          description: Owner of the Tessell client VPC
+          type: string
+      required:
+      - cloudType
+      - name
+      - region
+      - subscriptionName
+      type: object
+    AzureClientInfoServiceConsumer:
+      description: Azure VPC Peering Client Info
+      example:
+        clientSubscriptionId: clientSubscriptionId
+        clientResourceGroup: clientResourceGroup
+        clientVpcName: clientVpcName
+      properties:
+        clientSubscriptionId:
+          description: Azure Subscription Id of the client VPC
+          type: string
+        clientResourceGroup:
+          description: Azure Resource Group of the client VPC
+          type: string
+        clientVpcName:
+          description: Name of the client VPC
+          type: string
+      type: object
+    VpcPeeringStatus:
+      description: Tessell VPC Peering Status
+      enum:
+      - CREATING
+      - PENDING_PEER
+      - ACTIVE
+      - FAILED
+      - DELETING
+      - DELETION_FAILED
+      type: string
+    VpcPeeringAwsCloudformationLink:
+      description: Tessell VPC Peering Status
+      example:
+        link: link
+      properties:
+        link:
+          description: URL for VPC Peering
+          type: string
+      type: object
+    CreatePrivateLinkPayload:
+      description: Create Private Link Payload
+      properties:
+        cloudType:
+          $ref: '#/components/schemas/cloudType'
+        awsPrivateLinkInfo:
+          $ref: '#/components/schemas/CreateAwsPrivateLinkPayload'
+        azurePrivateLinkInfo:
+          $ref: '#/components/schemas/CreateAzurePrivateLinkPayload'
+      type: object
+    CreateAwsPrivateLinkPayload:
+      description: Create AWS Private Link Payload
+      properties:
+        serviceId:
+          description: Tessell Service UUID
+          format: uuid
+          type: string
+        subscriptionId:
+          description: Id of the subscription
+          format: uuid
+          type: string
+        serviceName:
+          description: Name of the Tessell Service
+          type: string
+        servicePrivateIp:
+          description: Private Ip of the Tessell Service
+          type: string
+        serviceConnectionPort:
+          description: Port for the Tessell Service Connection
+          type: string
+        serviceConnectionProtocol:
+          description: Protocol for the Tessell Service Connection. Example - TCP
+          type: string
+        serviceVpcId:
+          description: VPC ID for the Tessell Service
+          format: uuid
+          type: string
+        serviceAvailabilityZone:
+          description: Tessell Service Availability Zone
+          type: string
+        clientServicePrincipalList:
+          description: List of service Principals allowed to connect to AWS Private
+            Link
+          items:
+            type: string
+          type: array
+      type: object
+    CreateAzurePrivateLinkPayload:
+      description: Create Azure Private Link Payload
+      properties:
+        serviceId:
+          description: Tessell Service UUID
+          format: uuid
+          type: string
+        subscriptionId:
+          description: Id of the subscription
+          format: uuid
+          type: string
+        serviceName:
+          description: Name of the Tessell Service
+          type: string
+        serviceNicName:
+          description: Name of NIC of the Tessell Service
+          type: string
+        subnetId:
+          description: Subnet ID to be used for Private Link Creation
+          type: string
+        serviceConnectionPort:
+          description: Port for the Tessell Service Connection
+          type: string
+        serviceConnectionProtocol:
+          description: Protocol for the Tessell Service Connection. Example - TCP
+          type: string
+        serviceVpcId:
+          description: VPC ID for the Tessell Service
+          format: uuid
+          type: string
+        clientAzureSubscriptionIdList:
+          description: List of Azure Subscriptions allowed to connect to Azure Private
+            Link
+          items:
+            type: string
+          type: array
+      type: object
+    UpdatePrivateLinkPayload:
+      description: Update Private Link Payload
+      properties:
+        cloudType:
+          $ref: '#/components/schemas/cloudType'
+        awsPrivateLinkInfo:
+          $ref: '#/components/schemas/CreateAwsPrivateLinkPayload'
+        azurePrivateLinkInfo:
+          $ref: '#/components/schemas/CreateAzurePrivateLinkPayload'
+      type: object
+    PrivateLink:
+      description: Private Link Details
+      example:
+        awsPrivateLinkInfo:
+          loadBalancerId: loadBalancerId
+          endpointServiceName: endpointServiceName
+          clientServicePrincipalList:
+          - clientServicePrincipalList
+          - clientServicePrincipalList
+          targetGroupId: targetGroupId
+          loadBalancerDnsName: loadBalancerDnsName
+          endpointServiceId: endpointServiceId
+        azurePrivateLinkInfo:
+          clientAzureSubscriptionIdList:
+          - clientAzureSubscriptionIdList
+          - clientAzureSubscriptionIdList
+          privateLinkServiceAlias: privateLinkServiceAlias
+        id: id
+        serviceId: serviceId
+        subscriptionId: subscriptionId
+      properties:
+        id:
+          format: UUID
+          type: string
+        cloudType:
+          $ref: '#/components/schemas/cloudType'
+        serviceId:
+          format: UUID
+          type: string
+        subscriptionId:
+          format: UUID
+          type: string
+        status:
+          $ref: '#/components/schemas/PrivateLinkStatus'
+        awsPrivateLinkInfo:
+          $ref: '#/components/schemas/AwsPrivateLinkInfo'
+        azurePrivateLinkInfo:
+          $ref: '#/components/schemas/AzurePrivateLinkInfo'
+      type: object
+    AwsPrivateLinkInfo:
+      description: Aws Private Link Info
+      example:
+        loadBalancerId: loadBalancerId
+        endpointServiceName: endpointServiceName
+        clientServicePrincipalList:
+        - clientServicePrincipalList
+        - clientServicePrincipalList
+        targetGroupId: targetGroupId
+        loadBalancerDnsName: loadBalancerDnsName
+        endpointServiceId: endpointServiceId
+      properties:
+        endpointServiceId:
+          type: string
+        endpointServiceName:
+          type: string
+        loadBalancerId:
+          type: string
+        targetGroupId:
+          type: string
+        loadBalancerDnsName:
+          type: string
+        clientServicePrincipalList:
+          description: List of service Principals allowed to connect to AWS Private
+            Link
+          items:
+            type: string
+          type: array
+      type: object
+    AzurePrivateLinkInfo:
+      description: Azure Private Link Info
+      example:
+        clientAzureSubscriptionIdList:
+        - clientAzureSubscriptionIdList
+        - clientAzureSubscriptionIdList
+        privateLinkServiceAlias: privateLinkServiceAlias
+      properties:
+        privateLinkServiceAlias:
+          type: string
+        clientAzureSubscriptionIdList:
+          description: List of Azure Subscriptions allowed to connect to Azure Private
+            Link
+          items:
+            type: string
+          type: array
+      type: object
+    PrivateLinkStatus:
+      description: Tessell Private Link Status
+      enum:
+      - CREATING
+      - ACTIVE
+      - FAILED
+      - UPDATING
+      - UPDATION_SUCCESS
+      - UPDATION_FAILED
+      - DELETING
+      - DELETED
+      - DELETION_FAILED
+      type: string
+    BulkDeleteVpcsPayload:
+      properties:
+        tenantId:
+          format: uuid
+          type: string
+        subscriptionId:
+          format: uuid
+          type: string
+        skipDeletion:
+          description: List of services to be skipped for deletion
+          items:
+            $ref: '#/components/schemas/SkipDeletionInfo'
+          type: array
+        scheduleDeletionAfterDays:
+          description: days after which deletion should be scheduled
+          type: integer
+      required:
+      - tenantId
+      title: ResourceBulkDeletePayloadOps
+      type: object
+    BulkDeleteVpcsStatusPayload:
+      example:
+        skipDeletion:
+        - entities:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - entities:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        tenantId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        context: '{}'
+        cleanupId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        subscriptionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        cleanupId:
+          format: uuid
+          type: string
+        status:
+          $ref: '#/components/schemas/ResourceBulkDeleteStatusOps'
+        timestamp:
+          format: date-time
+          type: string
+        tenantId:
+          format: uuid
+          type: string
+        subscriptionId:
+          format: uuid
+          type: string
+        skipDeletion:
+          description: List of services to be skipped for deletion
+          items:
+            $ref: '#/components/schemas/SkipDeletionInfo'
+          type: array
+        context:
+          type: object
+      title: ResourceBulkDeleteResponseOps
+      type: object
+    BulkDeleteVpcsContext:
+      properties:
+        id:
+          description: id of the vpc
+          format: uuid
+          type: string
+        status:
+          $ref: '#/components/schemas/VpcInternalStatus'
+        deletionStatus:
+          $ref: '#/components/schemas/ResourceBulkDeleteStatusOps'
+      title: BulkDeleteVpcsContext
+      type: object
+    BulkDeleteVpcPeeringPayload:
+      properties:
+        tenantId:
+          format: uuid
+          type: string
+        subscriptionId:
+          format: uuid
+          type: string
+        skipDeletion:
+          description: List of services to be skipped for deletion
+          items:
+            $ref: '#/components/schemas/SkipDeletionInfo'
+          type: array
+        scheduleDeletionAfterDays:
+          description: days after which deletion should be scheduled
+          type: integer
+      required:
+      - tenantId
+      title: ResourceBulkDeletePayloadOps
+      type: object
+    BulkDeleteVpcPeeringStatusPayload:
+      example:
+        skipDeletion:
+        - entities:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - entities:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        tenantId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        context: '{}'
+        cleanupId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        subscriptionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        cleanupId:
+          format: uuid
+          type: string
+        status:
+          $ref: '#/components/schemas/ResourceBulkDeleteStatusOps'
+        timestamp:
+          format: date-time
+          type: string
+        tenantId:
+          format: uuid
+          type: string
+        subscriptionId:
+          format: uuid
+          type: string
+        skipDeletion:
+          description: List of services to be skipped for deletion
+          items:
+            $ref: '#/components/schemas/SkipDeletionInfo'
+          type: array
+        context:
+          type: object
+      title: ResourceBulkDeleteResponseOps
+      type: object
+    BulkDeleteVpcPeeringContext:
+      properties:
+        id:
+          description: id of the vpc peering
+          format: uuid
+          type: string
+        status:
+          $ref: '#/components/schemas/VpcPeeringStatus'
+        deletionStatus:
+          $ref: '#/components/schemas/ResourceBulkDeleteStatusOps'
+      title: BulkDeleteVpcPeeringContext
+      type: object
+    cloudType:
+      description: Tessell supported cloud types
+      enum:
+      - AWS
+      - AZURE
+      - GCP
+      type: string
+    ApiError:
+      description: Common error response object for non 2xx responses
+      properties:
+        code:
+          description: Status code for the error response
+          type: string
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        defaultCodeSet:
+          type: boolean
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    ApiErrorDetails:
+      description: Common API exception details
+      properties:
+        resolution:
+          description: Resolution detail for API exception
+          type: string
+      type: object
+    apiStatus:
+      example:
+        message: message
+        status: status
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+      title: apiStatus
+      type: object
+    EntityAclSharingInfo:
+      description: Tessell Entity ACL Sharing Info
+      example:
+        users:
+        - role: role
+          emailId: emailId
+        - role: role
+          emailId: emailId
+      properties:
+        users:
+          items:
+            $ref: '#/components/schemas/EntityUserAclSharingInfo'
+          type: array
+      title: EntityAclSharingInfo
+    EntityUserAclSharingInfo:
+      description: Tessell Entity ACL Sharing Info for a user
+      example:
+        role: role
+        emailId: emailId
+      properties:
+        emailId:
+          type: string
+        role:
+          type: string
+      title: EntityUserAclSharingInfo
+    AclRevokePayload:
+      description: Payload to revoke Tessell ACLs
+      properties:
+        users:
+          description: List of users to be deleted
+          items:
+            maxLength: 256
+            minLength: 1
+            type: string
+          maxItems: 100
+          minItems: 1
+          type: array
+      required:
+      - users
+      title: AclRevokePayload
+    AclPayload:
+      description: Payload to create an entity ACL
+      example:
+        users:
+        - role: role
+          emailId: emailId
+        - role: role
+          emailId: emailId
+        - role: role
+          emailId: emailId
+        - role: role
+          emailId: emailId
+        - role: role
+          emailId: emailId
+      properties:
+        users:
+          items:
+            $ref: '#/components/schemas/AclUserPayload'
+          maxItems: 100
+          minItems: 1
+          type: array
+      required:
+      - users
+      title: AclPayload
+    AclUserPayload:
+      description: Payload to create an user's entity ACL
+      example:
+        role: role
+        emailId: emailId
+      properties:
+        emailId:
+          description: Email id of the user
+          maxLength: 256
+          minLength: 1
+          type: string
+        role:
+          description: Role Info
+          maxLength: 64
+          minLength: 1
+          type: string
+      required:
+      - emailId
+      - role
+      title: AclUserPayload
+    AclEligibleUser:
+      description: Eligible user for sharing the entity
+      example:
+        firstName: firstName
+        lastName: lastName
+        eligibleRoles:
+        - eligibleRoles
+        - eligibleRoles
+        emailId: emailId
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        emailId:
+          type: string
+        eligibleRoles:
+          items:
+            type: string
+          type: array
+      title: AclEligibleUser
+    ApiErrorOps:
+      description: Common error response object for non 2xx responses of internal
+        or ops APIs
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/TessellErrorCode'
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        serviceException:
+          $ref: '#/components/schemas/ApiError'
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    TessellErrorCode:
+      description: Error code object for API Exceptions
+      properties:
+        httpErrorCode:
+          description: Standard http error code
+          type: string
+        serviceCode:
+          description: Service error code
+          type: string
+        opCode:
+          description: Operation error code
+          type: string
+        description:
+          description: Error code description
+          type: string
+      type: object
+    ResourceBulkDeleteResponseOps:
+      example:
+        skipDeletion:
+        - entities:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - entities:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        tenantId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        context: '{}'
+        cleanupId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        subscriptionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        cleanupId:
+          format: uuid
+          type: string
+        status:
+          $ref: '#/components/schemas/ResourceBulkDeleteStatusOps'
+        timestamp:
+          format: date-time
+          type: string
+        tenantId:
+          format: uuid
+          type: string
+        subscriptionId:
+          format: uuid
+          type: string
+        skipDeletion:
+          description: List of services to be skipped for deletion
+          items:
+            $ref: '#/components/schemas/SkipDeletionInfo'
+          type: array
+        context:
+          type: object
+      title: ResourceBulkDeleteResponseOps
+      type: object
+    ResourceBulkDeleteStatusOps:
+      description: bulk delete status
+      enum:
+      - IN_PROGRESS
+      - FAILED
+      - SUCCESS
+      type: string
+    SkipDeletionInfo:
+      example:
+        entities:
+        - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        entityType:
+          $ref: '#/components/schemas/entityType'
+        entities:
+          description: List of entities uuids
+          items:
+            format: uuid
+            type: string
+          type: array
+      title: SkipDeletionInfo
+      type: object
+    entityType:
+      description: Tessell Entity Type
+      enum:
+      - TENANT
+      - COMPUTE_RESOURCE
+      - STORAGE
+      - COMPUTE_RESOURCE_METADATA
+      - DBSERVER_SYETEM
+      - DBSERVER_SUB_SYETEM
+      - DBSERVER_SYETEM_COMPUTE_RESOURCE
+      - DATABASE_SYETEM
+      - DATABASE
+      - DATABASE_NODE
+      - DATABASE_METADATA
+      - DMM
+      - DMM_AVAILABILITY
+      - DB_BACKUP
+      - DB_SNAPSHOT
+      - DB_LOG
+      - TASK
+      - SUB_TASK
+      - SLA
+      - SCHEDULE
+      - CLOUD_ACCOUNT
+      - CLOUD_LOCATION
+      - COMPUTE_TYPE
+      - SOFTWARE_IMAGE
+      - SOFTWARE_IMAGE_VERSION
+      - SUBSCRIPTION
+      - CUSTOM_SCRIPT
+      - DEPLOYMENT
+      - TERRAFORM
+      - DB_EXPORTER
+      - USER
+      - IDENTITY_PROVIDER
+      - ENCRYPTION_KEY
+      - TESSELL_SERVICE
+      - NETWORK
+      - NETWORK_PEERING
+      - SECRET
+      - PERSONA
+      - ACL
+      - API_KEY
+      type: string
+    MaturityStatus:
+      description: Maturity Status
+      enum:
+      - DRAFT
+      - PUBLISHED
+      - UNPUBLISHED
+      type: string
+    databaseEngineType:
+      description: Database Engine Type
+      enum:
+      - ORACLE
+      - POSTGRESQL
+      - SQLSERVER
+      - MYSQL
+      - APACHE_KAFKA
+      - MONGODB
+      - MILVUS
+      type: string
+    TessellTag:
+      nullable: true
+      properties:
+        name:
+          description: Case sensitive, tag name
+          maxLength: 128
+          minLength: 1
+          type: string
+        value:
+          description: Case sensitive, tag value
+          maxLength: 256
+          minLength: 0
+          type: string
+      title: TessellTag
+      type: object
+    ResourceBulkDeletePayloadOps:
+      properties:
+        tenantId:
+          format: uuid
+          type: string
+        subscriptionId:
+          format: uuid
+          type: string
+        skipDeletion:
+          description: List of services to be skipped for deletion
+          items:
+            $ref: '#/components/schemas/SkipDeletionInfo'
+          type: array
+        scheduleDeletionAfterDays:
+          description: days after which deletion should be scheduled
+          type: integer
+      required:
+      - tenantId
+      title: ResourceBulkDeletePayloadOps
+      type: object
+

@@ -1,0 +1,2162 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: support@tessell.com
+    name: Tessell Inc.
+    url: https://www.tessell.com
+  description: Software Library Governance Service API Documentation
+  title: Software Library Governance Service API Documentation
+  version: "1.0"
+servers:
+- description: Software Library Governance Service API Base Path
+  url: http://localhost:8080/
+paths:
+  /software-library/images:
+    get:
+      description: Get a list of all software images.
+      operationId: getSoftwareImages
+      parameters:
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: false
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Cloud Region
+        examples:
+          aws:
+            summary: aws region example
+            value: us-east-1
+          azure:
+            summary: azure region example
+            value: eastUS
+        in: query
+        name: region
+        required: false
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Personas list
+        example:
+          personas:
+          - CloudAdmin
+          - TessellAdmin
+        explode: true
+        in: query
+        name: personas
+        required: false
+        schema:
+          format: list
+          type: string
+        style: form
+      - description: Name of a Software Image
+        example:
+          name: postgresql-rhel6
+        explode: true
+        in: query
+        name: name
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Returns All Software Images
+        explode: true
+        in: query
+        name: allImages
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: Time Zone
+        in: query
+        name: timeZone
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getSoftwareImagesResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get a list of all software images. Using the name filter, a software
+        image can be found using name.
+      tags:
+      - TessellSoftwareLibraryServiceView
+      x-accepts: application/json
+  /software-library/image/{name}:
+    get:
+      operationId: getSoftwareImageByName
+      parameters:
+      - description: Software Image name
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          example: PostgreSQL 12
+          maxLength: 64
+          minLength: 1
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: Software Image version
+        required: false
+        schema:
+          example: "12"
+          maxLength: 32
+          minLength: 1
+          type: string
+        style: form
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: true
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Time Zone
+        in: query
+        name: timeZone
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getSoftwareImageByNameResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get Software Image by name
+      tags:
+      - TessellSoftwareLibraryServiceView
+      x-accepts: application/json
+  /software-library/governance/images/disable:
+    patch:
+      operationId: disableSoftwareImages
+      parameters:
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: false
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Time Zone
+        in: query
+        name: timeZone
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/disableSoftwareImagesRequest'
+        description: Software Images to disable
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/disableSoftwareImagesResponse'
+          description: Ok
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Disable Software Images
+      tags:
+      - TessellSoftwareLibraryGovernanceServiceView
+      x-contentType: application/json
+      x-accepts: application/json
+  /software-library/governance/images/enable:
+    patch:
+      operationId: enableSoftwareImages
+      parameters:
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: false
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Time Zone
+        in: query
+        name: timeZone
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/enableSoftwareImagesRequest'
+        description: Software Images to enable
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/enableSoftwareImagesResponse'
+          description: Ok
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Enable Software Images
+      tags:
+      - TessellSoftwareLibraryGovernanceServiceView
+      x-contentType: application/json
+      x-accepts: application/json
+  /software-library/governance/images/restrict-regions:
+    patch:
+      operationId: restrictSoftwareImagesInRegions
+      parameters:
+      - description: Time Zone
+        in: query
+        name: timeZone
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/restrictSoftwareImagesInRegionsRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/restrictSoftwareImagesInRegionsResponse'
+          description: Ok
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Restrict Software Images to certain regions
+      tags:
+      - TessellSoftwareLibraryGovernanceServiceView
+      x-contentType: application/json
+      x-accepts: application/json
+  /software-library/governance/images/restrict-access:
+    patch:
+      operationId: restrictAccessToSoftwareImages
+      parameters:
+      - description: Time Zone
+        in: query
+        name: timeZone
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/restrictAccessToSoftwareImagesRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/restrictAccessToSoftwareImagesResponse'
+          description: Ok
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Restrict Software Images access to set of Personas
+      tags:
+      - TessellSoftwareLibraryGovernanceServiceView
+      x-contentType: application/json
+      x-accepts: application/json
+  /software-library/governance/images:
+    get:
+      operationId: getAllSoftwareImages
+      parameters:
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: false
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Cloud Region
+        examples:
+          aws:
+            summary: aws region example
+            value: us-east-1
+          azure:
+            summary: azure region example
+            value: eastUS
+        in: query
+        name: region
+        required: false
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Time Zone
+        in: query
+        name: timeZone
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getAllSoftwareImagesResponse'
+          description: List of Software Images
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: List Software Images (including disabled ones)
+      tags:
+      - TessellSoftwareLibraryGovernanceServiceView
+      x-accepts: application/json
+  /tessell-internal/software-library/images:
+    get:
+      description: Get all Software Images including image ids.
+      operationId: getAllSoftwareImagesInternalView
+      parameters:
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: false
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Time Zone
+        in: query
+        name: timeZone
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getAllSoftwareImagesInternalView'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get all Software Images including image ids.
+      tags:
+      - TessellSoftwareLibraryInternalView
+      x-accepts: application/json
+  /tessell-internal/software-library/image/{name}:
+    get:
+      description: Returns a software images.
+      operationId: getSoftwareImageByNameInternalView
+      parameters:
+      - description: Name of the software image
+        example:
+          name: postgresql-12
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: DB version name
+        example:
+          name: PostgreSQL 13.3 (AWS)
+        explode: true
+        in: query
+        name: dbVersionName
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Name of the Cloud
+        in: query
+        name: cloudType
+        required: true
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Cloud Region
+        examples:
+          aws:
+            summary: aws region example
+            value: us-east-1
+          azure:
+            summary: azure region example
+            value: eastUS
+        in: query
+        name: region
+        required: false
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Availability Zone
+        example:
+          availabilityZone: us-east-1c
+        explode: true
+        in: query
+        name: availabilityZone
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Time Zone
+        in: query
+        name: timeZone
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getSoftwareImageByNameInternalViewResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Returns a software images.
+      tags:
+      - TessellSoftwareLibraryInternalView
+      x-accepts: application/json
+  /tessell-internal/software-library/image/id/{id}:
+    get:
+      description: Get Details of Software Image identified by identifier.
+      operationId: getSoftwareImageByIdInternalView
+      parameters:
+      - example: 123e4567-e89b-12d3-a456-426614174000
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          description: Software Identifier
+          format: uuid
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: versionName
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: version
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: cloudAndAvailability
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Time Zone
+        in: query
+        name: timeZone
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getSoftwareImageByIdInternalViewResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get Details of Software Image identified by identifier.
+      tags:
+      - TessellSoftwareLibraryInternalView
+      x-accepts: application/json
+  /tessell-internal/software-library/version/{id}:
+    get:
+      description: Get Details of Software Image Version identified by identifier.
+      operationId: getSoftwareImageVersionByIdInternalView
+      parameters:
+      - example: 123e4567-e89b-12d3-a456-426614174000
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          description: Software Version Identifier
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getSoftwareImageVersionByIdInternalViewResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get Details of Software Image Version identified by identifier.
+      tags:
+      - TessellSoftwareLibraryInternalView
+      x-accepts: application/json
+  /software-library/governance/images/patchable:
+    get:
+      operationId: getPatchableImageVersions
+      parameters:
+      - description: Software Image name
+        explode: true
+        in: query
+        name: image-name
+        required: true
+        schema:
+          example: PostgreSQL 12
+          maxLength: 64
+          minLength: 1
+          type: string
+        style: form
+      - description: Software Image version
+        explode: true
+        in: query
+        name: version-name
+        required: true
+        schema:
+          example: "12"
+          maxLength: 32
+          minLength: 1
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getPatchableImageVersionsResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get Details of Patchable Software Image Version identified by ImageId
+        and VersionId.
+      tags:
+      - TessellSoftwareLibraryGovernanceServiceView
+      x-accepts: application/json
+components:
+  parameters:
+    imageName:
+      description: Name of a Software Image
+      example:
+        name: postgresql-rhel6
+      explode: true
+      in: query
+      name: name
+      required: false
+      schema:
+        type: string
+      style: form
+    osVersion:
+      description: OS Version
+      example:
+        osVersion: win2012-sp1
+      explode: true
+      in: query
+      name: osVersion
+      required: false
+      schema:
+        type: string
+      style: form
+    dbVersion:
+      description: DB Version
+      example:
+        dbVersion: postgresql12-update1
+      explode: true
+      in: query
+      name: dbVersion
+      required: false
+      schema:
+        type: string
+      style: form
+    availabilityZone:
+      description: Availability Zone
+      example:
+        availabilityZone: us-east-1c
+      explode: true
+      in: query
+      name: availabilityZone
+      required: false
+      schema:
+        type: string
+      style: form
+    personas:
+      description: Personas list
+      example:
+        personas:
+        - CloudAdmin
+        - TessellAdmin
+      explode: true
+      in: query
+      name: personas
+      required: false
+      schema:
+        format: list
+        type: string
+      style: form
+    allImages:
+      description: Returns All Software Images
+      explode: true
+      in: query
+      name: allImages
+      required: false
+      schema:
+        default: false
+        type: boolean
+      style: form
+  schemas:
+    SoftwareImageMetadata:
+      description: Software image metadata
+      example:
+        engine: engine
+        createContainer: true
+        edition: edition
+        tessellLibBucketPath: tessellLibBucketPath
+        version: version
+      properties:
+        engine:
+          type: string
+        edition:
+          type: string
+        version:
+          type: string
+        createContainer:
+          type: boolean
+        tessellLibBucketPath:
+          type: string
+      type: object
+    getSoftwareImagesResponse:
+      description: Response returned by APIs.
+      example:
+        images:
+        - metadata:
+            engine: engine
+            createContainer: true
+            edition: edition
+            tessellLibBucketPath: tessellLibBucketPath
+            version: version
+          versions:
+          - osVersion: osVersion
+            name: name
+            cloudAndAvailability:
+            - cloudAndAvailability
+            - cloudAndAvailability
+            version: version
+          - osVersion: osVersion
+            name: name
+            cloudAndAvailability:
+            - cloudAndAvailability
+            - cloudAndAvailability
+            version: version
+          name: name
+          description: description
+        - metadata:
+            engine: engine
+            createContainer: true
+            edition: edition
+            tessellLibBucketPath: tessellLibBucketPath
+            version: version
+          versions:
+          - osVersion: osVersion
+            name: name
+            cloudAndAvailability:
+            - cloudAndAvailability
+            - cloudAndAvailability
+            version: version
+          - osVersion: osVersion
+            name: name
+            cloudAndAvailability:
+            - cloudAndAvailability
+            - cloudAndAvailability
+            version: version
+          name: name
+          description: description
+      properties:
+        images:
+          items:
+            $ref: '#/components/schemas/SoftwareImage'
+          type: array
+      type: object
+    SoftwareImageVersion:
+      example:
+        osVersion: osVersion
+        name: name
+        cloudAndAvailability:
+        - cloudAndAvailability
+        - cloudAndAvailability
+        version: version
+      properties:
+        name:
+          description: Version name
+          type: string
+        version:
+          description: DB version string
+          type: string
+        osVersion:
+          description: OS Version string
+          type: string
+        cloudAndAvailability:
+          description: Cloud and Location detail
+          items:
+            type: string
+          type: array
+        status:
+          $ref: '#/components/schemas/SoftwareImageStatus'
+      type: object
+    SoftwareImage:
+      description: Software Image Response Object
+      example:
+        metadata:
+          engine: engine
+          createContainer: true
+          edition: edition
+          tessellLibBucketPath: tessellLibBucketPath
+          version: version
+        versions:
+        - osVersion: osVersion
+          name: name
+          cloudAndAvailability:
+          - cloudAndAvailability
+          - cloudAndAvailability
+          version: version
+        - osVersion: osVersion
+          name: name
+          cloudAndAvailability:
+          - cloudAndAvailability
+          - cloudAndAvailability
+          version: version
+        name: name
+        description: description
+      properties:
+        description:
+          description: Description of the SoftwareImage.
+          maxLength: 512
+          type: string
+        name:
+          description: Name of the Software Image.
+          maxLength: 128
+          type: string
+        versions:
+          items:
+            $ref: '#/components/schemas/SoftwareImageVersion'
+          type: array
+        status:
+          $ref: '#/components/schemas/SoftwareImageStatus'
+        metadata:
+          $ref: '#/components/schemas/SoftwareImageMetadata'
+      type: object
+    getSoftwareImageByNameResponse:
+      allOf:
+      - $ref: '#/components/schemas/SoftwareImage'
+    disableSoftwareImagesRequest:
+      properties:
+        names:
+          example:
+          - MySQL 5.6
+          - MySQL 8.0
+          items:
+            maxLength: 64
+            minLength: 1
+            type: string
+          maxItems: 100
+          minItems: 1
+          type: array
+      required:
+      - names
+      type: object
+    disableSoftwareImagesResponse:
+      example:
+        names:
+        - names
+        - names
+      properties:
+        names:
+          items:
+            type: string
+          type: array
+      type: object
+    enableSoftwareImagesRequest:
+      properties:
+        names:
+          example:
+          - MySQL 5.6
+          - MySQL 8.0
+          items:
+            maxLength: 64
+            minLength: 1
+            type: string
+          maxItems: 100
+          minItems: 1
+          type: array
+      required:
+      - names
+      type: object
+    enableSoftwareImagesResponse:
+      example:
+        names:
+        - names
+        - names
+      properties:
+        names:
+          items:
+            type: string
+          type: array
+      type: object
+    restrictSoftwareImagesInRegionsRequest:
+      description: Restrict software images in regions Request
+      properties:
+        images:
+          items:
+            $ref: '#/components/schemas/restrictSoftwareImagesInRegionsRequest_images'
+          maxItems: 20
+          minItems: 1
+          type: array
+      required:
+      - images
+      type: object
+    restrictSoftwareImagesInRegionsResponse:
+      example:
+        images:
+        - name: name
+          cloudAndAvailabilty: cloudAndAvailabilty
+        - name: name
+          cloudAndAvailabilty: cloudAndAvailabilty
+      properties:
+        images:
+          items:
+            $ref: '#/components/schemas/restrictSoftwareImagesInRegionsResponse_images'
+          type: array
+      type: object
+    restrictAccessToSoftwareImagesRequest:
+      properties:
+        names:
+          example:
+          - MySQL 5.6
+          - MySQL 8.0
+          items:
+            maxLength: 64
+            minLength: 1
+            type: string
+          maxItems: 20
+          minItems: 1
+          type: array
+        personas:
+          items:
+            maxLength: 64
+            minLength: 1
+            type: string
+          maxItems: 20
+          minItems: 1
+          type: array
+      required:
+      - names
+      - personas
+      type: object
+    restrictAccessToSoftwareImagesResponse:
+      example:
+        images:
+        - disabledInPersonas:
+          - disabledInPersonas
+          - disabledInPersonas
+          enabledInPersonas:
+          - enabledInPersonas
+          - enabledInPersonas
+          name: name
+        - disabledInPersonas:
+          - disabledInPersonas
+          - disabledInPersonas
+          enabledInPersonas:
+          - enabledInPersonas
+          - enabledInPersonas
+          name: name
+      properties:
+        images:
+          items:
+            $ref: '#/components/schemas/restrictAccessToSoftwareImagesResponse_images'
+          type: array
+      type: object
+    SoftwareImageVersionWithStatus:
+      example:
+        osVersion: osVersion
+        name: name
+        cloudAndAvailability: {}
+        version: version
+      properties:
+        name:
+          description: Version name
+          type: string
+        version:
+          description: DB version string
+          type: string
+        osVersion:
+          description: OS Version string
+          type: string
+        cloudAndAvailability:
+          additionalProperties:
+            $ref: '#/components/schemas/SoftwareImageStatus'
+          description: Cloud and Location detail
+          type: object
+      type: object
+    SoftwareImageWithStatus:
+      description: Software Image Response Object
+      example:
+        metadata:
+          engine: engine
+          createContainer: true
+          edition: edition
+          tessellLibBucketPath: tessellLibBucketPath
+          version: version
+        versions:
+        - osVersion: osVersion
+          name: name
+          cloudAndAvailability: {}
+          version: version
+        - osVersion: osVersion
+          name: name
+          cloudAndAvailability: {}
+          version: version
+        name: name
+        description: description
+        cloudAndAvailability: {}
+      properties:
+        description:
+          description: Description of the SoftwareImage.
+          maxLength: 512
+          type: string
+        name:
+          description: Name of the Software Image.
+          maxLength: 128
+          type: string
+        cloudAndAvailability:
+          additionalProperties:
+            $ref: '#/components/schemas/SoftwareImageStatus'
+          description: Cloud and Location detail
+          type: object
+        versions:
+          items:
+            $ref: '#/components/schemas/SoftwareImageVersionWithStatus'
+          type: array
+        status:
+          $ref: '#/components/schemas/SoftwareImageStatus'
+        metadata:
+          $ref: '#/components/schemas/SoftwareImageMetadata'
+      type: object
+    getAllSoftwareImagesResponse:
+      description: Response returned by APIs.
+      example:
+        images:
+        - metadata:
+            engine: engine
+            createContainer: true
+            edition: edition
+            tessellLibBucketPath: tessellLibBucketPath
+            version: version
+          versions:
+          - osVersion: osVersion
+            name: name
+            cloudAndAvailability: {}
+            version: version
+          - osVersion: osVersion
+            name: name
+            cloudAndAvailability: {}
+            version: version
+          name: name
+          description: description
+          cloudAndAvailability: {}
+        - metadata:
+            engine: engine
+            createContainer: true
+            edition: edition
+            tessellLibBucketPath: tessellLibBucketPath
+            version: version
+          versions:
+          - osVersion: osVersion
+            name: name
+            cloudAndAvailability: {}
+            version: version
+          - osVersion: osVersion
+            name: name
+            cloudAndAvailability: {}
+            version: version
+          name: name
+          description: description
+          cloudAndAvailability: {}
+      properties:
+        images:
+          items:
+            $ref: '#/components/schemas/SoftwareImageWithStatus'
+          type: array
+      type: object
+    getSoftwareImageByNameInternalViewResponse:
+      description: Response returned by getSoftwareImageByNameInternalView.
+      example:
+        images:
+        - metadata:
+            engine: engine
+            createContainer: true
+            edition: edition
+            tessellLibBucketPath: tessellLibBucketPath
+            version: version
+          dbVersion: dbVersion
+          tessellLibrarySnapshotId: tessellLibrarySnapshotId
+          description: description
+          cloudAndRegionAvailabilty: cloudAndRegionAvailabilty
+          dbVersionName: dbVersionName
+          dbEngineSnapshotId: dbEngineSnapshotId
+          dbVersionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          osImageId: osImageId
+          osVersion: osVersion
+          name: name
+          terraformId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - metadata:
+            engine: engine
+            createContainer: true
+            edition: edition
+            tessellLibBucketPath: tessellLibBucketPath
+            version: version
+          dbVersion: dbVersion
+          tessellLibrarySnapshotId: tessellLibrarySnapshotId
+          description: description
+          cloudAndRegionAvailabilty: cloudAndRegionAvailabilty
+          dbVersionName: dbVersionName
+          dbEngineSnapshotId: dbEngineSnapshotId
+          dbVersionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          osImageId: osImageId
+          osVersion: osVersion
+          name: name
+          terraformId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        images:
+          items:
+            $ref: '#/components/schemas/SoftwareImageInternalView'
+          type: array
+      type: object
+    getSoftwareImageByIdInternalViewResponse:
+      description: Response returned by getSoftwareImageByIdInternalViewResponse.
+      example:
+        images:
+        - metadata:
+            engine: engine
+            createContainer: true
+            edition: edition
+            tessellLibBucketPath: tessellLibBucketPath
+            version: version
+          dbVersion: dbVersion
+          tessellLibrarySnapshotId: tessellLibrarySnapshotId
+          description: description
+          cloudAndRegionAvailabilty: cloudAndRegionAvailabilty
+          dbVersionName: dbVersionName
+          dbEngineSnapshotId: dbEngineSnapshotId
+          dbVersionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          osImageId: osImageId
+          osVersion: osVersion
+          name: name
+          terraformId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - metadata:
+            engine: engine
+            createContainer: true
+            edition: edition
+            tessellLibBucketPath: tessellLibBucketPath
+            version: version
+          dbVersion: dbVersion
+          tessellLibrarySnapshotId: tessellLibrarySnapshotId
+          description: description
+          cloudAndRegionAvailabilty: cloudAndRegionAvailabilty
+          dbVersionName: dbVersionName
+          dbEngineSnapshotId: dbEngineSnapshotId
+          dbVersionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          osImageId: osImageId
+          osVersion: osVersion
+          name: name
+          terraformId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        images:
+          items:
+            $ref: '#/components/schemas/SoftwareImageInternalView'
+          type: array
+      type: object
+    getPatchableImageVersionsResponse:
+      description: Response returned by getPatchableImageVersions.
+      example:
+        images:
+        - imageName: imageName
+          versions:
+          - versionRefId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            image: ""
+            supportedVersions:
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            osVersion: osVersion
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            versionName: versionName
+            cloudAndAvailability:
+            - osImageId: osImageId
+              tessellLibrarySnapshotId: tessellLibrarySnapshotId
+              id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+              dbEngineSnapshotId: dbEngineSnapshotId
+              cloudAndAvailability: cloudAndAvailability
+              version: ""
+            - osImageId: osImageId
+              tessellLibrarySnapshotId: tessellLibrarySnapshotId
+              id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+              dbEngineSnapshotId: dbEngineSnapshotId
+              cloudAndAvailability: cloudAndAvailability
+              version: ""
+            version: version
+          - versionRefId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            image: ""
+            supportedVersions:
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            osVersion: osVersion
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            versionName: versionName
+            cloudAndAvailability:
+            - osImageId: osImageId
+              tessellLibrarySnapshotId: tessellLibrarySnapshotId
+              id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+              dbEngineSnapshotId: dbEngineSnapshotId
+              cloudAndAvailability: cloudAndAvailability
+              version: ""
+            - osImageId: osImageId
+              tessellLibrarySnapshotId: tessellLibrarySnapshotId
+              id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+              dbEngineSnapshotId: dbEngineSnapshotId
+              cloudAndAvailability: cloudAndAvailability
+              version: ""
+            version: version
+        - imageName: imageName
+          versions:
+          - versionRefId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            image: ""
+            supportedVersions:
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            osVersion: osVersion
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            versionName: versionName
+            cloudAndAvailability:
+            - osImageId: osImageId
+              tessellLibrarySnapshotId: tessellLibrarySnapshotId
+              id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+              dbEngineSnapshotId: dbEngineSnapshotId
+              cloudAndAvailability: cloudAndAvailability
+              version: ""
+            - osImageId: osImageId
+              tessellLibrarySnapshotId: tessellLibrarySnapshotId
+              id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+              dbEngineSnapshotId: dbEngineSnapshotId
+              cloudAndAvailability: cloudAndAvailability
+              version: ""
+            version: version
+          - versionRefId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            image: ""
+            supportedVersions:
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            osVersion: osVersion
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            versionName: versionName
+            cloudAndAvailability:
+            - osImageId: osImageId
+              tessellLibrarySnapshotId: tessellLibrarySnapshotId
+              id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+              dbEngineSnapshotId: dbEngineSnapshotId
+              cloudAndAvailability: cloudAndAvailability
+              version: ""
+            - osImageId: osImageId
+              tessellLibrarySnapshotId: tessellLibrarySnapshotId
+              id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+              dbEngineSnapshotId: dbEngineSnapshotId
+              cloudAndAvailability: cloudAndAvailability
+              version: ""
+            version: version
+      properties:
+        images:
+          items:
+            $ref: '#/components/schemas/getPatchableImageVersionsResponse_images'
+          type: array
+      type: object
+    getSoftwareImageVersionByIdInternalViewResponse:
+      $ref: '#/components/schemas/SoftwareImageVersionEntity'
+    SoftwareImageInternalView:
+      description: Software Image Response Object (Internal View)
+      example:
+        metadata:
+          engine: engine
+          createContainer: true
+          edition: edition
+          tessellLibBucketPath: tessellLibBucketPath
+          version: version
+        dbVersion: dbVersion
+        tessellLibrarySnapshotId: tessellLibrarySnapshotId
+        description: description
+        cloudAndRegionAvailabilty: cloudAndRegionAvailabilty
+        dbVersionName: dbVersionName
+        dbEngineSnapshotId: dbEngineSnapshotId
+        dbVersionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        osImageId: osImageId
+        osVersion: osVersion
+        name: name
+        terraformId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        terraformId:
+          description: Software Image Identifier
+          format: uuid
+          type: string
+        description:
+          description: Description of the SoftwareImage.
+          maxLength: 512
+          type: string
+        name:
+          description: Name of the Software Image.
+          maxLength: 128
+          type: string
+        dbVersion:
+          description: DB Image Version
+          type: string
+        dbVersionName:
+          description: DB Version name string.
+          type: string
+          x-dao-query: true
+        dbVersionId:
+          format: uuid
+          type: string
+        osVersion:
+          description: OS Image Version
+          type: string
+        osImageId:
+          description: OS Image Identifier.
+          maxLength: 128
+          type: string
+        dbEngineSnapshotId:
+          description: DB Engine disk Identifier.
+          maxLength: 128
+          type: string
+        tessellLibrarySnapshotId:
+          description: Tessell Library Disk Snapshot Id. This will be deprecated once
+            os image is self sufficient.
+          maxLength: 128
+          type: string
+        cloudAndRegionAvailabilty:
+          description: Cloud region availability.
+          type: string
+        id:
+          description: If provided, then use the provided uuid as the software image
+            identifier.
+          format: uuid
+          type: string
+        status:
+          $ref: '#/components/schemas/SoftwareImageStatus'
+        metadata:
+          $ref: '#/components/schemas/SoftwareImageMetadata'
+      type: object
+    getAllSoftwareImagesInternalView:
+      example:
+        images:
+        - metadata: ""
+          dateCreated: 2000-01-23T04:56:07.000+00:00
+          versions:
+          - versionRefId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            image: ""
+            supportedVersions:
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            osVersion: osVersion
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            versionName: versionName
+            cloudAndAvailability:
+            - osImageId: osImageId
+              tessellLibrarySnapshotId: tessellLibrarySnapshotId
+              id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+              dbEngineSnapshotId: dbEngineSnapshotId
+              cloudAndAvailability: cloudAndAvailability
+              version: ""
+            - osImageId: osImageId
+              tessellLibrarySnapshotId: tessellLibrarySnapshotId
+              id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+              dbEngineSnapshotId: dbEngineSnapshotId
+              cloudAndAvailability: cloudAndAvailability
+              version: ""
+            version: version
+          - versionRefId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            image: ""
+            supportedVersions:
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            osVersion: osVersion
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            versionName: versionName
+            cloudAndAvailability:
+            - osImageId: osImageId
+              tessellLibrarySnapshotId: tessellLibrarySnapshotId
+              id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+              dbEngineSnapshotId: dbEngineSnapshotId
+              cloudAndAvailability: cloudAndAvailability
+              version: ""
+            - osImageId: osImageId
+              tessellLibrarySnapshotId: tessellLibrarySnapshotId
+              id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+              dbEngineSnapshotId: dbEngineSnapshotId
+              cloudAndAvailability: cloudAndAvailability
+              version: ""
+            version: version
+          name: name
+          terraformId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          description: description
+          dateModified: 2000-01-23T04:56:07.000+00:00
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          dbEngineType: ""
+        - metadata: ""
+          dateCreated: 2000-01-23T04:56:07.000+00:00
+          versions:
+          - versionRefId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            image: ""
+            supportedVersions:
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            osVersion: osVersion
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            versionName: versionName
+            cloudAndAvailability:
+            - osImageId: osImageId
+              tessellLibrarySnapshotId: tessellLibrarySnapshotId
+              id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+              dbEngineSnapshotId: dbEngineSnapshotId
+              cloudAndAvailability: cloudAndAvailability
+              version: ""
+            - osImageId: osImageId
+              tessellLibrarySnapshotId: tessellLibrarySnapshotId
+              id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+              dbEngineSnapshotId: dbEngineSnapshotId
+              cloudAndAvailability: cloudAndAvailability
+              version: ""
+            version: version
+          - versionRefId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            image: ""
+            supportedVersions:
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            osVersion: osVersion
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            versionName: versionName
+            cloudAndAvailability:
+            - osImageId: osImageId
+              tessellLibrarySnapshotId: tessellLibrarySnapshotId
+              id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+              dbEngineSnapshotId: dbEngineSnapshotId
+              cloudAndAvailability: cloudAndAvailability
+              version: ""
+            - osImageId: osImageId
+              tessellLibrarySnapshotId: tessellLibrarySnapshotId
+              id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+              dbEngineSnapshotId: dbEngineSnapshotId
+              cloudAndAvailability: cloudAndAvailability
+              version: ""
+            version: version
+          name: name
+          terraformId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          description: description
+          dateModified: 2000-01-23T04:56:07.000+00:00
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          dbEngineType: ""
+      properties:
+        images:
+          items:
+            $ref: '#/components/schemas/SoftwareImageEntity'
+          type: array
+      type: object
+    SoftwareImageStatus:
+      description: Software Image Status
+      enum:
+      - ENABLED
+      - DISABLED
+      - DELETED
+      - DEPRECATED
+      type: string
+      x-dao-query: true
+      x-dao-annotations: |
+        @Enumerated(EnumType.STRING)
+          @NotNull
+          @Type(type = "pgsql_enum")
+      x-dto-annotations: |
+        @ToString.Exclude
+    SoftwareImageCurationEntity:
+      description: SoftwareImage Curation Entity
+      properties:
+        curationId:
+          description: Curation Identifier
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+              @Column(name = "curation_id", nullable = false)
+        imageId:
+          description: Software image identifier
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "image_id", nullable = false)
+        imageName:
+          description: Software image name
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "image_name", nullable = false)
+        cloudAndAvailability:
+          description: Cloud and Availability
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="cloud_location")
+        tenantId:
+          description: Tenant Identifier.
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "tenant_id", nullable = false)
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "DATE_CREATED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @CreationTimestamp
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "DATE_MODIFIED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @UpdateTimestamp
+      type: object
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_SOFTWARE_IMAGE_CURATIONS
+      x-dao-entity-annotations: |
+        @Table(name = 'TESSELL_SOFTWARE_IMAGE_CURATIONS')
+      x-dao-primary-key: curationId
+    SoftwareImageCloudLocationEntity:
+      description: SoftwareImage Cloud Location Entity
+      example:
+        osImageId: osImageId
+        tessellLibrarySnapshotId: tessellLibrarySnapshotId
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        dbEngineSnapshotId: dbEngineSnapshotId
+        cloudAndAvailability: cloudAndAvailability
+        version: ""
+      properties:
+        id:
+          description: Software Image Cloud Location identifier
+          format: uuid
+          type: string
+          x-dao-annotations: |
+            @Id
+              @Type(type = "pg-uuid")
+              @GeneratedValue(strategy = GenerationType.AUTO)
+          x-dao-query: true
+        osImageId:
+          description: OS Image Identifier.
+          maxLength: 128
+          type: string
+          x-dao-query: true
+        dbEngineSnapshotId:
+          description: DB Engine disk Identifier.
+          maxLength: 128
+          type: string
+          x-dao-query: true
+        tessellLibrarySnapshotId:
+          description: Tessell Library Disk Snapshot Id. This will be deprecated once
+            os image is self sufficient.
+          maxLength: 128
+          type: string
+        version:
+          allOf:
+          - $ref: '#/components/schemas/SoftwareImageVersionEntity'
+          x-dao-foreign-key-reference: true
+          x-dao-annotations: |
+            @ManyToOne(fetch = FetchType.EAGER)
+              @JoinColumn(name="software_image_version_id", nullable=false)
+              @JsonBackReference
+          x-dto-annotations: |
+            @ToString.Exclude
+              @JsonBackReference
+        cloudAndAvailability:
+          description: Cloud Location
+          type: string
+          x-dao-annotations: |
+            @Column(name='cloud_location')
+        status:
+          $ref: '#/components/schemas/SoftwareImageStatus'
+      type: object
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_SOFTWARE_IMAGE_CLOUD_LOCATIONS
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_SOFTWARE_IMAGE_CLOUD_LOCATIONS")
+    SoftwareImageVersionEntity:
+      description: SoftwareImage Version Entity
+      example:
+        versionRefId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        image: ""
+        supportedVersions:
+        - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        osVersion: osVersion
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        versionName: versionName
+        cloudAndAvailability:
+        - osImageId: osImageId
+          tessellLibrarySnapshotId: tessellLibrarySnapshotId
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          dbEngineSnapshotId: dbEngineSnapshotId
+          cloudAndAvailability: cloudAndAvailability
+          version: ""
+        - osImageId: osImageId
+          tessellLibrarySnapshotId: tessellLibrarySnapshotId
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          dbEngineSnapshotId: dbEngineSnapshotId
+          cloudAndAvailability: cloudAndAvailability
+          version: ""
+        version: version
+      properties:
+        id:
+          description: Image Version identifier
+          format: uuid
+          type: string
+          x-dao-annotations: |
+            @Id
+              @Type(type = "pg-uuid")
+              @GeneratedValue(strategy = GenerationType.AUTO)
+          x-dao-query: true
+        image:
+          allOf:
+          - $ref: '#/components/schemas/SoftwareImageEntity'
+          x-dao-foreign-key-reference: true
+          x-dto-annotations: |
+            @ToString.Exclude
+              @JsonBackReference
+          x-dao-annotations: |
+            @ManyToOne(fetch = FetchType.EAGER)
+              @JsonBackReference
+              @JoinColumn(name="software_image_id", nullable=false)
+        osVersion:
+          description: OS Version.
+          type: string
+          x-dao-query: true
+        version:
+          description: DB Version.
+          type: string
+          x-dao-query: true
+        versionName:
+          description: DB Version name string.
+          type: string
+          x-dao-query: true
+        versionRefId:
+          description: DB Version reference Id
+          format: uuid
+          type: string
+          x-dao-annotations: |
+            @Column(name = "version_ref_id")
+          x-dao-query: true
+        supportedVersions:
+          description: Column denoting the supported versions to patch
+          items:
+            format: uuid
+            type: string
+          type: array
+          x-dao-annotations: |
+            @Column(name = "supported_versions")
+          x-dao-query: true
+        cloudAndAvailability:
+          description: Cloud and Location detail
+          items:
+            $ref: '#/components/schemas/SoftwareImageCloudLocationEntity'
+          type: array
+          x-dao-annotations: |
+            @JsonManagedReference
+            @OneToMany(mappedBy = "version", cascade = CascadeType.ALL)
+        status:
+          $ref: '#/components/schemas/SoftwareImageStatus'
+      type: object
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_SOFTWARE_IMAGE_VERSIONS
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_SOFTWARE_IMAGE_VERSIONS")
+    SoftwareImageEntity:
+      description: SoftwareImage Entity
+      example:
+        metadata: ""
+        dateCreated: 2000-01-23T04:56:07.000+00:00
+        versions:
+        - versionRefId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          image: ""
+          supportedVersions:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          osVersion: osVersion
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          versionName: versionName
+          cloudAndAvailability:
+          - osImageId: osImageId
+            tessellLibrarySnapshotId: tessellLibrarySnapshotId
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            dbEngineSnapshotId: dbEngineSnapshotId
+            cloudAndAvailability: cloudAndAvailability
+            version: ""
+          - osImageId: osImageId
+            tessellLibrarySnapshotId: tessellLibrarySnapshotId
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            dbEngineSnapshotId: dbEngineSnapshotId
+            cloudAndAvailability: cloudAndAvailability
+            version: ""
+          version: version
+        - versionRefId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          image: ""
+          supportedVersions:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          osVersion: osVersion
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          versionName: versionName
+          cloudAndAvailability:
+          - osImageId: osImageId
+            tessellLibrarySnapshotId: tessellLibrarySnapshotId
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            dbEngineSnapshotId: dbEngineSnapshotId
+            cloudAndAvailability: cloudAndAvailability
+            version: ""
+          - osImageId: osImageId
+            tessellLibrarySnapshotId: tessellLibrarySnapshotId
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            dbEngineSnapshotId: dbEngineSnapshotId
+            cloudAndAvailability: cloudAndAvailability
+            version: ""
+          version: version
+        name: name
+        terraformId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        description: description
+        dateModified: 2000-01-23T04:56:07.000+00:00
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        dbEngineType: ""
+      properties:
+        id:
+          description: If provided, then use the provided uuid as the software image
+            identifier.
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+              @Column(name = "id", updatable = false, nullable = false)
+        terraformId:
+          description: Software Image Identifier
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @NotNull
+            @Column(name = "terraform_id")
+        description:
+          description: Description of the SoftwareImage.
+          maxLength: 512
+          type: string
+        name:
+          description: Name of the Software Image.
+          maxLength: 128
+          type: string
+          x-dao-query: true
+        dbEngineType:
+          allOf:
+          - $ref: '#/components/schemas/databaseEngineType'
+          x-dao-query: true
+          x-dao-annotations: |
+            @Enumerated(EnumType.STRING)
+              @Type(type = "pgsql_enum")
+        versions:
+          items:
+            $ref: '#/components/schemas/SoftwareImageVersionEntity'
+          type: array
+          x-dao-annotations: |
+            @JsonManagedReference
+              @OneToMany(mappedBy = 'image', cascade = CascadeType.ALL)
+          x-dto-annotations: |
+            @ToString.Exclude
+        status:
+          $ref: '#/components/schemas/SoftwareImageStatus'
+        metadata:
+          allOf:
+          - $ref: '#/components/schemas/SoftwareImageMetadata'
+          description: Extra metadata
+          x-dao-column-converter: true
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "DATE_CREATED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @CreationTimestamp
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "DATE_MODIFIED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @UpdateTimestamp
+      type: object
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_SOFTWARE_IMAGE_CATALOG
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_SOFTWARE_IMAGE_CATALOG")
+    SoftwareImageInternalEntity:
+      description: SoftwareImage Internal Entity
+      properties:
+        id:
+          description: If provided, then use the provided uuid as the software image
+            identifier.
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+              @Column(name = "id", updatable = false, nullable = false)
+        terraformId:
+          description: Software Image Identifier
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @NotNull
+            @Column(name = "terraform_id")
+        description:
+          description: Description of the SoftwareImage.
+          maxLength: 512
+          type: string
+        name:
+          description: Name of the Software Image.
+          maxLength: 128
+          type: string
+          x-dao-query: true
+        dbEngineType:
+          allOf:
+          - $ref: '#/components/schemas/databaseEngineType'
+          x-dao-query: true
+          x-dao-annotations: |
+            @Enumerated(EnumType.STRING)
+              @Type(type = "pgsql_enum")
+        status:
+          $ref: '#/components/schemas/SoftwareImageStatus'
+        metadata:
+          allOf:
+          - $ref: '#/components/schemas/SoftwareImageMetadata'
+          description: Extra metadata
+          x-dao-column-converter: true
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "DATE_CREATED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = true)
+              @CreationTimestamp
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "DATE_MODIFIED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = true)
+              @UpdateTimestamp
+      type: object
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_SOFTWARE_IMAGE_CATALOG
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_SOFTWARE_IMAGE_CATALOG")
+    SoftwareImageVersionInternalEntity:
+      description: SoftwareImage Version Entity
+      properties:
+        id:
+          description: Image Version identifier
+          format: uuid
+          type: string
+          x-dao-annotations: |
+            @Column(name='id')
+          x-dao-query: true
+        osVersion:
+          description: OS Version.
+          type: string
+          x-dao-query: true
+        version:
+          description: DB Version.
+          type: string
+          x-dao-query: true
+        versionName:
+          description: DB Version name string.
+          type: string
+          x-dao-query: true
+        versionRefId:
+          description: DB Version reference Id
+          format: uuid
+          type: string
+          x-dao-annotations: |
+            @Column(name = "version_ref_id")
+          x-dao-query: true
+        supportedVersions:
+          description: Column denoting the supported versions to patch
+          items:
+            format: uuid
+            type: string
+          type: array
+          x-dao-annotations: |
+            @Column(name = "supported_versions")
+          x-dao-query: true
+        softwareImageId:
+          description: Software Image Id to which the version is referring to.
+          format: uuid
+          type: string
+        status:
+          $ref: '#/components/schemas/SoftwareImageStatus'
+      type: object
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_SOFTWARE_IMAGE_VERSIONS
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_SOFTWARE_IMAGE_VERSIONS")
+    SoftwareImageCloudLocationInternalEntity:
+      description: SoftwareImage Cloud Location Entity
+      properties:
+        id:
+          description: Software Image Cloud Location identifier
+          format: uuid
+          type: string
+          x-dao-annotations: |
+            @Column(name='id')
+          x-dao-query: true
+        osImageId:
+          description: OS Image Identifier.
+          maxLength: 128
+          type: string
+          x-dao-query: true
+        softwareImageVersionId:
+          format: uuid
+          type: string
+          x-dao-annotations: |
+            @Column(name='software_image_version_id')
+          x-dao-query: true
+        dbEngineSnapshotId:
+          description: DB Engine disk Identifier.
+          maxLength: 128
+          type: string
+          x-dao-query: true
+        tessellLibrarySnapshotId:
+          description: Tessell Library Disk Snapshot Id. This will be deprecated once
+            os image is self sufficient.
+          maxLength: 128
+          type: string
+        cloudAndAvailability:
+          description: Cloud Location
+          type: string
+          x-dao-annotations: |
+            @Column(name='cloud_location')
+        status:
+          $ref: '#/components/schemas/SoftwareImageStatus'
+      type: object
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_SOFTWARE_IMAGE_CLOUD_LOCATIONS
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_SOFTWARE_IMAGE_CLOUD_LOCATIONS")
+    EntityType:
+      description: Tessell Entity Type
+      enum:
+      - TENANT
+      - COMPUTE_RESOURCE
+      - STORAGE
+      - COMPUTE_RESOURCE_METADATA
+      - DBSERVER_SYETEM
+      - DBSERVER_SUB_SYETEM
+      - DBSERVER_SYETEM_COMPUTE_RESOURCE
+      - DATABASE_SYETEM
+      - DATABASE
+      - DATABASE_NODE
+      - DATABASE_METADATA
+      - DMM
+      - DMM_AVAILABILITY
+      - DB_BACKUP
+      - DB_SNAPSHOT
+      - DB_LOG
+      - TASK
+      - SUB_TASK
+      - SLA
+      - SCHEDULE
+      - CLOUD_ACCOUNT
+      - CLOUD_LOCATION
+      - COMPUTE_TYPE
+      - SOFTWARE_IMAGE
+      - SOFTWARE_IMAGE_VERSION
+      - SUBSCRIPTION
+      - CUSTOM_SCRIPT
+      - DEPLOYMENT
+      - TERRAFORM
+      - DB_EXPORTER
+      - USER
+      - IDENTITY_PROVIDER
+      - ENCRYPTION_KEY
+      - TESSELL_SERVICE
+      - NETWORK
+      - NETWORK_PEERING
+      - SECRET
+      - PERSONA
+      - ACL
+      - API_KEY
+      type: string
+    cloudType:
+      description: Tessell supported cloud types
+      enum:
+      - AWS
+      - AZURE
+      - GCP
+      type: string
+    ApiError:
+      description: Common error response object for non 2xx responses
+      properties:
+        code:
+          description: Status code for the error response
+          type: string
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        defaultCodeSet:
+          type: boolean
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    ApiErrorDetails:
+      description: Common API exception details
+      properties:
+        resolution:
+          description: Resolution detail for API exception
+          type: string
+      type: object
+    ApiErrorOps:
+      description: Common error response object for non 2xx responses of internal
+        or ops APIs
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/TessellErrorCode'
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        serviceException:
+          $ref: '#/components/schemas/ApiError'
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    TessellErrorCode:
+      description: Error code object for API Exceptions
+      properties:
+        httpErrorCode:
+          description: Standard http error code
+          type: string
+        serviceCode:
+          description: Service error code
+          type: string
+        opCode:
+          description: Operation error code
+          type: string
+        description:
+          description: Error code description
+          type: string
+      type: object
+    databaseEngineType:
+      description: Database Engine Type
+      enum:
+      - ORACLE
+      - POSTGRESQL
+      - SQLSERVER
+      - MYSQL
+      - APACHE_KAFKA
+      - MONGODB
+      - MILVUS
+      type: string
+    restrictSoftwareImagesInRegionsRequest_images:
+      properties:
+        name:
+          example: PostgreSQL 12
+          maxLength: 64
+          minLength: 1
+          type: string
+        cloudAndAvailability:
+          items:
+            maxLength: 128
+            minLength: 1
+            type: string
+          maxItems: 100
+          minItems: 0
+          type: array
+      required:
+      - cloudAndAvailability
+      - name
+      type: object
+    restrictSoftwareImagesInRegionsResponse_images:
+      example:
+        name: name
+        cloudAndAvailabilty: cloudAndAvailabilty
+      properties:
+        name:
+          type: string
+        cloudAndAvailabilty:
+          type: string
+        status:
+          $ref: '#/components/schemas/SoftwareImageStatus'
+      type: object
+    restrictAccessToSoftwareImagesResponse_images:
+      example:
+        disabledInPersonas:
+        - disabledInPersonas
+        - disabledInPersonas
+        enabledInPersonas:
+        - enabledInPersonas
+        - enabledInPersonas
+        name: name
+      properties:
+        name:
+          type: string
+        disabledInPersonas:
+          items:
+            type: string
+          type: array
+        enabledInPersonas:
+          items:
+            type: string
+          type: array
+      type: object
+    getPatchableImageVersionsResponse_images:
+      example:
+        imageName: imageName
+        versions:
+        - versionRefId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          image: ""
+          supportedVersions:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          osVersion: osVersion
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          versionName: versionName
+          cloudAndAvailability:
+          - osImageId: osImageId
+            tessellLibrarySnapshotId: tessellLibrarySnapshotId
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            dbEngineSnapshotId: dbEngineSnapshotId
+            cloudAndAvailability: cloudAndAvailability
+            version: ""
+          - osImageId: osImageId
+            tessellLibrarySnapshotId: tessellLibrarySnapshotId
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            dbEngineSnapshotId: dbEngineSnapshotId
+            cloudAndAvailability: cloudAndAvailability
+            version: ""
+          version: version
+        - versionRefId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          image: ""
+          supportedVersions:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          osVersion: osVersion
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          versionName: versionName
+          cloudAndAvailability:
+          - osImageId: osImageId
+            tessellLibrarySnapshotId: tessellLibrarySnapshotId
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            dbEngineSnapshotId: dbEngineSnapshotId
+            cloudAndAvailability: cloudAndAvailability
+            version: ""
+          - osImageId: osImageId
+            tessellLibrarySnapshotId: tessellLibrarySnapshotId
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            dbEngineSnapshotId: dbEngineSnapshotId
+            cloudAndAvailability: cloudAndAvailability
+            version: ""
+          version: version
+      properties:
+        imageName:
+          type: string
+        versions:
+          items:
+            $ref: '#/components/schemas/SoftwareImageVersionEntity'
+          type: array
+      type: object
+

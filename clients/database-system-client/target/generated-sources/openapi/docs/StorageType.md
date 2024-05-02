@@ -1,0 +1,31 @@
+
+
+# StorageType
+
+## Enum
+
+
+* `DB_DATA` (value: `"DB_DATA"`)
+
+* `ARCHIVE_DATA` (value: `"ARCHIVE_DATA"`)
+
+* `DB_TXN_LOGS` (value: `"DB_TXN_LOGS"`)
+
+* `DB_SOFTWARE` (value: `"DB_SOFTWARE"`)
+
+* `OS_SOFTWARE` (value: `"OS_SOFTWARE"`)
+
+* `TESSELL_CLIENT_LIBRARY` (value: `"TESSELL_CLIENT_LIBRARY"`)
+
+* `TEMPORARY_PATCH_SOFTWARE_HOME` (value: `"TEMPORARY_PATCH_SOFTWARE_HOME"`)
+
+* `DB_BACKUP` (value: `"DB_BACKUP"`)
+
+* `MONITORING_DATA` (value: `"MONITORING_DATA"`)
+
+* `S3_BUCKET` (value: `"S3_BUCKET"`)
+
+* `TEMPORARY_NATIVE_BACKUP_DISK` (value: `"TEMPORARY_NATIVE_BACKUP_DISK"`)
+
+
+

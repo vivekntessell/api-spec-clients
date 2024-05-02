@@ -1,0 +1,14 @@
+
+
+# TessellEncryptionKeyApiResponseDTO
+
+
+## Properties
+
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**metadata** | [**TessellApiMetadataDTO**](TessellApiMetadataDTO.md) |  |  [optional]
+**response** | [**List&lt;TessellEncryptionKeyDTODTO&gt;**](TessellEncryptionKeyDTODTO.md) |  |  [optional]
+
+
+

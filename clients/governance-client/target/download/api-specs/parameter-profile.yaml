@@ -1,0 +1,1388 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: support@tessell.com
+    name: Inc
+    url: https://www.tessell.com
+  description: REST API Documentation
+  termsOfService: https://www.tessell.com/terms
+  title: REST API Documentation
+  version: "1.0"
+servers:
+  - description: Inferred Url
+    url: http://localhost:8084
+paths:
+
+  /governance/parameter-profiles/validations:
+    get:
+      tags:
+        - tessell-parameter-profile-controller
+      summary: Get a list of supported Database Parameters for all Database Engines with default configuration
+      operationId: getFactoryParameterProfiles
+      parameters:
+        - name: name
+          in: query
+          description: Parameter Profile name
+          required: false
+          style: form
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+            example: Postgres Custom Parameter Profile
+        - name: status
+          in: query
+          description: Status of Parameter Profile
+          required: false
+          style: form
+          schema:
+            $ref: '#/components/schemas/DatabaseParameterTypeStatus'
+        - name: engineType
+          in: query
+          description: Database Engine type
+          required: false
+          style: form
+          schema:
+            $ref: 'common-specification.yaml#/components/schemas/databaseEngineType'
+        - name: version
+          in: query
+          description: Database Engine version
+          required: false
+          style: form
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 32
+            example: '15.5'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseFactoryParameterListResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tessell-internal/parameter-profiles/validations/{id}:
+    get:
+      tags:
+        - tessell-parameter-profile-controller
+      summary: Get a list of supported Tessell Database Parameter Profile By Id with factory configuration
+      operationId: getFactoryParameterProfilesById
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseFactoryParameterResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /governance/parameter-profiles:
+    post:
+      tags:
+        - tessell-parameter-profile-controller
+      summary: Create a new Parameter Profile
+      operationId: createDatabaseParameterProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatabaseParameterProfileRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseParameterProfileResponse'
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+    get:
+      tags:
+        - tessell-parameter-profile-controller
+      summary: Get a list of Parameter Profiles
+      operationId: getDatabaseParameterProfiles
+      parameters:
+        - name: status
+          in: query
+          description: Status of a Parameter Profile
+          required: false
+          style: form
+          schema:
+            $ref: '#/components/schemas/DatabaseParameterProfileStatus'
+        - name: engineType
+          in: query
+          description: Database Engine type
+          required: false
+          style: form
+          schema:
+            $ref: 'common-specification.yaml#/components/schemas/databaseEngineType'
+        - name: version
+          in: query
+          description: Database Engine version
+          required: false
+          style: form
+          schema:
+            type: string
+            maxLength: 32
+            example: '15.5'
+        - name: name
+          in: query
+          description: Parameter Profile name
+          required: false
+          style: form
+          schema:
+            type: string
+            maxLength: 64
+            example: Postgres Custom Parameter Profile
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseParameterProfileListResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /governance/parameter-profiles/{id}:
+    delete:
+      tags:
+        - tessell-parameter-profile-controller
+      summary: Delete a Parameter Profile
+      operationId: deleteDatabaseParameterProfile
+      parameters:
+        - name: id
+          in: path
+          description: Parameter Profile Id
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+        - name: softDelete
+          in: query
+          description: When set to false, it permanently deletes a Parameter Profile. When set to true, Parameter Profile can be recovered by contacting Tessell Support.
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/apiStatus
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+    patch:
+      tags:
+        - tessell-parameter-profile-controller
+      summary: Update a Parameter Profile
+      operationId: updateDatabaseParameterProfile
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatabaseParameterProfilePatchRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseParameterProfileResponse'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tessell-internal/parameter-profiles/{id}:
+    get:
+      tags:
+        - tessell-parameter-profile-controller
+      summary: View available Tessell Database Parameter Profiles by Id
+      operationId: getDatabaseParameterProfilesById
+      x-terraform-resource: DBParameterProfile
+      x-terraform-operation: Read
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+        - name: id
+          in: path
+          description: name
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseParameterProfileResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-internal/parameter-profiles/{id}/version/{versionId}:
+    get:
+      tags:
+        - tessell-parameter-profile-controller
+      summary: View available Tessell Database Parameter Profiles by Id and versionId
+      operationId: getDatabaseParameterProfilesByVersion
+      parameters:
+        - name: id
+          in: path
+          description: name
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+        - name: versionId
+          in: path
+          description: name
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseParameterProfileResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /governance/parameter-profiles/{id}/compare:
+    get:
+      tags:
+        - tessell-parameter-profile-controller
+      summary: Compare two Parameter Profile configuration
+      operationId: compareDatabaseParameterConfigs
+      parameters:
+        - name: id
+          in: path
+          description: Id of the Parameter Profile
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+        - name: compareTo
+          in: query
+          description: Id of the Parameter Profile to be compared with
+          required: true
+          style: form
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParameterProfileCompareResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /governance/parameter-profiles/{id}/copy-configuration:
+    patch:
+      tags:
+        - tessell-parameter-profile-controller
+      summary: Copy Parameters of one Parameter Profile to other Parameter Profiles
+      operationId: copyDatabaseParameterConfigs
+      parameters:
+        - name: id
+          in: path
+          description: Id of Parameter Profile (Parameters will be copied from this Parameter Profile)
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CopyToProfiles'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/apiStatus
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /governance/parameter-profiles/{id}/reset:
+    post:
+      tags:
+        - tessell-parameter-profile-controller
+      summary: Reset Parameters of Parameter Profile to its default values
+      operationId: resetParameterProfileToDefault
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/apiStatus
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tessell-internal/parameter-profiles/{id}/evaluate:
+    post:
+      tags:
+        - tessell-parameter-profile-controller
+      summary: Evaluate a new Tessell Database Parameter Profile
+      operationId: evaluateDatabaseParameterProfile
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+        - name: id
+          in: path
+          description: name
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatabaseParameterProfileEvaluateRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseParameterProfileResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-internal/parameter-profiles/is-active:
+    patch:
+      tags:
+        - tessell-parameter-profile-controller
+      summary: Toggle the is_active value for a given parameter profile configuration
+      operationId: toggleIsActiveFlagForParameterProfile
+      parameters:
+        - name: id
+          in: query
+          description: id
+          required: true
+          style: form
+          schema:
+            type: string
+            format: uuid
+        - name: isActive
+          in: query
+          description: New is-active for the parameter profile
+          required: true
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ToggleIsActiveFlagResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /databases/parameter-profiles:
+    get:
+      tags:
+        - tessell-parameter-profile-controller
+      summary: Get a list of available Parameter Profiles
+      operationId: getDatabaseParameterProfilesForConsumers
+      x-terraform-resource: DBParameterProfile
+      x-terraform-operation: ReadList
+      parameters:
+        - name: status
+          in: query
+          description: Parameter Profile status
+          required: false
+          style: form
+          schema:
+            $ref: '#/components/schemas/DatabaseParameterProfileStatus'
+        - name: engineType
+          in: query
+          description: Database Engine type
+          required: false
+          style: form
+          schema:
+            $ref: 'common-specification.yaml#/components/schemas/databaseEngineType'
+        - name: version
+          in: query
+          description: Database Engine version
+          required: false
+          style: form
+          schema:
+            type: string
+            maxLength: 32
+            example: '15.5'
+        - name: name
+          in: query
+          description: Parameter Profile name
+          required: false
+          style: form
+          schema:
+            type: string
+            maxLength: 64
+            example: Postgres Custom Parameter Profile
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseParameterProfileListResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tessell-internal/parameter-profiles:
+    get:
+      tags:
+        - tessell-parameter-profile-controller
+      summary: Get a list of available Tessell Database Parameter Profiles for consumers
+      operationId: getDatabaseParameterProfilesForInternalConsumers
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+        - name: status
+          in: query
+          description: status
+          required: false
+          style: form
+          schema:
+            $ref: '#/components/schemas/DatabaseParameterProfileStatus'
+        - name: engineType
+          in: query
+          description: engineType
+          required: false
+          style: form
+          schema:
+            $ref: common-specification.yaml#/components/schemas/databaseEngineType
+        - name: version
+          in: query
+          description: version
+          required: false
+          style: form
+          schema:
+            type: string
+        - name: name
+          in: query
+          required: false
+          style: form
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseParameterProfileListResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    post:
+      tags:
+        - tessell-parameter-profile-controller
+      summary: Create a new Parameter Profile
+      operationId: createDatabaseParameterProfileForInternalConsumers
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatabaseParameterProfileRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseParameterProfileResponse'
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /governance/parameter-profiles/{id}/deletable:
+    get:
+      tags:
+        - tessell-parameter-profile-controller
+      summary: Check if Parameter Profile is deletable or not
+      operationId: isParameterProfileDeletable
+      parameters:
+        - name: id
+          in: path
+          description: Parameter Profile Id
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteValidationResponse'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /governance/parameter-profiles/{id}/usages:
+    get:
+      tags:
+        - tessell-parameter-profile-controller
+      summary: Provide Services/Instances that are using the Parameter Profile
+      operationId: getParameterProfileUsages
+      parameters:
+        - name: id
+          in: path
+          description: Parameter Profile Id
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParameterProfileUsageResponse'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+components:
+  schemas:
+    ParameterProfileCompareResponse:
+      type: object
+      properties:
+        leftAdditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseProfileParameterType'
+        rightAdditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseProfileParameterType'
+        diffs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProfileCompareValueChange'
+        common:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseProfileParameterType'
+    ProfileCompareValueChange:
+      type: object
+      properties:
+        dataType:
+          type: string
+        defaultValue:
+          type: string
+        applyType:
+          type: string
+        name:
+          type: string
+        lvalue:
+          type: string
+        rvalue:
+          type: string
+        allowedValues:
+          type: string
+        isFormulaType:
+          type: boolean
+          default: false
+    DeleteValidationResponse:
+      type: object
+      properties:
+        deletable:
+          type: boolean
+        message:
+          type: string
+    CopyToProfiles:
+      type: object
+      properties:
+        copyTo:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+          maxItems: 30
+    DatabaseFactoryParameterListResponse:
+      title: DatabaseFactoryParameterListResponse
+      allOf:
+        - $ref: common-specification.yaml#/components/schemas/apiResponse
+      type: object
+      properties:
+        response:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseFactoryParameterResponse'
+    DatabaseParameterProfileListResponse:
+      title: DatabaseParameterProfileListResponse
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/apiResponse'
+      type: object
+      properties:
+        response:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseParameterProfileResponse'
+    DatabaseParameterProfileConsumptionListResponse:
+      title: DatabaseParameterProfileConsumptionListResponse
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/apiResponse'
+      type: object
+      properties:
+        response:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseParameterProfileConsumptionResponse'
+    DatabaseParameterProfileDriverInfo:
+      title: DatabaseParameterProfileDriverInfo
+      type: object
+      properties:
+        data:
+          type: object
+    DatabaseParameterProfileMetadata:
+      title: DatabaseParameterProfileMetadata
+      type: object
+      properties:
+        data:
+          type: object
+    DatabaseParameterType:
+      title: DatabaseParameterType
+      type: object
+      properties:
+        isFormulaType:
+          type: boolean
+          default: false
+        isModifiable:
+          type: boolean
+        allowedValues:
+          type: string
+        applyType:
+          type: string
+        dataType:
+          type: string
+        defaultValue:
+          type: string
+        description:
+          type: string
+        name:
+          type: string
+    DatabaseProfileParameterType:
+      title: DatabaseProfileParameterType
+      type: object
+      required: [name, value, defaultValue, dataType]
+      properties:
+        dataType:
+          type: string
+          minLength: 1
+          maxLength: 32
+          example: bool
+        defaultValue:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          example: on
+        applyType:
+          type: string
+          minLength: 1
+          maxLength: 32
+          example: static
+        name:
+          type: string
+          minLength: 1
+          maxLength: 128
+          example: autovacuum
+        value:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          example: off
+        allowedValues:
+          type: string
+          minLength: 0
+          maxLength: 1000
+          example: on/off
+        isModified:
+          type: boolean
+        isFormulaType:
+          type: boolean
+          default: false
+
+    DatabaseParameterProfileEvaluateRequest:
+      title: DatabaseParameterProfileEvaluateRequest
+      type: object
+      required:
+        - items
+      properties:
+        versionId:
+          type: string
+          format: uuid
+        variables:
+          type: array
+          items:
+            $ref: "#/components/schemas/mapItem"
+
+    mapItem:
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+
+    DatabaseParameterProfileRequest:
+      title: DatabaseParameterProfileRequest
+      required:
+        - name
+        - engineType
+        - parameters
+        - dbVersion
+      type: object
+      properties:
+        name:
+          type: string
+          description: Parameter Profile name
+          minLength: 1
+          maxLength: 64
+          example: Postgres Custom Parameter Profile
+        description:
+          type: string
+          description: Parameter Profile description
+          minLength: 0
+          maxLength: 128
+          example: Custom Parameter Profile with autovacuum off
+        engineType:
+          $ref: common-specification.yaml#/components/schemas/databaseEngineType
+        status:
+          $ref: '#/components/schemas/DatabaseParameterProfileStatus'
+        maturityStatus:
+          $ref: '#/components/schemas/DatabaseParameterProfileMaturityStatus'
+        owner:
+          type: string
+          minLength: 1
+          maxLength: 128
+        parameters:
+          type: array
+          description: Parameters associated with Parameter Profile
+          items:
+            $ref: '#/components/schemas/DatabaseProfileParameterType'
+          minItems: 1
+          maxItems: 1000
+        metadata:
+          $ref: '#/components/schemas/DatabaseParameterProfileMetadata'
+        dbVersion:
+          type: string
+          description: Database Engine version
+          minLength: 1
+          maxLength: 32
+          example: '15.5'
+      description: This is a definition for Tessell Parameter Profile Object
+    DatabaseParameterProfilePatchRequest:
+      title: DatabaseParameterProfilePatchRequest
+      required:
+        - parameterProfile
+      type: object
+      properties:
+        parameterProfile:
+          $ref: '#/components/schemas/DatabaseParameterProfileRequest'
+        propagationPolicy:
+          $ref: '#/components/schemas/UpdatePropagationPolicy'
+        serviceInstances:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceInstances'
+      description: Parameter Profile Object to be updates and details on how it should be propagated to the service instances using that
+    UpdatePropagationPolicy:
+      title: UpdatePropagationPolicy
+      required:
+        - strategy
+      type: object
+      properties:
+        strategy:
+          $ref: '#/components/schemas/UpdatePropagationStrategy'
+        time:
+          type: string
+          format: date-time
+          description: Needed when strategy is CUSTOM_DATE_TIME
+    UpdatePropagationStrategy:
+      type: string
+      enum:
+        - IMMEDIATELY
+        - MAINTENANCE_WINDOW
+        - CUSTOM_DATE_TIME
+        - DO_NOT_APPLY
+      description: Details on if / when the changes should be applied
+    DatabaseParameterProfileResponse:
+      title: DatabaseParameterProfileResponse
+      required:
+        - name
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Tessell generated UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174000
+        versionId:
+          type: string
+          format: uuid
+          description: Tessell generated UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174000
+        name:
+          type: string
+          description: Name of the entity
+          example: sample_entity
+        description:
+          type: string
+          description: Database Parameter Profile description
+        oob:
+          type: boolean
+        engineType:
+          $ref: common-specification.yaml#/components/schemas/databaseEngineType
+        factoryParameterId:
+          type: string
+          format: uuid
+          description: Tessell parameter type UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174001
+        status:
+          $ref: '#/components/schemas/DatabaseParameterProfileStatus'
+        maturityStatus:
+          $ref: '#/components/schemas/DatabaseParameterProfileMaturityStatus'
+        owner:
+          type: string
+        tenantId:
+          type: string
+        loggedInUserRole:
+          type: string
+          description: The role of the logged in user for accessing the db profile
+        parameters:
+          type: array
+          description: Parameter Profile's associated parameters
+          items:
+            $ref: '#/components/schemas/DatabaseProfileParameterType'
+        metadata:
+          $ref: '#/components/schemas/DatabaseParameterProfileMetadata'
+        driverInfo:
+          $ref: '#/components/schemas/DatabaseParameterProfileDriverInfo'
+        userId:
+          type: string
+          format: uuid
+          description: Database Parameter Profile's user id
+        sharedWith:
+          $ref: 'common-specification.yaml#/components/schemas/EntityAclSharingInfo'
+        dbVersion:
+          type: string
+          description: Database Parameter Profile's version
+        dateCreated:
+          type: string
+          description: Timestamp when the entity was created
+          format: date-time
+        dateModified:
+          type: string
+          description: Timestamp when the entity was last modified
+          format: date-time
+      description: This is a definition for Tessell Database Parameter Profile Object
+    DatabaseParameterProfileUpdateEvent:
+      title: DatabaseParameterProfileUpdateEvent
+      properties:
+        response:
+          $ref: '#/components/schemas/DatabaseParameterProfileResponse'
+        propagationPolicy:
+          $ref: '#/components/schemas/UpdatePropagationPolicy'
+        serviceInstance:
+          $ref: '#/components/schemas/ServiceInstances'
+    TerraformDBParameterProfile:
+      title: TerraformDBParameterProfile
+      required:
+        - name
+      type: object
+      x-terraform-resource: DBParameterProfile
+      x-terraform:
+        plural-name: DBParameterProfiles
+        render:
+          - data_source_list
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Tessell generated UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174000
+        versionId:
+          type: string
+          format: uuid
+          description: Tessell generated UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174000
+        name:
+          type: string
+          description: Name of the entity
+          example: sample_entity
+        description:
+          type: string
+          description: Database Parameter Profile description
+        oob:
+          type: boolean
+        engineType:
+          $ref: common-specification.yaml#/components/schemas/databaseEngineType
+        factoryParameterId:
+          type: string
+          format: uuid
+          description: Tessell parameter type UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174001
+        status:
+          $ref: '#/components/schemas/DatabaseParameterProfileStatus'
+        maturityStatus:
+          $ref: '#/components/schemas/DatabaseParameterProfileMaturityStatus'
+        owner:
+          type: string
+        tenantId:
+          type: string
+        loggedInUserRole:
+          type: string
+          description: The role of the logged in user for accessing the db profile
+        parameters:
+          type: array
+          description: Parameter Profile's associated parameters
+          items:
+            $ref: '#/components/schemas/DatabaseProfileParameterType'
+        userId:
+          type: string
+          format: uuid
+          description: Database Parameter Profile's user id
+        sharedWith:
+          $ref: 'common-specification.yaml#/components/schemas/EntityAclSharingInfo'
+        dbVersion:
+          type: string
+          description: Database Parameter Profile's version
+        dateCreated:
+          type: string
+          description: Timestamp when the entity was created
+          format: date-time
+        dateModified:
+          type: string
+          description: Timestamp when the entity was last modified
+          format: date-time
+      description: This is a definition for Tessell Database Parameter Profile Object
+    DatabaseParameterProfileConsumptionResponse:
+      title: DatabaseParameterProfileConsumptionResponse
+      required:
+        - name
+      type: object
+      properties:
+        description:
+          type: string
+          description: Database Parameter Profile description
+        driverInfo:
+          $ref: '#/components/schemas/DatabaseParameterProfileDriverInfo'
+        engineType:
+          $ref: 'common-specification.yaml#/components/schemas/databaseEngineType'
+        id:
+          type: string
+          format: uuid
+          description: Tessell generated UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174000
+        parameterTypeId:
+          type: string
+          format: uuid
+          description: Tessell parameter type UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174001
+        metadata:
+          $ref: '#/components/schemas/DatabaseParameterProfileMetadata'
+        name:
+          type: string
+          description: Name of the entity
+          example: sample_entity
+        maturityStatus:
+          $ref: '#/components/schemas/DatabaseParameterProfileMaturityStatus'
+        parameters:
+          type: array
+          description: Database Parameter Profile's associated parameters
+          items:
+            $ref: '#/components/schemas/DatabaseProfileParameterType'
+        topology:
+          type: string
+          description: Database Parameter Profile's topology
+        owner:
+          type: string
+        tenantId:
+          type: string
+        version:
+          type: string
+          description: Database Parameter Profile's version
+      description: This is a definition for Tessell Database Parameter Profile Object
+    DatabaseFactoryParameterResponse:
+      title: DatabaseFactoryParameterResponse
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        engineType:
+          $ref: common-specification.yaml#/components/schemas/databaseEngineType
+        version:
+          type: string
+        status:
+          $ref: '#/components/schemas/DatabaseParameterTypeStatus'
+        parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseParameterType'
+    DatabaseParameterProfileStatus:
+      description: Database ParameterProfile Status
+      type: string
+      enum:
+        - DELETED
+        - DELETING
+        - DRAFT
+        - PUBLISH
+        - UNPUBLISH
+        - DEPRECATED
+    DatabaseParameterProfileMaturityStatus:
+      description: Database ParameterProfile Status
+      type: string
+      enum:
+        - DRAFT
+        - PUBLISHED
+        - UNPUBLISHED
+    DatabaseParameterTypeStatus:
+      type: string
+      enum:
+        - DISABLED
+        - ENABLED
+    ToggleIsActiveFlagResponse:
+      title: ToggleIsActiveFlagResponse
+      type: object
+      properties:
+        isActive:
+          type: boolean
+    ParameterProfileUsageResponse:
+      title: ParameterProfileUsageResponse
+      type: object
+      properties:
+        serviceInstances:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceInstances'
+    ServiceInstances:
+      properties:
+        service:
+          $ref: '#/components/schemas/GovernanceServiceInfo'
+        instances:
+          type: array
+          items:
+            $ref: '#/components/schemas/GovernanceInstanceInfo'
+    GovernanceServiceInfo:
+      type: object
+      properties:
+        name:
+          type: string
+        id:
+          type: string
+          format: uuid
+    GovernanceInstanceInfo:
+      type: object
+      properties:
+        name:
+          type: string
+        id:
+          type: string
+          format: uuid
+
+    parameterProfileEntity:
+      type: object
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_DATABASE_PARAMETER_PROFILES
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_DATABASE_PARAMETER_PROFILES")
+      properties:
+        id:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+            @Type(type = "pg-uuid")
+            @GeneratedValue(strategy = GenerationType.AUTO)
+          type: string
+          format: uuid
+        name:
+          x-dao-query: true
+          type: string
+          description: user created profile name
+        description:
+          x-dao-query: true
+          type: string
+        profileRefId:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="profile_ref_id")
+          type: string
+          format: uuid
+          description: ref id of profile
+        tessellUserId:
+          # code generator issue with userid as it uses the same in executionContext
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="user_id")
+          type: string
+          format: uuid
+        parameterTypeId:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="parameter_type_id")
+            @Type(type = "pg-uuid")
+          type: string
+          format: uuid
+        tenantId:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="tenant_id")
+          type: string
+        parameters:
+          x-dao-query: true
+          type: array
+          description: Database Parameter Profile's associated parameters
+          items:
+            $ref: '#/components/schemas/DatabaseProfileParameterType'
+        isActive:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="is_active")
+          type: boolean
+        oob:
+          x-dao-query: true
+          type: boolean
+        metadata:
+          x-dao-query: true
+          description: Database Parameter Profile's metadata information
+          allOf:
+            - $ref: '#/components/schemas/DatabaseParameterProfileMetadata'
+        dateCreated:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "date_created", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+            @CreationTimestamp
+          description: create date
+          format: date-time
+          type: string
+        dateModified:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "date_modified", columnDefinition = "TIMESTAMP WITH TIME ZONE", nullable = true, updatable = true)
+              @UpdateTimestamp
+          format: date-time
+          type: string
+        owner:
+          x-dao-query: false
+          type: string
+        maturityStatus:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="maturity_status")
+              @Enumerated(EnumType.STRING)
+              @Type(type = "pgsql_enum")
+          allOf:
+            - $ref: '#/components/schemas/DatabaseParameterProfileMaturityStatus'
+        driverInfo:
+          x-dao-annotations: |
+            @Column(name="driver_info")
+          description: Database Parameter Profile's metadata information for driver use
+          allOf:
+            - $ref: '#/components/schemas/DatabaseParameterProfileDriverInfo'
+        status:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="status")
+              @Enumerated(EnumType.STRING)
+              @Type(type = "pgsql_enum")
+          allOf:
+            - $ref: '#/components/schemas/DatabaseParameterProfileStatus'
+
+    factoryParametersEntity:
+      type: object
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_DATABASE_PARAMETER_TYPES
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_DATABASE_PARAMETER_TYPES")
+      properties:
+        id:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+              @Type(type = "pg-uuid")
+              @GeneratedValue(strategy = GenerationType.AUTO)
+          type: string
+          format: uuid
+        name:
+          x-dao-query: true
+          type: string
+          description: user created profile name
+        description:
+          x-dao-query: true
+          type: string
+          description: edition of license
+        engineType:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="engine_type")
+              @Enumerated(EnumType.STRING)
+              @Type(type = "pgsql_enum")
+          allOf:
+            - $ref: common-specification.yaml#/components/schemas/databaseEngineType
+        version:
+          x-dao-query: true
+          type: string
+        topology:
+          x-dao-query: true
+          type: string
+        parameters:
+          x-dao-query: true
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseParameterType'
+          description: Database Parameter Profile's associated parameters
+        dateCreated:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "date_created", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @CreationTimestamp
+          description: create date
+          format: date-time
+          type: string
+        dateModified:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "date_modified", columnDefinition = "TIMESTAMP WITH TIME ZONE", nullable = true, updatable = true)
+              @UpdateTimestamp
+          format: date-time
+          type: string
+        status:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="status")
+              @Enumerated(EnumType.STRING)
+              @Type(type = "pgsql_enum")
+          allOf:
+            - $ref: '#/components/schemas/DatabaseParameterTypeStatus'

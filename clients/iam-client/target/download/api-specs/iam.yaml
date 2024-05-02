@@ -1,0 +1,4638 @@
+openapi: 3.0.3
+info:
+  title: Tessell REST API Documentation
+  description: Tessell REST API Documentation
+  termsOfService: https://www.tessell.com/terms
+  contact:
+    name: Tessell Inc
+    url: https://www.tessell.com
+    email: support@tessell.com
+  version: '1.0'
+servers:
+  - url: http://localhost:8082
+    description: Inferred Url
+paths:
+  "/iam/personas":
+    get:
+      tags:
+        - Personas
+      summary: Get a list of Personas
+      operationId: getPersonas
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+        - name: load-apps
+          in: query
+          description: Flag to include/exclude Application details in response
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: false
+        - name: load-privileges
+          in: query
+          description: Flag to include/exclude Privilege details in response (only applicable when consumer-type is OPS)
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: false
+        - name: status
+          in: query
+          description: Filter by status
+          required: false
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/PersonaStatus'
+            maxItems: 10
+        - name: consumer-type
+          in: query
+          description: consumer-type
+          required: false
+          style: form
+          schema:
+            $ref: 'common-specification.yaml#/components/schemas/consumerType'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/IamApiResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+    post:
+      tags:
+        - Personas
+      summary: Create a new Persona
+      operationId: createPersona
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePersonaPayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/PersonaDTO'
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tessell-ops/iam/personas/bulk-delete:
+    post:
+      tags:
+        - Personas
+      summary: Get status of bulk deletion of Personas
+      operationId: getStatusOfBulkDeletePersonas
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeletePayloadOps'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeleteResponseOps'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    delete:
+      tags:
+        - Personas
+      summary: Bulk delete Personas
+      operationId: bulkDeletePersonas
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeletePayloadOps'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeleteResponseOps'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  "/iam/personas/upgradable-personas":
+    get:
+      tags:
+        - Personas
+      summary: Get upgradable list of Personas for all the Personas
+      operationId: getUpgradablePersonas
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/UpgradablePersonaApiResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  "/iam/personas/{name}":
+    delete:
+      tags:
+        - Personas
+      summary: Delete a Persona
+      operationId: deletePersona
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+        - name: name
+          in: path
+          description: name
+          required: true
+          style: simple
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+            example: DBAdmins
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+    patch:
+      tags:
+        - Personas
+      summary: Update a Persona
+      operationId: updatePersona
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+        - name: name
+          in: path
+          description: name
+          required: true
+          style: simple
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+            example: DBAdmins
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePersonaPayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/PersonaDTO'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  "/iam/i/privileges":
+    post:
+      tags:
+        - Privileges
+      summary: Create a privilege
+      operationId: createPrivilege
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrivilegeCreatePayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/PrivilegeDTO'
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  "/iam/i/privileges/{name}":
+    delete:
+      tags:
+        - Privileges
+      summary: Delete a privilege
+      operationId: deletePrivilege
+      parameters:
+        - name: name
+          in: path
+          description: name
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: softDelete
+          in: query
+          description: softDelete
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+    patch:
+      tags:
+        - Privileges
+      summary: Update a privilege
+      operationId: updatePrivilege
+      parameters:
+        - name: name
+          in: path
+          description: name
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrivilegeUpdatePayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/PrivilegeDTO'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  "/tessell-internal/iam/privileges":
+    get:
+      tags:
+        - Privileges
+      summary: Get list of privileges
+      operationId: getPrivileges
+      parameters:
+        - name: page-size
+          in: query
+          description: page-size
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: page-offset
+          in: query
+          description: page-offset
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: time-zone
+          in: query
+          description: time-zone
+          required: false
+          style: form
+          schema:
+            type: string
+        - name: consumer-type
+          in: query
+          description: consumer-type
+          required: false
+          style: form
+          schema:
+            $ref: 'common-specification.yaml#/components/schemas/consumerType'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/IamApiResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  "/tessell-internal/iam/privileges/{name}":
+    get:
+      tags:
+        - Privileges
+      summary: Get details of an privilege
+      operationId: getPrivilege
+      parameters:
+        - name: name
+          in: path
+          description: name
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/PrivilegeDTO'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  "/tessell-internal/iam/users":
+    get:
+      tags:
+        - Users
+      summary: Get list of all the users internal API
+      operationId: getUsersInternal
+      parameters:
+        - name: tenant-id
+          in: header
+          description: tenant-id
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: personas
+          in: query
+          description: Personas that users are belonging to
+          required: false
+          style: form
+          schema:
+            type: array
+            description: List of persona names
+            items:
+              type: string
+        - name: load-apps
+          in: query
+          description: Flag to include/exclude Application details in response.
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: false
+        - name: load-personas
+          in: query
+          description: Flag to include/exclude Persona details in response.
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: false
+        - name: load-subscriptions
+          in: query
+          description: Flag to include/exclude Subscriptions details in response.
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: false
+        - name: page-size
+          in: query
+          description: page-size (paging is not implemented yet)
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: page-offset
+          in: query
+          description: page-offset (paging is not implemented yet)
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: time-zone
+          in: query
+          description: time-zone
+          required: false
+          style: form
+          schema:
+            type: string
+        - name: consumer-type
+          in: query
+          description: consumer-type
+          required: false
+          style: form
+          schema:
+            $ref: 'common-specification.yaml#/components/schemas/consumerType'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/IamApiResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    post:
+      tags:
+        - Users
+      summary: Get list of all the users by privileges
+      operationId: getUsersByPrivileges
+      parameters:
+        - name: tenant-id
+          in: header
+          description: tenant-id
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              description: List of privilege names
+              items:
+                type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/IamApiResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    delete:
+      tags:
+        - Users
+      summary: Delete all the users of a tenant (Internal API)
+      operationId: deleteAllUsersInTenantInternal
+      parameters:
+        - name: tenant-id
+          in: header
+          description: TenantId for which all the users to be deleted
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/iam/users/bulk-delete:
+    post:
+      tags:
+        - Users
+      summary: Get status of bulk deletion of users
+      operationId: getStatusOfBulkDeleteUsersOfTenant
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeletePayloadOps'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeleteResponseOps'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    delete:
+      tags:
+        - Users
+      summary: Bulk delete all users of tenant
+      operationId: bulkDeleteUsersOfTenant
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeletePayloadOps'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeleteResponseOps'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  "/iam/users":
+    get:
+      tags:
+        - Users
+      summary: Get list of all the users
+      operationId: getUsers
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+        - name: personas
+          in: query
+          description: Personas that users are belonging to
+          required: false
+          style: form
+          schema:
+            type: array
+            description: List of persona names
+            items:
+              type: string
+              minLength: 1
+              maxLength: 64
+          example: ["DBAdmins", "Data Owner"]
+        - name: load-apps
+          in: query
+          description: Flag to include/exclude Application details in response
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: false
+        - name: load-personas
+          in: query
+          description: Flag to include/exclude Persona details in response
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: false
+        - name: load-subscriptions
+          in: query
+          description: Flag to include/exclude Subscriptions details in response.
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: false
+        - $ref: 'common-specification.yaml#/components/parameters/pageSize'
+        - $ref: 'common-specification.yaml#/components/parameters/pageOffset'
+        - $ref: 'common-specification.yaml#/components/parameters/timeZone'
+        - name: consumer-type
+          in: query
+          description: consumer-type ( Deprecated )
+          required: false
+          style: form
+          schema:
+            $ref: 'common-specification.yaml#/components/schemas/consumerType'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/IamApiResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  "/iam/users/invite-user":
+    post:
+      tags:
+        - Users
+      summary: Create for a new user
+      operationId: inviteUser
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InviteUserPayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  "/iam/users/accept-invite":
+    post:
+      tags:
+        - Users
+      summary: Accept invite
+      operationId: acceptInvite
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcceptInviteUserPayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tessell-internal/iam/users/create:
+    post:
+      tags:
+        - Users
+      summary: Create User in non Active state
+      operationId: createUserInternal
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserInternalPayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-internal/iam/users/activate:
+    post:
+      tags:
+        - Users
+      summary: First time activate user
+      operationId: activateUserInternal
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivateUserInternalPayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  "/iam/users/change-password":
+    post:
+      tags:
+        - Users
+      summary: Change current user's password
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      operationId: changePassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordPayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  "/iam/users/force-reset-password":
+    post:
+      tags:
+        - Users
+      summary: Forcefully reset password for a user
+      operationId: forceResetPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForceResetPasswordPayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  "/iam/users/login":
+    post:
+      tags:
+        - Users
+      summary: Login a user
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginUserPayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/LoginUserResponse'
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  "/iam/users/refresh-token":
+    post:
+      tags:
+        - Users
+      summary: Acquire new access-token using refresh-token
+      operationId: refreshToken
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/RefreshTokenResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  "/iam/users/logout":
+    post:
+      tags:
+        - Users
+      summary: Logout a user
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      operationId: logout
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /iam/users/forgot-password/{email-id}:
+    post:
+      tags:
+        - Users
+      summary: Forgot Password
+      operationId: forgotPassword
+      parameters:
+        - name: email-id
+          in: path
+          description: email-id
+          required: true
+          style: simple
+          schema:
+            $ref: '#/components/schemas/EmailId'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  "/iam/users/reset-password":
+    post:
+      tags:
+        - Users
+      summary: Reset password for a user
+      operationId: resetPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordPayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  "/iam/users/reset-password-on-expiry":
+    post:
+      tags:
+        - Users
+      summary: Reset password for a user when password has been expired
+      operationId: resetPasswordOnExpiry
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordOnExpiryPayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  "/iam/users/whoami":
+    get:
+      tags:
+        - Users
+      summary: Get details of a user
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      operationId: whoami
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/UserServiceConsumerDTO'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  "/tessell-internal/iam/users/whoami":
+    get:
+      tags:
+        - Users
+      summary: Get details of a user for internal consumption
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      operationId: internalWhoami
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  "/iam/users/{email-id}":
+    delete:
+      tags:
+        - Users
+      summary: Delete a user
+      operationId: delete
+      parameters:
+        - name: email-id
+          in: path
+          description: email-id
+          required: true
+          style: simple
+          schema:
+            $ref: '#/components/schemas/EmailId'
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+    patch:
+      tags:
+        - Users
+      summary: Update a user
+      operationId: adminUpdateUser
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+        - name: email-id
+          in: path
+          description: emailId
+          required: true
+          style: simple
+          schema:
+            $ref: '#/components/schemas/EmailId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserPayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  "/iam/users/profile":
+    patch:
+      tags:
+        - Users
+      summary: Update self profile
+      operationId: updateUserProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserProfilePayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  "/tessell-internal/iam/users/{email-id}":
+    delete:
+      tags:
+        - Users
+      summary: Delete a user (Internal API)
+      operationId: deleteUser
+      parameters:
+        - name: email-id
+          in: path
+          description: EmailId of the user to be deleted
+          required: true
+          style: simple
+          schema:
+            $ref: '#/components/schemas/EmailId'
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  "/iam/users/{email-id}/change-status":
+    post:
+      tags:
+        - Users
+      summary: Change status of a user
+      operationId: changeStatus
+      parameters:
+        - name: email-id
+          in: path
+          description: email-id
+          required: true
+          style: simple
+          schema:
+            $ref: '#/components/schemas/EmailId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeStatusPayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  "/iam/tessell-internal/users/{app-family}/{app}/check-feature-enabled/{feature-name}":
+    get:
+      tags:
+        - Users
+      summary: Check if a feature is enabled and is active
+      operationId: checkFeatureEnabled
+      parameters:
+        - name: tenant-id
+          in: header
+          description: tenant-id
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: app-family
+          in: path
+          description: app family name
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: app
+          in: path
+          description: app name
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: feature-name
+          in: path
+          description: feature name
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/FeatureStatusResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  "/iam/tessell-internal/users/validate-token/{token-id}":
+    get:
+      tags:
+        - Users
+      summary: Validate if a token is valid or not
+      operationId: validateToken
+      parameters:
+        - name: token-id
+          in: path
+          description: token-id
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                type: boolean
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  "/iam/tessell-internal/users/check-privileges":
+    post:
+      tags:
+        - Users
+      summary: Validate if user has a given privilege or not
+      operationId: checkPrivileges
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      parameters:
+        - name: tenant-id
+          in: header
+          description: tenant-id
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              description: List of privileges names
+              items:
+                type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                type: object
+                additionalProperties:
+                  type: boolean
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  "/iam/tessell-internal/users/ids":
+    post:
+      tags:
+        - Users
+      summary: Given a set of email ids, return the corresponding user ids
+      operationId: getIds
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      parameters:
+        - name: tenant-id
+          in: header
+          description: tenant-id
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              description: List of email ids
+              items:
+                type: string
+                format: email
+              uniqueItems: true
+              minItems: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: List of email-id to user id mappings
+                items:
+                  $ref: '#/components/schemas/EmailToUserIdMapping'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  "/iam/tessell-internal/users/details":
+    post:
+      tags:
+        - Users
+      summary: Given a set of user ids, return the corresponding user details
+      operationId: getDetails
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      parameters:
+        - name: tenant-id
+          in: header
+          description: tenant-id
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              description: List of user ids
+              items:
+                type: string
+                format: uuid
+              uniqueItems: true
+              minItems: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: List of objects each containing the user details of a user
+                items:
+                  $ref: '#/components/schemas/UserDetails'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  "/iam/i/userpools":
+    get:
+      tags:
+        - Userpool
+      summary: Get list of all the userpools
+      operationId: getUserpools
+      parameters:
+        - name: id
+          in: query
+          description: id
+          required: false
+          style: form
+          schema:
+            type: string
+        - name: page-size
+          in: query
+          description: page-size
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: page-offset
+          in: query
+          description: page-offset
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: time-zone
+          in: query
+          description: time-zone
+          required: false
+          style: form
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/IamApiResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+    post:
+      tags:
+        - Userpool
+      summary: Create for a new userpool
+      operationId: createUserpool
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserpoolPayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/UserpoolDTO'
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  "/iam/i/userpools/{userpoolId}":
+    delete:
+      tags:
+        - Userpool
+      summary: Delete a userpool
+      operationId: deleteUserpool
+      parameters:
+        - name: userpoolId
+          in: path
+          description: userpoolId
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: softDelete
+          in: query
+          description: softDelete
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+    patch:
+      tags:
+        - Userpool
+      summary: Update a userpool
+      operationId: updateUserpool
+      parameters:
+        - name: userpoolId
+          in: path
+          description: userpoolId
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserpoolPayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/UserpoolDTO'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  "/iam/tessell-internal/acls/{entity-type}":
+    get:
+      tags:
+        - Acls
+      summary: Get list of acls for an entity type
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      operationId: getAclsWithEntityType
+      parameters:
+        - name: tenant-id
+          in: header
+          description: tenant-id
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: entity-type
+          in: path
+          description: entity-type
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: page-size
+          in: query
+          description: page-size
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: page-offset
+          in: query
+          description: page-offset
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: time-zone
+          in: query
+          description: time-zone
+          required: false
+          style: form
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/AclApiResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    patch:
+      tags:
+        - Acls
+      summary: Share an entity
+      operationId: updateAcls
+      parameters:
+        - name: tenant-id
+          in: header
+          description: tenant-id
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: entity-type
+          in: path
+          description: entity-type
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAclPayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/AclApiResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    delete:
+      tags:
+        - Acls
+      summary: Delete an Acl for an entity type
+      operationId: deleteAcls
+      parameters:
+        - name: tenant-id
+          in: header
+          description: tenant-id
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: entity-type
+          in: path
+          description: entity-type
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: softDelete
+          in: query
+          description: softDelete
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteAclPayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  "/iam/tessell-internal/acls/{entity-type}/{entity-id}":
+    get:
+      tags:
+        - Acls
+      summary: Get list of acls with entity type and entity id
+      operationId: getAclsWithEntityId
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      parameters:
+        - name: tenant-id
+          in: header
+          description: tenant-id
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: entity-type
+          in: path
+          description: entity-type
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: entity-id
+          in: path
+          description: entity-id
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+        - name: page-size
+          in: query
+          description: page-size
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: page-offset
+          in: query
+          description: page-offset
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: time-zone
+          in: query
+          description: time-zone
+          required: false
+          style: form
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/AclApiResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  "/iam/tessell-internal/acls/{entity-type}/acl/{acl-name}":
+    get:
+      tags:
+        - Acls
+      summary: Get list of acls with entity type and acl name
+      operationId: getAclsWithAclName
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      parameters:
+        - name: tenant-id
+          in: header
+          description: tenant-id
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: entity-type
+          in: path
+          description: entity-type
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: acl-name
+          in: path
+          description: acl-name
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: page-size
+          in: query
+          description: page-size
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: page-offset
+          in: query
+          description: page-offset
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: time-zone
+          in: query
+          description: time-zone
+          required: false
+          style: form
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/AclApiResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  "/iam/tessell-internal/acls/{entity-type}/{entity-id}/recipients/{recipient-type}":
+    get:
+      tags:
+        - Acls
+      summary: Get list of acls with entity type, entity id and recipient type
+      operationId: getAclsWithRecipientType
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      parameters:
+        - name: tenant-id
+          in: header
+          description: tenant-id
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: entity-type
+          in: path
+          description: entity-type
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: entity-id
+          in: path
+          description: entity-id
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+        - name: recipient-type
+          in: path
+          description: recipient-type
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: page-size
+          in: query
+          description: page-size
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: page-offset
+          in: query
+          description: page-offset
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: time-zone
+          in: query
+          description: time-zone
+          required: false
+          style: form
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/AclEntityApiResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  "/iam/tessell-internal/acls/{entity-type}/{entity-id}/recipients/{recipient-type}/{recipient-id}":
+    get:
+      tags:
+        - Acls
+      summary: Get list of acls with entity type, entity id, recipient type and recipient id
+      operationId: getAclsWithRecipientId
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      parameters:
+        - name: tenant-id
+          in: header
+          description: tenant-id
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: entity-type
+          in: path
+          description: entity-type
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: entity-id
+          in: path
+          description: entity-id
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+        - name: recipient-type
+          in: path
+          description: recipient-type
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: recipient-id
+          in: path
+          description: recipient-id
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: page-size
+          in: query
+          description: page-size
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: page-offset
+          in: query
+          description: page-offset
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: time-zone
+          in: query
+          description: time-zone
+          required: false
+          style: form
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/AclApiResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  "/iam/tessell-internal/acls/{entity-type}/{entity-id}/check-permission/{permission}":
+    get:
+      tags:
+        - Acls
+      summary: Check if an ACL permission exists or not
+      operationId: checkAclPermission
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      parameters:
+        - name: tenant-id
+          in: header
+          description: tenant-id
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: entity-type
+          in: path
+          description: entity-type
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: entity-id
+          in: path
+          description: entity-id
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+        - name: permission
+          in: path
+          description: name of acl permission
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                type: boolean
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  "/iam/tessell-internal/acls/check-acl/{entity-type}/{entity-id}/{acl-name}/recipients/{recipient-type}/{recipient-id}":
+    get:
+      tags:
+        - Acls
+      summary: Check if an ACL exists or not
+      operationId: checkAclForRecipient
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      parameters:
+        - name: tenant-id
+          in: header
+          description: tenant-id
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: entity-type
+          in: path
+          description: entity-type
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: entity-id
+          in: path
+          description: entity-id
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+        - name: acl-name
+          in: path
+          description: name of acl
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: recipient-type
+          in: path
+          description: recipient-type
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: recipient-id
+          in: path
+          description: recipient-id
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                type: boolean
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  "/iam/tessell-internal/batch-acls":
+    post:
+      tags:
+        - Acls
+      summary: Batch acl api
+      operationId: getBatchAcls
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      parameters:
+        - name: tenant-id
+          in: header
+          description: tenant-id
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchAclPayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/BatchAclResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/iam/acls/bulk-delete:
+    post:
+      tags:
+        - Acls
+      summary: Get status of bulk deletion of ACLs
+      operationId: getStatusOfBulkDeleteAcls
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeletePayloadOps'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeleteResponseOps'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    delete:
+      tags:
+        - Acls
+      summary: Bulk delete ACLs
+      operationId: bulkDeleteAcls
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeletePayloadOps'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeleteResponseOps'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  "/iam/roles":
+    get:
+      tags:
+        - Roles
+      summary: Get a list of Roles
+      operationId: getRoles
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      parameters:
+        - name: entity-type
+          in: query
+          description: entity-type
+          required: false
+          style: form
+          schema:
+            type: string
+        - $ref: 'common-specification.yaml#/components/parameters/pageSize'
+        - $ref: 'common-specification.yaml#/components/parameters/pageOffset'
+        - $ref: 'common-specification.yaml#/components/parameters/timeZone'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/RoleApiResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  "/tessell-internal/iam/roles":
+    post:
+      tags:
+        - Roles
+      summary: Create a Role
+      operationId: createRole
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRolePayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/RoleResponse'
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  "/tessell-internal/iam/roles/{entity-type}/{role-name}":
+    get:
+      tags:
+        - Roles
+      summary: Get details of an Role
+      operationId: getRole
+      parameters:
+        - name: entity-type
+          in: path
+          description: entity-type
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: role-name
+          in: path
+          description: role-name
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/RoleResponse'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    delete:
+      tags:
+        - Roles
+      summary: Delete an Role
+      operationId: deleteRole
+      parameters:
+        - name: entity-type
+          in: path
+          description: entity-type
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: role-name
+          in: path
+          description: role-name
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: softDelete
+          in: query
+          description: softDelete
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-internal/iam/{entity-type}/permissions:
+    get:
+      operationId: getPermissions
+      parameters:
+        - name: entity-type
+          in: path
+          description: entity-type
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: load-internal-permissions
+          in: query
+          description: load-internal-permissions
+          required: false
+          style: form
+          schema:
+            type: string
+            default: 'false'
+        - $ref: 'common-specification.yaml#/components/parameters/pageSize'
+        - $ref: 'common-specification.yaml#/components/parameters/pageOffset'
+        - $ref: 'common-specification.yaml#/components/parameters/timeZone'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionApiResponse'
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+      summary: Get a list of Tessell Permissions
+      tags:
+        - tessell-permission-controller
+  /tessell-internal/permissions:
+    post:
+      operationId: createPermission
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PermissionCreatePayload'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionDTO'
+          description: OK
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+      summary: Create an Tessell Permission
+      tags:
+        - tessell-permission-controller
+  /tessell-internal/iam/{entity-type}/permissions/{permission}:
+    delete:
+      operationId: deletePermission
+      parameters:
+        - description: entity-type
+          explode: false
+          in: path
+          name: entity-type
+          required: true
+          schema:
+            type: string
+          style: simple
+        - description: permission
+          explode: false
+          in: path
+          name: permission
+          required: true
+          schema:
+            type: string
+          style: simple
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+          description: OK
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+      summary: Delete a Tessell Permission
+      tags:
+        - tessell-permission-controller
+    get:
+      operationId: getPermission
+      parameters:
+        - description: entity-type
+          explode: false
+          in: path
+          name: entity-type
+          required: true
+          schema:
+            type: string
+          style: simple
+        - description: permission
+          explode: false
+          in: path
+          name: permission
+          required: true
+          schema:
+            type: string
+          style: simple
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionDTO'
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+      summary: Get details of an Tessell Permission
+      tags:
+        - tessell-permission-controller
+    patch:
+      operationId: updatePermission
+      parameters:
+        - description: entity-type
+          explode: false
+          in: path
+          name: entity-type
+          required: true
+          schema:
+            type: string
+          style: simple
+        - description: permission
+          explode: false
+          in: path
+          name: permission
+          required: true
+          schema:
+            type: string
+          style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PermissionUpdatePayload'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionDTO'
+          description: OK
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+      summary: Update a Tessell Permission
+      tags:
+        - tessell-permission-controller
+  /iam/sso:
+    get:
+      tags:
+        - SSO
+      operationId: getSsoConfiguration
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SsoConfigurationDTO'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /iam/idps:
+    post:
+      tags:
+        - Identity Providers
+      summary: Create a new integration with an Identity Provider
+      operationId: createIdpConfiguration
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateIdpPayload'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityProviderDTO'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tessell-ops/iam/idps/bulk-delete:
+    post:
+      tags:
+        - Identity Providers
+      summary: Get status of bulk deletion of Identity Providers
+      operationId: getStatusOfBulkDeleteIdps
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeletePayloadOps'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeleteResponseOps'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    delete:
+      tags:
+        - Identity Providers
+      summary: Bulk delete Identity Providers
+      operationId: bulkDeleteIdps
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeletePayloadOps'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeleteResponseOps'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /iam/idps/configured-idps:
+    get:
+      tags:
+        - Identity Providers
+      summary: Get a list of integrated Identity Providers
+      operationId: getConfiguredIdps
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfiguredIdpsApiResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /iam/idps/{idp-id}:
+    put:
+      tags:
+        - Identity Providers
+      summary: Update an Identity Provider
+      operationId: updateIdpConfiguration
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+        - name: idp-id
+          in: path
+          description: UUID of an Identity Provider Integration
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateIdpPayload'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityProviderDTO'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+    delete:
+      tags:
+        - Identity Providers
+      summary: Delete an Identity Provider integration
+      operationId: deleteIdpConfiguration
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+        - name: idp-id
+          in: path
+          description: UUID of an Identity Provider Integration
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /iam/api-keys:
+    post:
+      tags:
+        - API Keys
+      operationId: createApiKey
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      parameters:
+        - name: tenant-id
+          in: header
+          description: tenant-id
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateApiKeyPayload'
+      responses:
+        200:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateApiKeyDTO'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+    get:
+      operationId: getApiKeys
+      parameters:
+        - name: tenant-id
+          in: header
+          description: tenant-id
+          required: true
+          style: simple
+          schema:
+            type: string
+        - $ref: 'common-specification.yaml#/components/parameters/pageSize'
+        - $ref: 'common-specification.yaml#/components/parameters/pageOffset'
+        - $ref: 'common-specification.yaml#/components/parameters/timeZone'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKeyApiResponse'
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+      summary: Get a list of Tessell Permission
+      tags:
+        - API Keys
+
+  /tessell-ops/iam/api-keys/bulk-delete:
+    post:
+      tags:
+        - API Keys
+      summary: Get status of bulk deletion of API Keys
+      operationId: getStatusOfBulkDeleteApiKeys
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeletePayloadOps'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeleteResponseOps'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    delete:
+      tags:
+        - API Keys
+      summary: Bulk delete API Keys
+      operationId: bulkDeleteApiKeys
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeletePayloadOps'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/ResourceBulkDeleteResponseOps'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /iam/api-keys/{label}:
+    delete:
+      operationId: revokeApiKey
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+        - description: label
+          explode: false
+          in: path
+          name: label
+          required: true
+          schema:
+            type: string
+          style: simple
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+          description: OK
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+      summary: Delete a Tessell api key
+      tags:
+        - API Keys
+  /iam/authorize:
+    post:
+      tags:
+        - API Keys
+      operationId: authorizeApiKey
+      security:
+        - $ref: 'common-specification.yaml#/components/securitySchemes/BearerAuth'
+      parameters:
+        - name: tenant-id
+          in: header
+          description: tenant-id
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizeApiKeyPayload'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizeApiKeyResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+components:
+  schemas:
+    IamApiResponse:
+      title: IamApiResponse
+      type: object
+      properties:
+        metadata:
+          $ref: 'common-specification.yaml#/components/schemas/apiMetadata'
+        response:
+          type: array
+          items:
+            type: object
+    ChangePasswordPayload:
+      title: ChangePasswordPayload
+      type: object
+      description: This is a definition for Tessell's user password update payload object
+      properties:
+        newPassword:
+          $ref: '#/components/schemas/NewPassword'
+        oldPassword:
+          $ref: '#/components/schemas/OldPassword'
+      required:
+        - newPassword
+        - oldPassword
+    ChangeStatusPayload:
+      title: ChangeStatusPayload
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/UserStatus'
+      description: This is a definition for Tessell's user status update payload object
+    CreateUserPayload:
+      title: CreateUserPayload
+      type: object
+      description: This is a definition for Tessell's user payload object
+      properties:
+        emailId:
+          type: string
+          description: Email id of the user
+        firstName:
+          type: string
+          description: First name of the user
+        lastName:
+          type: string
+          description: Last name of the user
+        password:
+          type: string
+          description: Password of the user
+        authType:
+          $ref: '#/components/schemas/AuthType'
+        persona:
+          type: string
+          description: Persona of the user
+        subscriptions:
+          type: array
+          description: List of subscription names
+          items:
+            type: string
+    CreateUserInternalPayload:
+      title: CreateUserInternalPayload
+      type: object
+      description: This is a payload for Creating User in Tessell
+      required:
+        - emailId
+        - firstName
+        - lastName
+        - persona
+      properties:
+        emailId:
+          $ref: '#/components/schemas/EmailId'
+        firstName:
+          $ref: '#/components/schemas/FirstName'
+        lastName:
+          $ref: '#/components/schemas/LastName'
+        persona:
+          type: string
+          description: Persona to be assigned
+          minLength: 1
+          maxLength: 64
+          example: Administrator
+    ActivateUserInternalPayload:
+      title: ActivateUserInternalPayload
+      type: object
+      required:
+        - authType
+        - emailId
+      properties:
+        authType:
+          $ref: '#/components/schemas/AuthType'
+        emailId:
+          $ref: '#/components/schemas/EmailId'
+        password:
+          $ref: '#/components/schemas/Password'
+      description: This is a payload for Activating user
+    CreateFederatedUserPayload:
+      title: CreateFederatedUserPayload
+      type: object
+      properties:
+        emailId:
+          $ref: '#/components/schemas/EmailId'
+        firstName:
+          $ref: '#/components/schemas/FirstName'
+        lastName:
+          $ref: '#/components/schemas/LastName'
+        authType:
+          $ref: '#/components/schemas/AuthType'
+        personas:
+          type: array
+          description: List of personas
+          items:
+            type: string
+        subscriptions:
+          type: array
+          description: List of subscription names
+          items:
+            type: string
+            minLength: 1
+            maxLength: 255
+      description: This is a definition for Tessell's user payload object
+    AuthType:
+      title: AuthType
+      type: string
+      description: This is a definition for Tessell's auth type status object
+      enum:
+        - GOOGLE
+        - PASSWORD
+        - AZURE_AD
+        - OKTA
+    InviteUserPayload:
+      title: InviteUserPayload
+      type: object
+      description: This is a definition for Tessell's user payload object
+      properties:
+        emailId:
+          $ref: '#/components/schemas/EmailId'
+        personas:
+          type: array
+          description: List of personas
+          items:
+            type: string
+            minLength: 1
+            maxLength: 255
+          minItems: 1
+          maxItems: 1
+          example: ['Administrator']
+        subscriptions:
+          type: array
+          description: List of subscription names
+          items:
+            type: string
+            minLength: 1
+            maxLength: 255
+          example: ['default', 'Test123']
+      required:
+        - emailId
+    AcceptInviteUserPayload:
+      title: AcceptInviteUserPayload
+      type: object
+      description: This is a definition for accept invite payload
+      required:
+        - emailId
+        - password
+        - otp
+        - firstName
+        - authType
+      properties:
+        emailId:
+          $ref: '#/components/schemas/EmailId'
+        otp:
+          type: string
+          description: OTP to validate the request
+          minLength: 1
+          maxLength: 1000
+        firstName:
+          $ref: '#/components/schemas/FirstName'
+        lastName:
+          $ref: '#/components/schemas/LastName'
+        password:
+          $ref: '#/components/schemas/Password'
+        authType:
+          $ref: '#/components/schemas/AuthType'
+    ForceResetPasswordPayload:
+      title: ForceResetPasswordPayload
+      description: This is a definition for Tessell user's force password reset payload object
+      type: object
+      required:
+        - emailId
+        - newPassword
+      properties:
+        emailId:
+          $ref: '#/components/schemas/EmailId'
+        newPassword:
+          $ref: '#/components/schemas/NewPassword'
+    LoginUserPayload:
+      title: LoginUserPayload
+      type: object
+      description: This is a definition for Tessell login user object
+      required:
+        - emailId
+        - password
+      properties:
+        authType:
+          $ref: '#/components/schemas/AuthType'
+        emailId:
+          $ref: '#/components/schemas/EmailId'
+        password:
+          $ref: '#/components/schemas/Password'
+    LoginUserResponse:
+      title: LoginUserResponse
+      type: object
+      description: This is a definition for Tessell login user response object
+      properties:
+        accessToken:
+          type: string
+          description: Api access token of the user
+        refreshToken:
+          type: string
+          description: Refresh token of the user
+        emailId:
+          $ref: '#/components/schemas/EmailId'
+        firstName:
+          $ref: '#/components/schemas/FirstName'
+        lastName:
+          $ref: '#/components/schemas/LastName'
+        tenantUserAttributes:
+          type: array
+          description: List of tenant specific user attributes
+          items:
+            $ref: '#/components/schemas/TenantUserAttributes'
+        status:
+          $ref: '#/components/schemas/UserStatus'
+        dateLastLoggedIn:
+          type: string
+          description: Date when the user last logged into Tessell (null if logging in for first time)
+          format: date-time
+    EmailId:
+      title: EmailId
+      type: string
+      description: Email Id of the user
+      minLength: 3
+      maxLength: 255
+      example: abc@tessell.com
+    Password:
+      title: Password
+      type: string
+      description: Password of the user
+      minLength: 8
+      maxLength: 4096
+      example: Tessell@999
+    NewPassword:
+      title: NewPassword
+      type: string
+      description: New password of the user
+      minLength: 8
+      maxLength: 4096
+      example: Tessell@888
+    OldPassword:
+      title: OldPassword
+      type: string
+      description: Old password of the user
+      minLength: 8
+      maxLength: 4096
+      example: Tessell@999
+    FirstName:
+      title: FirstName
+      type: string
+      description: First name of the user
+      minLength: 1
+      maxLength: 60
+      example: John
+    LastName:
+      title: LastName
+      type: string
+      description: Last name of the user
+      minLength: 1
+      maxLength: 60
+      example: Martin
+    RefreshTokenResponse:
+      title: LoginUserPayload
+      description: Response of Refresh Token API
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: Access Token
+    CreatePersonaPayload:
+      title: CreatePersonaPayload
+      type: object
+      required:
+        - name
+        - apps
+      properties:
+        description:
+          type: string
+          description: Description of the Persona
+          minLength: 0
+          maxLength: 128
+          example: Persona for Database Administrators
+        name:
+          type: string
+          description: Name of the persona
+          minLength: 1
+          maxLength: 64
+          example: DBAdmins
+        # TODO: deprecate privileges
+        privileges:
+          type: array
+          description: List of privileges (Deprecated)
+          items:
+            type: string
+        apps:
+          type: array
+          description: List of Application names that the new Persona will have access to
+          items:
+            type: string
+            minLength: 1
+            maxLength: 100
+          minItems: 1
+          maxItems: 100
+          example: ['My Services', 'Provisioning', 'DB Governance']
+      description: This is a definition for Tessell create persona payload object
+    PersonaDTO:
+      title: PersonaDTO
+      type: object
+      properties:
+        tenantId:
+          type: string
+          description: Tessell tenant id
+        systemCreated:
+          type: boolean
+          default: false
+          description: system created persona
+        dateCreated:
+          type: string
+          description: Date when the persona is created  metadata
+          format: date-time
+        dateModified:
+          type: string
+          description: Date when persona is last modified  metadata
+          format: date-time
+        description:
+          type: string
+          description: Description of the persona
+        id:
+          type: string
+          description: Tessell generated UUID for the persona object
+          format: uuid
+        name:
+          type: string
+          description: Name of the persona
+        privileges:
+          type: array
+          description: List of privileges.
+          items:
+            $ref: '#/components/schemas/PrivilegeDTO'
+        apps:
+          type: array
+          description: List of apps
+          items:
+            $ref: '#/components/schemas/AppDTO'
+        status:
+          $ref: '#/components/schemas/PersonaStatus'
+      description: This is a definition for Tessell internal persona DTO object
+    UpdatePersonaPayload:
+      title: UpdatePersonaPayload
+      description: This is a definition for Persona update object
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the Persona
+          minLength: 1
+          maxLength: 64
+          example: DBAdmins
+        description:
+          type: string
+          description: Description of the Persona
+          minLength: 0
+          maxLength: 128
+          example: Persona for Database Administrators
+        apps:
+          type: array
+          description: New list of Application names that the Persona will have access to
+          items:
+            type: string
+            minLength: 1
+            maxLength: 100
+          minItems: 1
+          maxItems: 100
+          example: ['My Services', 'Provisioning', 'DB Governance', 'Availability Machines']
+    PersonaStatus:
+      title: PersonaStatus
+      type: string
+      description: This is a definition for Tessell persona status object
+      enum:
+        - ENABLED
+        - DISABLED
+        - DELETED
+    PrivilegeCreatePayload:
+      title: PrivilegeCreatePayload
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description of the privilege
+        name:
+          type: string
+          description: Name of the privilege
+      description: This is a definition for Tessell internal create privilege payload object
+    PrivilegeDTO:
+      title: PrivilegeDTO
+      type: object
+      properties:
+        dateCreated:
+          type: string
+          description: Date when the app is created  metadata
+          format: date-time
+        dateModified:
+          type: string
+          description: Date when app is last modified  metadata
+          format: date-time
+        description:
+          type: string
+          description: Description of the app
+        id:
+          type: string
+          description: Tessell generated UUID for the app object
+          format: uuid
+        name:
+          type: string
+          description: Name of the privilege
+        status:
+          $ref: '#/components/schemas/PrivilegeStatus'
+      description: This is a definition for Tessell
+    PersonaAppDTO:
+      title: PersonaAppDTO
+      type: object
+      properties:
+        dateCreated:
+          type: string
+          description: Date when the app is created  metadata
+          format: date-time
+        dateModified:
+          type: string
+          description: Date when app is last modified  metadata
+          format: date-time
+        description:
+          type: string
+          description: Description of the app
+        id:
+          type: string
+          description: Tessell generated UUID for the app object
+          format: uuid
+        name:
+          type: string
+          description: Name of the app
+      description: This is a definition for Tessell
+    PrivilegeStatus:
+      title: PrivilegeStatus
+      type: string
+      description: This is a definition for Tessell privilege status object
+      enum:
+        - DELETED
+        - ENABLED
+    PrivilegeUpdatePayload:
+      title: PrivilegeUpdatePayload
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description of the privilege
+        name:
+          type: string
+          description: Name of the privilege
+      description: This is a definition for Tessell privilege update object
+    ResetPasswordPayload:
+      title: ResetPasswordPayload
+      type: object
+      description: This is a definition for Tessell's user password reset payload
+      required:
+        - otp
+        - emailId
+        - password
+      properties:
+        otp:
+          type: string
+          description: OTP to validate the request
+          minLength: 1
+          maxLength: 1000
+        emailId:
+          $ref: '#/components/schemas/EmailId'
+        password:
+          $ref: '#/components/schemas/NewPassword'
+    ResetPasswordOnExpiryPayload:
+      title: ResetPasswordOnExpiryPayload
+      type: object
+      description: This is a definition for Tessell's user password reset payload while Password Expired
+      required:
+        - emailId
+        - oldPassword
+        - newPassword
+      properties:
+        emailId:
+          $ref: '#/components/schemas/EmailId'
+        oldPassword:
+          $ref: '#/components/schemas/OldPassword'
+        newPassword:
+          $ref: '#/components/schemas/NewPassword'
+    FeatureStatusResponse:
+      title: FeatureStatusResponse
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: string
+          enum:
+            - ENABLED
+            - DISABLED
+    UpdateUserProfilePayload:
+      title: UpdateUserProfilePayload
+      type: object
+      description: This is a definition for Tessell's user update profile payload object
+      properties:
+        firstName:
+          $ref: '#/components/schemas/FirstName'
+        lastName:
+          $ref: '#/components/schemas/LastName'
+
+    UserAccessControlFlags:
+      type: string
+      enum:
+        - DB_SERVICE_APP_ADMIN
+
+    UpdateUserPayload:
+      title: UpdateUserPayload
+      type: object
+      properties:
+        persona:
+          type: string
+          minLength: 1
+          maxLength: 64
+          example: Administrator
+        accessControlFlags:
+          type: array
+          uniqueItems: true
+          maxItems: 20
+          items:
+            $ref: '#/components/schemas/UserAccessControlFlags'
+      description: This is a definition for Tessell's user update payload object
+    UserAppsDTO:
+      title: UserAppsDTO
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the app
+        privileges:
+          type: array
+          description: List of privileges of user on the app.
+          items:
+            type: string
+        features:
+          type: array
+          description: List of features of user on the app.
+          items:
+            $ref: '#/components/schemas/UserAppFeatures'
+      description: This is a definition for Tessell user's apps object
+    UserAppFeatures:
+      title: UserAppFeatures
+      type: object
+      properties:
+        name:
+          type: string
+          description: Internal name of the feature
+        displayName:
+          type: string
+          description: Display name of feature
+        description:
+          type: string
+          description: description of the feature.
+      description: This is a definition for Tessell user's apps object
+    UserAppsServiceConsumerDTO:
+      title: UserAppsDTO
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Id of the app
+        name:
+          type: string
+          description: Name of the app
+        privileges:
+          type: array
+          description: List of privileges of user on the app.
+          items:
+            type: string
+        features:
+          type: array
+          description: List of features of user on the app.
+          items:
+            $ref: '#/components/schemas/UserAppFeatures'
+      description: This is a definition for Tessell user's apps object
+    TenantUserAttributes:
+      title: TenantUserAttributes
+      type: object
+      properties:
+        tenantId:
+          type: string
+          description: Tenant id to be used in the header in all the apis post login
+        tenantFirstName:
+          type: string
+          description: First Name of the tenant
+        tenantLastName:
+          type: string
+          description: Last Name of the tenant
+        tenantEmail:
+          type: string
+          description: Tenant email using which the tenant was registered
+        tenantType:
+          type: string
+          description: Type of the tenant
+        tenantDomain:
+          type: string
+          description: Type of the tenant
+        tenantServicePlan:
+          type: string
+          description: Service plan of tenant
+        tenantDateCreated:
+          type: string
+          description: Date tenant is created on
+          format: date-time
+        personas:
+          type: array
+          description: List of personas.
+          items:
+            $ref: '#/components/schemas/UserPersonaDTO'
+        subscriptions:
+          type: array
+          description: List of subscription names of user
+          items:
+            $ref: '#/components/schemas/UserSubscriptionDTO'
+        accessControlFlags:
+          type: array
+          description: List of Access Control Flags of user
+          items:
+            $ref: '#/components/schemas/UserAccessControlFlags'
+      description: This is a definition for Tessell user persona DTO object
+    TenantUserServiceConsumerAttributes:
+      title: TenantUserServiceConsumerAttributes
+      type: object
+      properties:
+        tenantId:
+          type: string
+          description: Email id of the tenant
+        tenantFirstName:
+          type: string
+          description: First Name of the tenant
+        tenantLastName:
+          type: string
+          description: Last Name of the tenant
+        tenantEmail:
+          type: string
+          description: Tenant email using which the tenant was registered
+        tenantType:
+          type: string
+          description: Type of the tenant
+        tenantDomain:
+          type: string
+          description: Type of the tenant
+        tenantServicePlan:
+          type: string
+          description: Service Plan of tenant
+        tenantDateCreated:
+          type: string
+          description: Date tenant is created on
+          format: date-time
+        personas:
+          type: array
+          description: List of personas.
+          items:
+            $ref: '#/components/schemas/UserPersonaServiceConsumerDTO'
+        subscriptions:
+          type: array
+          description: List of subscriptions of user
+          items:
+            type: string
+        accessControlFlags:
+          type: array
+          description: List of Access Control Flags of user
+          items:
+            $ref: '#/components/schemas/UserAccessControlFlags'
+      description: This is a definition for Tessell user persona DTO object
+    UserPersonaDTO:
+      title: UserPersonaDTO
+      type: object
+      properties:
+        apps:
+          type: array
+          description: List of apps.
+          items:
+            $ref: '#/components/schemas/UserAppsDTO'
+        id:
+          type: string
+          format: uuid
+          description: Id of the persona
+        name:
+          type: string
+          description: Name of the persona
+      description: This is a definition for Tessell user persona DTO object
+    UserSubscriptionDTO:
+      title: UserSubscriptionDTO
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Id of the subscription
+        name:
+          type: string
+          description: Name of the subscription
+      description: This is a definition for Tessell user subscription DTO object
+    UserPersonaServiceConsumerDTO:
+      title: UserPersonaServiceConsumerDTO
+      type: object
+      properties:
+        apps:
+          type: array
+          description: List of apps.
+          items:
+            $ref: '#/components/schemas/UserAppsDTO'
+        name:
+          type: string
+          description: Name of the persona
+      description: This is a definition for Tessell user persona DTO object
+    UserServiceConsumerDTO:
+      title: UserServiceConsumerDTO
+      type: object
+      properties:
+        emailId:
+          $ref: '#/components/schemas/EmailId'
+        firstName:
+          $ref: '#/components/schemas/FirstName'
+        lastName:
+          $ref: '#/components/schemas/LastName'
+        authType:
+          $ref: '#/components/schemas/AuthType'
+        tenantUserAttributes:
+          type: array
+          description: List of tenant's user attributes
+          items:
+            $ref: '#/components/schemas/TenantUserServiceConsumerAttributes'
+        status:
+          $ref: '#/components/schemas/UserStatus'
+        dateLastLoggedIn:
+          type: string
+          description: Date when the user last logged into Tessell (null if logging in for first time)
+          format: date-time
+      description: This is a definition for Tessell user object for service consumers
+    UserSubscription:
+      title: UserSubscription
+      type: object
+      properties:
+        name:
+          type: string
+          description: Subscription name
+        status:
+          $ref: '#/components/schemas/UserSubscriptionStatus'
+      description: This is a definition for Tessell user object for service consumers
+    UserSubscriptionsResponse:
+      title: UserSubscriptionsResponse
+      type: array
+      description: List of subscriptions
+      items:
+        $ref: '#/components/schemas/UserSubscription'
+    UserSubscriptionStatus:
+      title: UserSubscriptionStatus
+      type: string
+      description: This is a definition for Tessell user's subscription type object
+      enum:
+        - ENABLED
+        - DISABLED
+    SubscriptionRecipientPayload:
+      title: SubscriptionRecipientPayload
+      type: object
+      properties:
+        users:
+          type: array
+          description: List of users ids
+          items:
+            type: string
+        groups:
+          type: array
+          description: List of group names
+          items:
+            type: string
+      description: This is a definition for Tessell enable subscription
+    AppStatusDTO:
+      title: AppStatusDTO
+      description: Status of the Application
+      type: object
+      enum:
+        - ENABLED
+        - DISABLED
+        - DELETED
+    AppServiceConsumerDTO:
+      title: AppServiceConsumerDTO
+      description: This is a definition for Tessell app object for service consumers
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the app
+        description:
+          type: string
+          description: Description of the app
+        appFamily:
+          type: string
+          description: Family of the app
+        privileges:
+          type: array
+          description: List of privileges
+          items:
+            $ref: '#/components/schemas/PrivilegeServiceConsumerDTO'
+        status:
+          $ref: '#/components/schemas/AppStatusDTO'
+    AppDTO:
+      title: AppDTO
+      description: Tessell Application object
+      type: object
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/BaseEntity'
+        - $ref: '#/components/schemas/AppServiceConsumerDTO'
+        - properties:
+            privileges:
+              type: array
+              description: List of privileges
+              items:
+                $ref: '#/components/schemas/PrivilegeDTO'
+    PrivilegeServiceConsumerDTO:
+      title: PrivilegeServiceConsumerDTO
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the privilege
+        description:
+          type: string
+          description: Description of the privilege
+        status:
+          $ref: '#/components/schemas/PrivilegeStatus'
+      description: This is a definition for Tessell privilege object for service consumers
+    PersonaServiceConsumerDTO:
+      title: PersonaServiceConsumerDTO
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the persona
+        description:
+          type: string
+          description: Description of the persona
+        apps:
+          type: array
+          description: List of apps
+          items:
+            $ref: '#/components/schemas/AppServiceConsumerDTO'
+        status:
+          $ref: '#/components/schemas/PersonaStatus'
+        systemCreated:
+          type: boolean
+          description: Whether a Persona is system created (OOB) or not
+      description: This is a definition for Tessell persona object for service consumers
+    UpgradablePersonaServiceConsumerDTO:
+      title: UpgradablePersonaServiceConsumerDTO
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the persona
+        upgradablePersonaNames:
+          type: array
+          description: Assignable personas
+          items:
+            type: string
+      description: This is a definition for Tessell upgradable persona object for service consumers
+    UpgradablePersonaApiResponse:
+      title: UpgradablePersonaApiResponse
+      type: object
+      properties:
+        metadata:
+          $ref: 'common-specification.yaml#/components/schemas/apiMetadata'
+        response:
+          type: array
+          items:
+            $ref: '#/components/schemas/UpgradablePersonaServiceConsumerDTO'
+    UserStatus:
+      title: UserStatus
+      type: string
+      description: This is a definition for Tessell userpool type object
+      enum:
+        - ACTIVE
+        - FORCE_CHANGE_PASSWORD
+        - INACTIVE
+        - INVITED
+    ConsumerType:
+      title: ConsumerType
+      type: string
+      description: This is a definition for Tessell consumer type object
+      enum:
+        - OPS
+        - SERVICE
+    UserpoolDTO:
+      title: UserpoolDTO
+      type: object
+      properties:
+        clientId:
+          type: string
+          description: AWS userpool client id
+        dateCreated:
+          type: string
+          description: Date when the userpool is created  metadata
+          format: date-time
+        dateModified:
+          type: string
+          description: Date when userpool is last modified  metadata
+          format: date-time
+        id:
+          type: string
+          description: Tessell generated UUID for the userpool object
+          format: uuid
+        name:
+          type: string
+          description: AWS userpool name
+        region:
+          type: string
+          description: AWS userpool region
+        status:
+          $ref: '#/components/schemas/UserpoolStatus'
+        type:
+          $ref: '#/components/schemas/UserpoolType'
+        userpoolId:
+          type: string
+          description: AWS userpool id
+      description: This is a definition for Tessell managed userpool payload object
+    UserpoolPayload:
+      title: UserpoolPayload
+      type: object
+      properties:
+        clientId:
+          type: string
+          description: AWS userpool client id
+        name:
+          type: string
+          description: AWS userpool name
+        region:
+          type: string
+          description: AWS userpool region
+        type:
+          $ref: '#/components/schemas/UserpoolType'
+        userpoolId:
+          type: string
+          description: AWS userpool id
+      description: This is a definition for Tessell internal create userpool payload object
+    UserpoolStatus:
+      title: UserpoolStatus
+      type: string
+      description: This is a definition for Tessell userpool status object
+      enum:
+        - DELETED
+        - DISABLED
+        - ENABLED
+    UserpoolType:
+      title: UserpoolType
+      type: string
+      description: This is a definition for Tessell userpool type object
+      enum:
+        - GLOBAL
+        - LOCAL
+    AclDTO:
+      title: AclDTO
+      type: object
+      properties:
+        entityId:
+          type: string
+          description: entity id of the entity to share
+          format: uuid
+        entityType:
+          type: string
+          description: entity type of the entity to share
+        recipientId:
+          type: string
+          description: recipient id
+        recipientType:
+          $ref: '#/components/schemas/RecipientType'
+        acl:
+          type: string
+        status:
+          $ref: '#/components/schemas/AclStatus'
+        tenantId:
+          type: string
+          description: tenant id of the entity to share
+        dateCreated:
+          type: string
+          description: Date when the acl is created  metadata
+          format: date-time
+        dateModified:
+          type: string
+          description: Date when acl is last modified  metadata
+          format: date-time
+      description: This is a definition for Tessell acl DTO object for service consumers
+    AclApiResponse:
+      title: AclApiResponse
+      type: object
+      properties:
+        metadata:
+          $ref: 'common-specification.yaml#/components/schemas/apiMetadata'
+        response:
+          type: array
+          items:
+            $ref: '#/components/schemas/AclDTO'
+    AclEntityApiResponse:
+      title: AclEntityApiResponse
+      type: object
+      properties:
+        metadata:
+          $ref: 'common-specification.yaml#/components/schemas/apiMetadata'
+        response:
+          $ref: '#/components/schemas/AclEntityResponse'
+    BatchAclPayload:
+      description: This is a definition for Tessell internal get acls batch
+      properties:
+        entityDetails:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+              format: uuid
+      title: BatchAclPayload
+      type: object
+    BatchAclResponse:
+      description: This is a definition for Tessell internal get acls batch
+      properties:
+        batchAcls:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/BatchAclEntityResponse'
+      title: BatchAclPayload
+      type: object
+    BatchAclEntityResponse:
+      title: BatchAclEntityResponse
+      type: object
+      properties:
+        entityId:
+          type: string
+          description: entity id of the entity to share
+          format: uuid
+        userAcls:
+          type: array
+          description: List of recipients
+          items:
+            $ref: '#/components/schemas/UserAcls'
+      description: This is a definition for Tessell acl response for service consumers
+    UserAcls:
+      title: UserAcls
+      type: object
+      properties:
+        emailId:
+          $ref: '#/components/schemas/EmailId'
+        acl:
+          type: string
+          description: acl
+      description: This is a definition for Tessell acl response for service consumers
+    AclEntityResponse:
+      title: AclEntityResponse
+      type: object
+      properties:
+        entityId:
+          type: string
+          description: entity id of the entity to share
+          format: uuid
+        entityType:
+          type: string
+          description: entity type of the entity to share
+        recipients:
+          type: array
+          description: List of recipients
+          items:
+            type: string
+        recipientType:
+          $ref: '#/components/schemas/RecipientType'
+      description: This is a definition for Tessell acl response for service consumers
+    Acl:
+      title: Acl
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of acl
+        status:
+          $ref: '#/components/schemas/AclStatus'
+        dateCreated:
+          type: string
+          description: Date when the acl is created  metadata
+          format: date-time
+        dateModified:
+          type: string
+          description: Date when acl is last modified  metadata
+          format: date-time
+    AclStatus:
+      title: AclStatus
+      type: string
+      description: This is a definition for Tessell acl status object
+      enum:
+        - ENABLED
+        - DISABLED
+        - DELETED
+    UpdateAclPayload:
+      title: UpdateAclPayload
+      type: object
+      properties:
+        entityId:
+          type: string
+          description: entity id of the entity to share
+          format: uuid
+        users:
+          type: array
+          description: List of user ids
+          items:
+            type: string
+        groups:
+          type: array
+          description: List of group ids
+          items:
+            type: string
+        personas:
+          type: array
+          description: List of personas
+          items:
+            type: string
+        acl:
+          type: string
+          description: acl name of the entity to share
+      description: This is a definition for Tessell create acl payload object
+    DeleteAclPayload:
+      title: DeleteAclPayload
+      type: object
+      properties:
+        entityId:
+          type: string
+          description: entity id of the entity to share
+          format: uuid
+        recipientType:
+          $ref: '#/components/schemas/RecipientType'
+        recipients:
+          type: array
+          description: List of recipients
+          items:
+            type: string
+      description: This is a definition for Tessell delete acl payload object
+    CreateRolePayload:
+      title: CreateRolePayload
+      type: object
+      properties:
+        entityType:
+          type: string
+          description: entity type
+        role:
+          type: string
+          description: role name
+        description:
+          type: string
+          description: Description of role
+        permissions:
+          type: array
+          description: list of permissions
+          items:
+            type: string
+        internal:
+          type: boolean
+          description: internal role
+      description: This is a definition for Tessell create role payload object
+    RoleEntity:
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_ROLES
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_ROLES")
+      x-dao-primary-key: id
+      type: object
+      description: This is a definition for Tessell internal create onboarded acl payload object
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/BaseEntity'
+        - title: RoleEntity
+          type: object
+          properties:
+            role:
+              x-dao-query: true
+              x-dao-annotations: |
+                @Column(name="role", nullable = false)
+              type: string
+              description: role name
+            description:
+              x-dao-query: true
+              x-dao-annotations: |
+                @Column(name="description")
+              type: string
+              description: Description of role
+            entityType:
+              x-dao-query: true
+              x-dao-annotations: |
+                @Column(name="entity_type", nullable = false)
+              type: string
+              description: entity type
+            permissions:
+              x-dao-annotations: |
+                @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+                @ToString.Exclude
+                @JsonIgnoreProperties("roles")
+                @JoinTable(name = "TESSELL_ROLES_PERMISSIONS", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
+              x-dto-annotations: |
+                @ToString.Exclude
+              type: array
+              items:
+                $ref: '#/components/schemas/PermissionEntity'
+            internal:
+              x-dao-query: true
+              x-dao-annotations: |
+                @Column(name="internal")
+              description: Internal role
+              type: boolean
+            status:
+              x-dao-annotations: |
+                @Enumerated(EnumType.STRING)
+                  @NotNull
+                  @Type(type = "pgsql_enum")
+              description: Status of the role
+              allOf:
+                - $ref: '#/components/schemas/RoleStatus'
+    RoleResponse:
+      title: RoleResponse
+      type: object
+      properties:
+        role:
+          type: string
+          description: role name
+        description:
+          type: string
+          description: Description of role
+        entityType:
+          type: string
+          description: entity type
+        permissions:
+          type: array
+          description: List of permissions
+          items:
+            $ref: '#/components/schemas/PermissionResponse'
+        status:
+          $ref: '#/components/schemas/RoleStatus'
+        dateCreated:
+          type: string
+          description: Date when onboarded acl is created  metadata
+          format: date-time
+        dateModified:
+          type: string
+          description: Date when onboarded acl is last modified  metadata
+          format: date-time
+      description: This is a definition for Tessell internal create onboarded acl payload object
+    PermissionResponse:
+      title: PermissionResponse
+      type: object
+      properties:
+        permission:
+          type: string
+          description: role name
+        description:
+          type: string
+          description: Description of role
+      description: This is a definition for Tessell internal create onboarded acl payload object
+    RoleApiResponse:
+      title: RoleApiResponse
+      type: object
+      properties:
+        metadata:
+          $ref: 'common-specification.yaml#/components/schemas/apiMetadata'
+        response:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleResponse'
+    RoleStatus:
+      title: RoleStatus
+      type: string
+      description: This is a definition for Tessell onboarded acl status object
+      enum:
+        - DELETED
+        - ENABLED
+    PermissionApiResponse:
+      title: PermissionApiResponse
+      type: object
+      properties:
+        metadata:
+          $ref: 'common-specification.yaml#/components/schemas/apiMetadata'
+        response:
+          type: array
+          items:
+            $ref: '#/components/schemas/PermissionDTO'
+    PermissionDTO:
+      type: object
+      description: This is a definition for Tessell permission DTO object
+      allOf:
+        - title: Permission
+          type: object
+          properties:
+            id:
+              type: string
+              description: Tessell created unique uuid
+            entity-type:
+              description: Entity type of the permission
+              type: string
+            permission:
+              description: Name of the permission
+              type: string
+            description:
+              description: Description of the permission
+              type: string
+            #            status:
+            #              $ref: '#/components/schemas/PermissionStatus'
+            dateCreated:
+              type: string
+              description: Date when the feature is created  metadata
+              format: date-time
+            dateModified:
+              type: string
+              description: Date when feature is last modified  metadata
+              format: date-time
+    PermissionEntity:
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_PERMISSIONS
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_PERMISSIONS")
+      type: object
+      description: This is a definition for Tessell permission DTO object
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/BaseEntity'
+        - title: Permission
+          type: object
+          properties:
+            entity-type:
+              x-dao-query: true
+              x-dao-annotations: |
+                @Column(name="entity_type", nullable = false)
+              description: Entity type of the permission
+              type: string
+            permission:
+              x-dao-query: true
+              x-dao-annotations: |
+                @Column(name="permission", nullable = false)
+              description: Name of the permission
+              type: string
+            description:
+              x-dao-annotations: |
+                @Column(name="description")
+              description: Description of the permission
+              type: string
+            internal:
+              x-dao-query: true
+              x-dao-annotations: |
+                @Column(name="internal")
+              description: Internal permission
+              type: boolean
+            roles:
+              x-dao-annotations: |
+                @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+                  @ToString.Exclude
+                  @JsonIgnoreProperties("permissions")
+                  @JoinTable(name = "TESSELL_ROLES_PERMISSIONS", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
+              x-dto-annotations: |
+                @ToString.Exclude
+              type: array
+              items:
+                $ref: '#/components/schemas/RoleEntity'
+            status:
+              x-dao-annotations: |
+                @Enumerated(EnumType.STRING)
+                  @NotNull
+                  @Type(type = "pgsql_enum")
+              description: Status of the permission
+              allOf:
+                - $ref: '#/components/schemas/PermissionStatus'
+    PermissionCreatePayload:
+      description: This is a definition for Tessell internal create permission payload object
+      example:
+        entityType: entityType
+        permission: name of permission
+        description: description
+      properties:
+        entityType:
+          description: entity type this permission belong to
+          type: string
+          minLength: 1
+          maxLength: 32
+        permission:
+          description: Name of the permission
+          type: string
+          minLength: 1
+          maxLength: 256
+        description:
+          description: Description of the permission
+          type: string
+          minLength: 1
+          maxLength: 256
+        internal:
+          description: Internal permission
+          type: boolean
+      title: PermissionCreatePayload
+      type: object
+    PermissionUpdatePayload:
+      description: This is a definition for Tessell permission update object
+      example:
+        permission: entity
+        description: description
+      properties:
+        entityType:
+          description: entityType of the permission
+          type: string
+        permission:
+          description: Name of the permission
+          type: string
+        description:
+          description: Description of the permission
+          type: string
+      title: PermissionUpdatePayload
+      type: object
+    PermissionStatus:
+      description: Permission Status
+      x-dao-query: true
+      x-dao-annotations: |
+        @Enumerated(EnumType.STRING)
+          @NotNull
+          @Type(type = "pgsql_enum")
+      x-dto-annotations: |
+        @ToString.Exclude
+      enum:
+        - ENABLED
+        - DISABLED
+        - DELETED
+      type: string
+    RecipientType:
+      title: RecipientType
+      type: string
+      description: This is a definition for Tessell recipient type object
+      enum:
+        - USER
+        - PERSONA
+        - GROUP
+    EmailToUserIdMapping:
+      title: EmailToUserIdMapping
+      type: object
+      description: Mapping of an email-id to user id
+      properties:
+        emailId:
+          $ref: '#/components/schemas/EmailId'
+        userId:
+          type: string
+          format: uuid
+    UserDetails:
+      title: UserDetails
+      type: object
+      description: Details of a user
+      properties:
+        id:
+          type: string
+          format: uuid
+        emailId:
+          $ref: '#/components/schemas/EmailId'
+        firstName:
+          $ref: '#/components/schemas/FirstName'
+        lastName:
+          $ref: '#/components/schemas/LastName'
+        persona:
+          type: string
+          description: Persona of the user
+          minLength: 1
+          maxLength: 64
+        isAppAdmin:
+          type: boolean
+          default: false
+          description: if user us app admin
+        status:
+          $ref: '#/components/schemas/UserStatus'
+    IdentityProviderType:
+      title: IdentityProviderType
+      type: string
+      description: Currently supported Identity Providers for SSO
+      enum:
+        - AZURE_AD
+        - OKTA
+    IdentityProviderStatus:
+      title: IdentityProviderStatus
+      type: string
+      description: Status of Identity Provider for SSO
+      enum:
+        - ENABLED
+        - DISABLED
+        - DELETED
+    IdentityProviderDTO:
+      title: IdentityProviderDTO
+      type: object
+      description: Component to represent Identity Provider properties
+      properties:
+        id:
+          type: string
+          description: Unique ID of Identity Provider configuration
+          format: uuid
+        type:
+          $ref: '#/components/schemas/IdentityProviderType'
+        entityId:
+          type: string
+          description: Entity ID of Identity Provider
+        loginUrl:
+          type: string
+          description: Login URL of Identity Provider
+        certificate:
+          type: string
+          description: Certificate of Identity Provider
+        status:
+          $ref: '#/components/schemas/IdentityProviderStatus'
+        dateCreated:
+          type: string
+          description: Date when the IDP configuration was created
+          format: date-time
+        dateModified:
+          type: string
+          description: Date when the IDP configuration was last modified
+          format: date-time
+    SsoConfigurationDTO:
+      title: SsoConfigurationDTO
+      description: Component to represent SSO Configuration
+      type: object
+      properties:
+        tessellEntityId:
+          type: string
+          description: Tessell's Entity ID for SSO
+        assertionConsumerServiceUrl:
+          type: string
+          description: Assertion Consumer Service URL
+        tessellLoginUrl:
+          type: string
+          description: Tessell Login URL
+        scimBaseUrl:
+          type: string
+          description: Base URL for SCIM protocol
+        idps:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityProviderDTO'
+    CreateIdpPayload:
+      title: CreateIdpPayload
+      type: object
+      description: Payload for Creating Identity Provider
+      required:
+        - type
+        - entityId
+        - loginUrl
+        - certificate
+      properties:
+        type:
+          $ref: '#/components/schemas/IdentityProviderType'
+        entityId:
+          type: string
+          description: Entity ID of Identity Provider
+          minLength: 1
+          maxLength: 2000
+          example: http://www.okta.com/abcd1234
+        loginUrl:
+          type: string
+          description: Login URL of Identity Provider
+          minLength: 1
+          maxLength: 2000
+          example: https://sandwich.okta.com/app/sandwich_app_1/abcd1234/sso/saml
+        certificate:
+          type: string
+          description: Certificate of Identity Provider
+          minLength: 1
+          maxLength: 10000
+          example: '-----BEGIN CERTIFICATE-----\nMIIF0jCCA ... tg3g\n-----END CERTIFICATE-----'
+    ConfiguredIdpsApiResponse:
+      title: ConfiguredIdpsApiResponse
+      description: Array of currently configured IDP types
+      type: object
+      properties:
+        metadata:
+          $ref: 'common-specification.yaml#/components/schemas/apiMetadata'
+        response:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityProviderType'
+    CreateApiKeyPayload:
+      title: CreateApiKeyPayload
+      type: object
+      description: Payload for Creating API Key
+      properties:
+        label:
+          type: string
+          description: API key label
+          minLength: 1
+          maxLength: 256
+        description:
+          type: string
+          description: Description of the API key
+          minLength: 0
+          maxLength: 512
+        maxAge:
+          description: Maximum age of the API key in seconds
+          type: integer
+          format: int64
+          default: 0
+          minimum: 0
+          maximum: 3156000000
+        neverExpire:
+          type: boolean
+          default: false
+    AuthorizeApiKeyPayload:
+      title: AuthorizeApiKeyPayload
+      type: object
+      description: Payload for access token from API Key
+      properties:
+        apiKey:
+          type: string
+          description: API key
+    AuthorizeApiKeyResponse:
+      title: AuthorizeApiKeyResponse
+      type: object
+      description: Response for access token from API Key
+      properties:
+        accessToken:
+          type: string
+          description: access token
+    CreateApiKeyDTO:
+      type: object
+      description: This is a definition for Tessell API key DTO object
+      title: CreateApiKeyDTO
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Tessell created unique uuid
+        label:
+          description: Label of the key
+          type: string
+        apiKey:
+          description: Hashed API key
+          type: string
+        description:
+          description: Description of the key
+          type: string
+        neverExpire:
+          type: boolean
+          default: false
+        dateCreated:
+          type: string
+          description: Date when the feature is created  metadata
+          format: date-time
+        dateLastUsed:
+          type: string
+          description: Date when the API key was last used
+          format: date-time
+        dateExpiry:
+          type: string
+          description: Expire date of the API key
+          format: date-time
+    ApiKeyDTO:
+      type: object
+      description: This is a definition for Tessell API key DTO object
+      title: ApiKeyDTO
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Tessell created unique uuid
+        label:
+          description: Label of the key
+          type: string
+        description:
+          description: Description of the key
+          type: string
+        neverExpire:
+          type: boolean
+          default: false
+        status:
+          $ref: '#/components/schemas/ApiKeyStatus'
+        dateCreated:
+          type: string
+          description: Date when the feature is created  metadata
+          format: date-time
+        dateLastUsed:
+          type: string
+          description: Date when the API key was last used
+          format: date-time
+        dateExpiry:
+          type: string
+          description: Expire date of the API key
+          format: date-time
+    ApiKeyApiResponse:
+      title: ApiKeyApiResponse
+      type: object
+      properties:
+        metadata:
+          $ref: 'common-specification.yaml#/components/schemas/apiMetadata'
+        response:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApiKeyDTO'
+    ApiKeyEntity:
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_APIKEYS
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_APIKEYS")
+      type: object
+      description: This is a definition for Tessell API key DTO object
+      title: Apikey
+      properties:
+        id:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+              @GeneratedValue(generator = "UUID")
+              @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+              @Column(name = "id", updatable = false, nullable = false)
+          description: generated UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+          type: string
+        dateCreated:
+          x-dao-annotations: |
+            @Column(name = "DATE_CREATED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @CreationTimestamp
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+        dateLastUsed:
+          x-dao-annotations: |
+            @Column(name = "DATE_LAST_USED", columnDefinition = "TIMESTAMP WITH TIME ZONE", nullable = true, updatable = true)
+          description: Timestamp when the API key was last used
+          format: date-time
+          type: string
+        dateExpiry:
+          x-dao-annotations: |
+            @Column(name = "DATE_EXPIRY", columnDefinition = "TIMESTAMP WITH TIME ZONE", nullable = true, updatable = true)
+          description: Timestamp when the API key expires
+          format: date-time
+          type: string
+        api-key:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="api_key", nullable = false)
+          description: Hashed value of API key
+          type: string
+        description:
+          x-dao-annotations: |
+            @Column(name="description")
+          description: Description of the API key
+          type: string
+        label:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="label")
+          description: label of the api key
+          type: string
+        emailId:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="email_id")
+          description: Emil id the key belongs to
+          type: string
+        tenantId:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="tenant_id")
+          description: tenant id the key belongs to
+          type: string
+        neverExpire:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="never_expire")
+          description: never expire the key flag
+          type: boolean
+        status:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Enumerated(EnumType.STRING)
+              @NotNull
+              @Type(type = "pgsql_enum")
+          description: Status of the role
+          allOf:
+            - $ref: '#/components/schemas/ApiKeyStatus'
+    ApiKeyStatus:
+      title: ApiKeyStatus
+      type: string
+      description: This is a definition for Tessell API key status object
+      enum:
+        - ACTIVE
+        - REVOKED
+        - EXPIRED

@@ -1,0 +1,3247 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: support@tessell.com
+    name: Tessell Inc
+    url: https://www.tessell.com
+  description: Tessell REST API Documentation
+  termsOfService: https://www.tessell.com/terms
+  title: Tessell REST API Documentation
+  version: "1.0"
+servers:
+- description: Inferred Url
+  url: http://localhost:8081
+paths:
+  /security/key-vaults:
+    get:
+      description: Get existing key vault
+      operationId: getExistingKeyVaultExternal
+      parameters:
+      - description: Tenant ID
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          maxLength: 36
+          minLength: 36
+          type: string
+        style: simple
+      - description: Subscription Name
+        explode: true
+        in: query
+        name: subscription-name
+        required: true
+        schema:
+          maxLength: 64
+          minLength: 3
+          type: string
+        style: form
+      - description: Region
+        explode: true
+        in: query
+        name: region
+        required: true
+        schema:
+          maxLength: 36
+          minLength: 1
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AzureKeyVaultDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get existing key vault
+      tags:
+      - key-vaults
+      x-accepts: application/json
+  /tessell-internal/security/key-vaults:
+    get:
+      operationId: getExistingKeyVault
+      parameters:
+      - description: Subscription Id
+        explode: true
+        in: query
+        name: subscription-id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: form
+      - description: Region
+        explode: true
+        in: query
+        name: region
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AzureKeyVaultDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: get existing key vault
+      tags:
+      - key-vaults
+      x-accepts: application/json
+    patch:
+      operationId: patchExistingKeyVaults
+      parameters:
+      - description: Cloud Account Id
+        explode: false
+        in: query
+        name: cloud-account-id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: form
+      responses:
+        "200":
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Patch existing key vaults
+      tags:
+      - key-vaults
+      x-accepts: application/json
+    post:
+      operationId: createKeyVaultInternal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAzureKeyVaultPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AzureKeyVaultDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Creates a Key Vault in given region (if not already exists)
+      tags:
+      - key-vaults
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-internal/security/key-vaults/register:
+    post:
+      operationId: registerKeyVaultInternal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterKeyVaultPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AzureKeyVaultDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Registers a Key Vault in given region
+      tags:
+      - key-vaults
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-internal/security/key-vaults/{id}:
+    get:
+      operationId: getKeyVaultByIdInternal
+      parameters:
+      - description: Id of Key Vault
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AzureKeyVaultDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get Key Vault details by Id
+      tags:
+      - key-vaults
+      x-accepts: application/json
+  /tessell-internal/security/key-vaults/{id}/callback/create-key-vault:
+    post:
+      operationId: callbackForCreateKeyVaultWorkflowInternal
+      parameters:
+      - description: Id of the Key Vault
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowCallbackPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Callback API after workflow execution is complete
+      tags:
+      - key-vaults
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-internal/security/key-vaults/delete-metadata/{cloudAccountId}:
+    delete:
+      operationId: deleteKeyVaultMetadata
+      parameters:
+      - description: Cloud account Id
+        explode: false
+        in: path
+        name: cloudAccountId
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Delete key-vault metadata for the particular cloudAccountId
+      tags:
+      - key-vaults
+      x-accepts: application/json
+  /encryption-keys:
+    get:
+      description: Get a list of Tessell Encryption keys
+      operationId: getEncryptionKeysConsumerView
+      parameters:
+      - description: Tenant ID
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          maxLength: 36
+          minLength: 36
+          type: string
+        style: simple
+      - description: cloud type
+        explode: true
+        in: query
+        name: cloud
+        required: false
+        schema:
+          $ref: '#/components/schemas/cloudType'
+        style: form
+      - description: name of the encryption key
+        explode: true
+        in: query
+        name: name
+        required: false
+        schema:
+          maxLength: 64
+          minLength: 3
+          type: string
+        style: form
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      - description: Timezone for return data
+        in: query
+        name: time-zone
+        required: false
+        schema:
+          default: UTC
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncryptionKeyConsumerViewApiResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get a list of Tessell Encryption keys
+      tags:
+      - encryption-keys
+      x-accepts: application/json
+  /encryption-keys/eligible:
+    get:
+      description: Get a list of eligible Tessell Encryption keys
+      operationId: getEligibleEncryptionKeysConsumerView
+      parameters:
+      - description: Tenant ID
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          maxLength: 36
+          minLength: 36
+          type: string
+        style: simple
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      - description: Timezone for return data
+        in: query
+        name: time-zone
+        required: false
+        schema:
+          default: UTC
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EligibleEncryptionKeyConsumerViewApiResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get a list of eligible Tessell Encryption keys
+      tags:
+      - encryption-keys
+      x-accepts: application/json
+  /encryption-keys/governance/eligible:
+    get:
+      operationId: getEligibleEncryptionKeys
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      - description: Timezone for return data
+        in: query
+        name: time-zone
+        required: false
+        schema:
+          default: UTC
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EligibleEncryptionKeyConsumerViewApiResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get a list of eligible Tessell Encryption keys
+      tags:
+      - encryption-keys
+      x-accepts: application/json
+  /tessell-internal/encryption-keys/validate:
+    post:
+      operationId: checkEncryptionKeyEligibility
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckEncryptionKeyPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncryptionKeyEligibilityResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Check if encryption key is available or can be made available in the
+        given subscription, region
+      tags:
+      - encryption-keys
+      x-contentType: application/json
+      x-accepts: application/json
+  /encryption-keys/governance:
+    get:
+      description: Get a list of Tessell Encryption keys
+      operationId: getEncryptionKeys
+      parameters:
+      - description: Tenant ID
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          maxLength: 36
+          minLength: 36
+          type: string
+        style: simple
+      - description: name of the encryption key
+        explode: true
+        in: query
+        name: name
+        required: false
+        schema:
+          maxLength: 64
+          minLength: 3
+          type: string
+        style: form
+      - description: cloud type
+        explode: true
+        in: query
+        name: cloud
+        required: false
+        schema:
+          $ref: '#/components/schemas/cloudType'
+        style: form
+      - description: Flag indicating whether to load users with whom entity is shared
+        explode: true
+        in: query
+        name: include-shared-with-users
+        required: false
+        schema:
+          type: boolean
+        style: form
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      - description: Timezone for return data
+        in: query
+        name: time-zone
+        required: false
+        schema:
+          default: UTC
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncryptionKeyApiResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get a list of Tessell Encryption keys
+      tags:
+      - encryption-keys
+      x-accepts: application/json
+    post:
+      description: Creates new encryption key
+      operationId: createEncryptionKey
+      parameters:
+      - description: Tenant ID
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          maxLength: 36
+          minLength: 36
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEncryptionKeyPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncryptionKeyDTO'
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      security: []
+      summary: Creates new encryption key
+      tags:
+      - encryption-keys
+      x-contentType: application/json
+      x-accepts: application/json
+  /encryption-keys/governance/register:
+    get:
+      operationId: getEncryptionKeysToRegister
+      parameters:
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Subscription name
+        in: query
+        name: subscription-name
+        required: true
+        schema:
+          example: Sub-Experiments-2
+          maxLength: 64
+          minLength: 1
+          type: string
+      - description: Cloud Type
+        in: query
+        name: cloud-type
+        required: true
+        schema:
+          $ref: '#/components/schemas/cloudType'
+      - description: Region
+        in: query
+        name: region
+        required: true
+        schema:
+          example: ap-south-1
+          maxLength: 64
+          minLength: 1
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncryptionKeysToRegisterApiResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: List Encryption Keys from a BYOA Subscription to register in Tessell
+      tags:
+      - EncryptionKeysAdminView
+      x-accepts: application/json
+    post:
+      operationId: registerEncryptionKeyV2
+      parameters:
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterEncryptionKeyPayloadV2'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncryptionKeyDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Register Encryption Key from a BYOA Subscription
+      tags:
+      - EncryptionKeysAdminView
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-internal/v2/encryption-keys/register:
+    post:
+      operationId: registerEncryptionKeyV2InternalView
+      parameters:
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterEncryptionKeyPayloadV2'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncryptionKeyDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Register Encryption Key from a BYOA Subscription
+      tags:
+      - EncryptionKeysInternalView
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-internal/encryption-keys/{id}:
+    delete:
+      operationId: deleteEncryptionKeyByIdInternal
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: id
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: days after which deletion should be scheduled (Applicable to
+          AWS KMS keys only & must be in between 7 & 30 both inclusive, defaults to
+          30 if not provided)
+        explode: false
+        in: query
+        name: schedule-deletion-after-days
+        required: false
+        schema:
+          maximum: 30
+          minimum: 7
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecurityStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Delete Encryption Key by Id
+      tags:
+      - encryption-keys
+      x-accepts: application/json
+    get:
+      operationId: getEncryptionKeyByIdInternalView
+      parameters:
+      - description: id
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncryptionKeyDetailsDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get details of a encryption key
+      tags:
+      - encryption-keys
+      x-accepts: application/json
+  /encryption-keys/governance/{id}/disable:
+    patch:
+      description: Disables Encryption Key by ID
+      operationId: disableEncryptionKeyById
+      parameters:
+      - description: encryption key uuid
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          maxLength: 36
+          minLength: 36
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecurityStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Disable Encryption Key
+      tags:
+      - encryption-keys
+      x-accepts: application/json
+  /encryption-keys/governance/{id}/enable:
+    patch:
+      description: Enables Encryption Key by ID
+      operationId: enableEncryptionKeyById
+      parameters:
+      - description: encryption key uuid
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          maxLength: 36
+          minLength: 36
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecurityStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Enables Encryption Key
+      tags:
+      - encryption-keys
+      x-accepts: application/json
+  /tessell-internal/encryption-keys:
+    delete:
+      operationId: deleteAllEncryptionKeysInternal
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: days after which deletion should be scheduled (Applicable to
+          AWS KMS keys only & must be in between 7 & 30 both inclusive, defaults to
+          30 if not provided)
+        explode: false
+        in: query
+        name: schedule-deletion-after-days
+        required: false
+        schema:
+          maximum: 30
+          minimum: 7
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecurityStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Delete All Encryption Key in a Tenant
+      tags:
+      - encryption-keys
+      x-accepts: application/json
+    get:
+      operationId: getEncryptionKeysInternalView
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: cloud
+        explode: true
+        in: query
+        name: cloud
+        required: false
+        schema:
+          $ref: '#/components/schemas/cloudType'
+        style: form
+      - description: name of the encryption key
+        explode: true
+        in: query
+        name: name
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: status of the encryption key
+        explode: true
+        in: query
+        name: status
+        required: false
+        schema:
+          $ref: '#/components/schemas/EncryptionKeyStatus'
+        style: form
+      - description: Flag indicating whether to load users with whom entity is shared
+        explode: true
+        in: query
+        name: include-shared-with-users
+        required: false
+        schema:
+          type: boolean
+        style: form
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      - description: Timezone for return data
+        in: query
+        name: time-zone
+        required: false
+        schema:
+          default: UTC
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncryptionKeyInternalViewApiResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get a list of Tessell Encryption keys
+      tags:
+      - encryption-keys
+      x-accepts: application/json
+    post:
+      operationId: createInternalEncryptionKey
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInternalEncryptionKeyPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncryptionKeyDTO'
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      security: []
+      tags:
+      - encryption-keys
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-internal/encryption-keys/register:
+    post:
+      operationId: registerEncryptionKey
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: validate-metadata
+        explode: true
+        in: query
+        name: validate-metadata
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterEncryptionKeyPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncryptionKeyDTO'
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      security: []
+      tags:
+      - encryption-keys
+      x-contentType: application/json
+      x-accepts: application/json
+  /encryption-keys/register:
+    post:
+      description: Registers encryption key
+      operationId: registerEncryptionKeyExternal
+      parameters:
+      - description: Tenant ID
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          maxLength: 36
+          minLength: 36
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterEncryptionKeyPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncryptionKeyDTO'
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      security: []
+      tags:
+      - encryption-keys
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-internal/encryption-keys/{id}/availability:
+    post:
+      operationId: makeEncryptionKeyAvailableInRegions
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: uuid of the encryption key
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: UUID
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/CloudAvailability'
+              type: array
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncryptionKeyInternalViewApiResponse'
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      security: []
+      tags:
+      - encryption-keys
+      x-contentType: application/json
+      x-accepts: application/json
+  /encryption-keys/governance/{id}/acls:
+    delete:
+      description: Revokes encryption key acls
+      operationId: revokeEncryptionKeyAcls
+      parameters:
+      - description: encryption key uuid
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          maxLength: 36
+          minLength: 36
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AclRevokePayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Revokes encryption key acls
+      tags:
+      - encryption-keys
+      x-contentType: application/json
+      x-accepts: application/json
+    patch:
+      description: Creates/updates encryption key acls
+      operationId: createEncryptionKeyAcls
+      parameters:
+      - description: encryption key uuid
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          maxLength: 36
+          minLength: 36
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AclPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AclPayload'
+          description: OK
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Creates/updates encryption key acls
+      tags:
+      - encryption-keys
+      x-contentType: application/json
+      x-accepts: application/json
+  /encryption-keys/governance/{id}/acls/eligible-users:
+    get:
+      description: Gets list of all the users by privileges
+      operationId: getEligibleUsersForEncryptionKeys
+      parameters:
+      - description: encryption key uuid
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: role
+        explode: true
+        in: query
+        name: role
+        required: false
+        schema:
+          items:
+            maxLength: 64
+            minLength: 1
+            type: string
+          maxItems: 100
+          minItems: 1
+          type: array
+        style: form
+      - description: Tenant ID
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          maxLength: 36
+          minLength: 36
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AclEligibleUser'
+                type: array
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get list of all the users by privileges
+      tags:
+      - encryption-keys
+      x-accepts: application/json
+  /encryption-keys/upload-file:
+    post:
+      description: Upload encryption key file blob
+      operationId: uploadEncryptionKeyFile
+      parameters:
+      - description: Tenant ID
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          maxLength: 36
+          minLength: 36
+          type: string
+        style: simple
+      requestBody:
+        $ref: '#/components/requestBodies/inline_object'
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                blob:
+                  description: File content
+                  format: binary
+                  maxLength: 512
+                  minLength: 0
+                  type: string
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncryptionFileDTO'
+          description: OK
+        "201":
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Upload encryption key file blob
+      tags:
+      - encryption-keys
+      x-contentType: multipart/form-data
+      x-accepts: application/json
+  /tessell-internal/encryption-keys/download-file/{id}:
+    get:
+      operationId: downloadEncryptionKeyFile
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Id of the Tessell file
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/octet-stream:
+              schema:
+                format: byte
+                type: string
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Download Tessell encryption file
+      tags:
+      - encryption-keys
+      x-accepts: application/json
+  /tessell-internal/encryption-keys/file/{id}:
+    get:
+      operationId: getEncryptionKeyFile
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Id of the Tessell file
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncryptionFileDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Download Tessell encryption file
+      tags:
+      - encryption-keys
+      x-accepts: application/json
+  /tessell-internal/security/password-policies:
+    get:
+      operationId: getInternalPasswordPolicyById
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordPolicyDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get Tenant Password Policies for internal api calls
+      tags:
+      - password-policies
+      x-accepts: application/json
+    post:
+      operationId: createPasswordPolicy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordPolicyDTO'
+        required: false
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordPolicyResponseDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Create Tenant Password Policies
+      tags:
+      - password-policies
+      x-contentType: application/json
+      x-accepts: application/json
+  /security/password-policies:
+    get:
+      operationId: getPasswordPolicyByID
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordPolicyDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get Tenant Password Policies
+      tags:
+      - password-policies
+      x-accepts: application/json
+    patch:
+      operationId: updatePasswordPolicy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordPolicyDTO'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordPolicyResponseDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Update Tenant Password Policies
+      tags:
+      - password-policies
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-ops/encryption-key/bulk-delete:
+    delete:
+      operationId: bulkDeleteEncryptionKeys
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkDeleteEncryptionKeysPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceBulkDeleteResponseOps'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Delete the encryption keys for subscription.
+      tags:
+      - encryption-keys
+      x-contentType: application/json
+      x-accepts: application/json
+    post:
+      operationId: getBulkDeleteEncryptionKeyStatus
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkDeleteEncryptionKeysStatusPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceBulkDeleteResponseOps'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: get status of bulk delete api
+      tags:
+      - encryption-keys
+      x-contentType: application/json
+      x-accepts: application/json
+components:
+  requestBodies:
+    inline_object:
+      content:
+        multipart/form-data:
+          schema:
+            $ref: '#/components/schemas/inline_object'
+  schemas:
+    EncryptionFileDTO:
+      description: Tessell Script Version Service view definition
+      example:
+        password: password
+        dateCreated: 2000-01-23T04:56:07.000+00:00
+        name: name
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        id:
+          format: uuid
+          type: string
+        name:
+          description: Version of the script.
+          maxLength: 128
+          type: string
+        password:
+          type: string
+        type:
+          $ref: '#/components/schemas/EncryptionFileType'
+        status:
+          $ref: '#/components/schemas/EncryptionFileStatus'
+        dateCreated:
+          format: date-time
+          type: string
+      type: object
+    EncryptionFileType:
+      description: File type of script e.g. shell, python, sql
+      enum:
+      - PEM
+      - PFX
+      type: string
+    EncryptionFileStatus:
+      description: Status of the script
+      enum:
+      - AVAILABLE
+      - DELETED
+      type: string
+    CreateEncryptionKeyPayload:
+      description: Payload for Creating encryption Key
+      properties:
+        cloud:
+          $ref: '#/components/schemas/cloudType'
+        name:
+          description: name of encryption key alias
+          maxLength: 256
+          minLength: 1
+          type: string
+        description:
+          description: Description of the encryption key
+          maxLength: 512
+          minLength: 0
+          type: string
+        cloudConfig:
+          $ref: '#/components/schemas/CloudConfig'
+      title: CreateEncryptionKeyPayload
+      type: object
+    CloudConfig:
+      description: Cloud configuration for the key
+      properties:
+        aws:
+          $ref: '#/components/schemas/aws'
+        azure:
+          $ref: '#/components/schemas/azure'
+      title: CloudConfig
+      type: object
+    aws:
+      description: aws cloud configuration for the key
+      properties:
+        keyMaterial:
+          description: Key material of base64 format
+          maxLength: 6144
+          minLength: 1
+          type: string
+        isCustomerManaged:
+          default: false
+          description: is encryption Tessell managed
+          type: boolean
+      title: awsConfig
+      type: object
+    azure:
+      description: azure cloud configuration for the key
+      properties:
+        fileId:
+          description: uuid for the file
+          format: uuid
+          type: string
+        password:
+          description: password for the file
+          maxLength: 64
+          minLength: 8
+          type: string
+        isCustomerManaged:
+          default: false
+          description: is encryption Tessell managed
+          type: boolean
+      title: azureConfig
+      type: object
+    CreateInternalEncryptionKeyPayload:
+      allOf:
+      - $ref: '#/components/schemas/CreateEncryptionKeyPayload'
+      - $ref: '#/components/schemas/CreateInternalEncryptionKeyPayload_1'
+      description: Payload for Creating internal encryption Key
+      type: object
+    EncryptionKeysToRegisterApiResponse:
+      example:
+        metadata:
+          pagination:
+            pageOffset: 1
+            pageSize: 6
+          records: 0
+          timeZone: timeZone
+        response:
+        - cloudResourceId: cloudResourceId
+          reason: reason
+          name: name
+          registrable: true
+        - cloudResourceId: cloudResourceId
+          reason: reason
+          name: name
+          registrable: true
+      properties:
+        metadata:
+          $ref: '#/components/schemas/apiMetadata'
+        response:
+          items:
+            $ref: '#/components/schemas/ClientEncryptionKey'
+          type: array
+      title: EncryptionKeysToRegisterApiResponse
+      type: object
+    ClientEncryptionKey:
+      example:
+        cloudResourceId: cloudResourceId
+        reason: reason
+        name: name
+        registrable: true
+      properties:
+        name:
+          description: Name of Encryption Key
+          type: string
+        cloudResourceId:
+          description: Cloud Id of Encryption Key
+          type: string
+        registrable:
+          description: Whether the Encryption Key is registrable or not
+          type: boolean
+        reason:
+          description: Reason for not able to register Encryption Key
+          type: string
+      type: object
+    RegisterEncryptionKeyPayloadV2:
+      description: Payload for Registering encryption Key
+      properties:
+        name:
+          description: Name of Encryption Key
+          example: Key-153
+          maxLength: 256
+          minLength: 1
+          type: string
+        description:
+          description: Description of Encryption Key
+          maxLength: 512
+          minLength: 0
+          type: string
+        subscriptionName:
+          description: Name of the Subscription
+          example: BYOA-134329
+          maxLength: 64
+          minLength: 1
+          type: string
+        owner:
+          description: email id of the owner of the encryption key
+          maxLength: 256
+          minLength: 0
+          type: string
+        cloud:
+          $ref: '#/components/schemas/cloudType'
+        awsEncryptionKeyInfo:
+          $ref: '#/components/schemas/awsEncryptionKeyInfo'
+      required:
+      - cloud
+      - name
+      - subscriptionName
+      type: object
+    awsEncryptionKeyInfo:
+      properties:
+        arn:
+          example: arn:aws:kms:ap-south-1:37857132:key/mrk-54931763438
+          maxLength: 200
+          minLength: 1
+          type: string
+        regions:
+          example:
+          - ap-south-1
+          - us-east-1
+          items:
+            type: string
+          maxItems: 1
+          minItems: 1
+          type: array
+          uniqueItems: true
+      required:
+      - arn
+      - regions
+      type: object
+    RegisterEncryptionKeyPayload:
+      description: Payload for Registering encryption Key
+      properties:
+        name:
+          description: name of encryption key alias
+          maxLength: 256
+          minLength: 1
+          type: string
+        owner:
+          description: email id of the owner of the encryption key
+          maxLength: 256
+          minLength: 0
+          type: string
+        description:
+          description: Description of the encryption key
+          maxLength: 512
+          minLength: 0
+          type: string
+        availability:
+          $ref: '#/components/schemas/RegisterEncryptionCloudAvailability'
+      type: object
+    EncryptionKeyDTO:
+      allOf:
+      - $ref: '#/components/schemas/BaseEntity'
+      - $ref: '#/components/schemas/EncryptionKeyDTO_1'
+      description: This is a definition for Tessell encryption key DTO object
+      type: object
+    EncryptionKeyConsumerView:
+      allOf:
+      - $ref: '#/components/schemas/EncryptionKeyConsumerView_1'
+      description: This is a definition for Tessell encryption key Consumer View object
+      type: object
+    EligilbleEncryptionKeyConsumerView:
+      allOf:
+      - $ref: '#/components/schemas/EncryptionKeyConsumerView'
+      - $ref: '#/components/schemas/EncryptionKeyDetailsDTO_1'
+      description: This is a definition for Tessell encryption key DTO object along
+        with availability
+      type: object
+    EncryptionKeyDetailsDTO:
+      allOf:
+      - $ref: '#/components/schemas/EncryptionKeyDTO'
+      - $ref: '#/components/schemas/EncryptionKeyDetailsDTO_2'
+      description: This is a definition for Tessell encryption key DTO object
+      type: object
+    CloudAvailability:
+      description: This is a definition for Tessell encryption key cloud availability
+        object
+      properties:
+        subscriptionId:
+          description: Name of the subscription
+          format: UUID
+          type: string
+        regionAvailability:
+          items:
+            $ref: '#/components/schemas/CloudRegions'
+          type: array
+        tags:
+          description: Additional tags to be applied on encryption key
+          items:
+            $ref: '#/components/schemas/TessellTag'
+          type: array
+      title: CloudAvailability
+      type: object
+    RegisterEncryptionCloudAvailability:
+      description: This is a definition for Tessell encryption key cloud availability
+        object
+      properties:
+        cloud:
+          $ref: '#/components/schemas/cloudType'
+        region:
+          description: Region
+          maxLength: 36
+          minLength: 1
+          type: string
+        subscriptionId:
+          description: Subscription ID
+          format: UUID
+          type: string
+        subscriptionName:
+          description: Name of the subscription
+          type: string
+        externalId:
+          description: External Id of the disk encryption set
+          type: string
+        keyVaultName:
+          description: Name of the key vault where key is stored
+          type: string
+      title: RegisterEncryptionCloudAvailability
+      type: object
+    CloudAvailabilityDetails:
+      description: This is a definition for Tessell encryption key cloud availability
+        object
+      properties:
+        subscriptionId:
+          description: Name of the subscription
+          format: UUID
+          type: string
+        regionAvailabilityDetails:
+          items:
+            $ref: '#/components/schemas/CloudRegionsDetails'
+          type: array
+      title: CloudAvailabilityDetails
+      type: object
+    CloudRegions:
+      description: This is a definition for Tessell encryption key cloud availability
+        object
+      properties:
+        cloud:
+          $ref: '#/components/schemas/cloudType'
+        regions:
+          items:
+            type: string
+          type: array
+      title: CloudRegions
+      type: object
+    CloudRegionsDetails:
+      description: This is a definition for Tessell encryption key cloud availability
+        object
+      properties:
+        cloud:
+          $ref: '#/components/schemas/cloudType'
+        regions:
+          items:
+            $ref: '#/components/schemas/RegionDetails'
+          type: array
+      title: CloudAvailabilityDetails
+      type: object
+    RegionDetails:
+      description: This is a definition for Tessell encryption key region object
+      properties:
+        region:
+          description: Name of the region
+          type: string
+        externalId:
+          description: External id of the encryption key
+          type: string
+        status:
+          $ref: '#/components/schemas/EncryptionKeyStatus'
+        deploymentId:
+          description: uuid of the deployment
+          format: UUID
+          type: string
+        type:
+          $ref: '#/components/schemas/EncryptionKeyType'
+      title: Region
+      type: object
+    EncryptionKeyConsumerViewApiResponse:
+      example:
+        metadata:
+          pagination:
+            pageOffset: 1
+            pageSize: 6
+          records: 0
+          timeZone: timeZone
+        response:
+        - null
+        - null
+      properties:
+        metadata:
+          $ref: '#/components/schemas/apiMetadata'
+        response:
+          items:
+            $ref: '#/components/schemas/EncryptionKeyConsumerView'
+          type: array
+      title: EncryptionKeyApiResponse
+      type: object
+    EligibleEncryptionKeyConsumerViewApiResponse:
+      example:
+        metadata:
+          pagination:
+            pageOffset: 1
+            pageSize: 6
+          records: 0
+          timeZone: timeZone
+        response:
+        - null
+        - null
+      properties:
+        metadata:
+          $ref: '#/components/schemas/apiMetadata'
+        response:
+          items:
+            $ref: '#/components/schemas/EligilbleEncryptionKeyConsumerView'
+          type: array
+      title: EligibleEncryptionKeyApiResponse
+      type: object
+    EncryptionKeyApiResponse:
+      example:
+        metadata:
+          pagination:
+            pageOffset: 1
+            pageSize: 6
+          records: 0
+          timeZone: timeZone
+        response:
+        - null
+        - null
+      properties:
+        metadata:
+          $ref: '#/components/schemas/apiMetadata'
+        response:
+          items:
+            $ref: '#/components/schemas/EncryptionKeyDTO'
+          type: array
+      title: EncryptionKeyApiResponse
+      type: object
+    EncryptionKeyInternalViewApiResponse:
+      example:
+        metadata:
+          pagination:
+            pageOffset: 1
+            pageSize: 6
+          records: 0
+          timeZone: timeZone
+        response:
+        - null
+        - null
+      properties:
+        metadata:
+          $ref: '#/components/schemas/apiMetadata'
+        response:
+          items:
+            $ref: '#/components/schemas/EncryptionKeyDetailsDTO'
+          type: array
+      title: EncryptionKeyApiResponse
+      type: object
+    EncryptionKeyRegionAvailabilityPayload:
+      description: Payload for making encryption Key available in regions
+      properties:
+        availability:
+          items:
+            $ref: '#/components/schemas/CloudAvailability'
+          type: array
+      title: EncryptionKeyRegionAvailabilityPayload
+      type: object
+    CheckEncryptionKeyPayload:
+      description: Payload for checking if encryption key is eligible
+      properties:
+        id:
+          description: Id of the key
+          format: UUID
+          type: string
+        name:
+          type: string
+        cloud:
+          $ref: '#/components/schemas/cloudType'
+        region:
+          type: string
+        subscriptionId:
+          description: Name of the subscription
+          format: UUID
+          type: string
+      title: CheckEncryptionKeyPayload
+      type: object
+    EncryptionKeyEligibilityResponse:
+      description: Response for checking if encryption key is eligible
+      example:
+        eligible: true
+      properties:
+        eligible:
+          description: if the key is eligible
+          type: boolean
+      title: EncryptionKeyEligibilityResponse
+      type: object
+    EncryptionKeyEntity:
+      description: This is a definition for Tessell encryption keys object
+      properties:
+        name:
+          description: name of key
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="name", nullable = false)
+        description:
+          description: Description of the key
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="description")
+        internalName:
+          description: Internal name of the cloud key
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="internal_name")
+        status:
+          allOf:
+          - $ref: '#/components/schemas/EncryptionKeyStatus'
+          description: Status of the key
+          x-dao-annotations: |
+            @Enumerated(EnumType.STRING)
+              @NotNull
+              @Type(type = "pgsql_enum")
+        maturityStatus:
+          allOf:
+          - $ref: '#/components/schemas/MaturityStatus'
+          description: Maturity status of the key
+          x-dao-annotations: |
+            @Enumerated(EnumType.STRING)
+              @NotNull
+              @Type(type = "pgsql_enum")
+        cloudType:
+          allOf:
+          - $ref: '#/components/schemas/cloudType'
+          description: Cloud type of the key
+          x-dao-query: true
+          x-dao-annotations: |
+            @Enumerated(EnumType.STRING)
+              @NotNull
+              @Type(type = "pgsql_enum")
+        owner:
+          description: owner of the key
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="owner", nullable = false)
+        cloudAvailability:
+          description: Encryption key availability details
+          items:
+            $ref: '#/components/schemas/EncryptionKeyAvailabilityEntity'
+          type: array
+          x-dao-annotations: |
+            @JsonManagedReference
+            @OneToMany(fetch=FetchType.EAGER, mappedBy = "id.encryptionKeyId", cascade = CascadeType.ALL)
+        tenantId:
+          description: tenant id of the key
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="tenant_id", nullable = false)
+        key_material_base64:
+          description: key_material_base64
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="key_material_base64", nullable = true)
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "DATE_CREATED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+            @CreationTimestamp
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "DATE_MODIFIED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = true)
+            @UpdateTimestamp
+        id:
+          description: generated UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+            @Column(name = "id", updatable = false, nullable = false)
+        isKeyMaterialProvidedByCustomer:
+          description: is the key material provided by customer
+          type: boolean
+          x-dao-annotations: |
+            @Column(name = "is_key_material_provided_by_customer", nullable = true)
+        isDefault:
+          description: is the key default
+          type: boolean
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "is_default", nullable = false)
+        oob:
+          description: is the key OOB
+          type: boolean
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "oob", nullable = false)
+        fileId:
+          description: Script content
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dto-annotations: |
+            @OneToOne(cascade = CascadeType.ALL)
+                @JoinColumn(name = "id", referencedColumnName = "fileId")
+        firstKey:
+          description: is the key first key created
+          type: boolean
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "first_key", nullable = false)
+        registeredKey:
+          description: is the key registered with Tessell
+          type: boolean
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "registered_key", nullable = false)
+      type: object
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_ENCRYPTION_KEYS
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_ENCRYPTION_KEYS")
+      x-dao-primary-key: id
+    EncryptionKeyFileEntity:
+      description: This is a definition for Tessell encryption keys files
+      properties:
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "DATE_CREATED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @CreationTimestamp
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "DATE_MODIFIED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @UpdateTimestamp
+        id:
+          description: generated UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+              @GeneratedValue(generator = "UUID")
+              @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+              @Column(name = "id", updatable = false, nullable = false)
+        name:
+          description: name of the file
+          type: string
+          x-dao-annotations: |
+            @Column(name="name", nullable = false)
+        type:
+          description: type of the file
+          type: string
+          x-dao-annotations: |
+            @Column(name="type", nullable = false)
+        blob:
+          description: File contents in binary.
+          format: byte
+          type: string
+        password:
+          description: optional password of the file
+          type: string
+          x-dao-annotations: |
+            @Column(name="password", nullable = false)
+        status:
+          allOf:
+          - $ref: '#/components/schemas/EncryptionKeyFileStatus'
+          description: Availability status of encryption key
+          x-dao-query: true
+          x-dao-annotations: |
+            @Enumerated(EnumType.STRING)
+              @NotNull
+              @Type(type = "pgsql_enum")
+              @Column(name = "status")
+        tenantId:
+          description: tenant id of the key
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="tenant_id", nullable = false)
+      type: object
+      x-dao-entity: true
+      x-dao-primary-key: id
+      x-dao-table-name: TESSELL_ENCRYPTION_KEY_FILES
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_ENCRYPTION_KEY_FILES")
+    EncryptionKeyFileStatus:
+      description: This is a definition for Tessell encryption key status object
+      enum:
+      - AVAILABLE
+      - DELETED
+      title: EncryptionKeyStatus
+      type: string
+    AzureKeyVaultEntity:
+      description: This is a definition for Tessell azure key vault
+      properties:
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "DATE_CREATED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @CreationTimestamp
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "DATE_MODIFIED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false)
+              @UpdateTimestamp
+        id:
+          description: generated UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+              @GeneratedValue(generator = "UUID")
+              @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+              @Column(name = "id", updatable = false, nullable = false)
+        name:
+          description: name of the file
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="name", nullable = false)
+        region:
+          description: region of  of the key vault
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="region", nullable = false)
+        resourceGroup:
+          description: resource group name of the key vault
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="resource_group", nullable = false)
+        subscriptionId:
+          description: azure subscription id of the key vault
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="subscription_id")
+        status:
+          allOf:
+          - $ref: '#/components/schemas/AzureKeyVaultStatus'
+          description: Availability status of encryption key
+          x-dao-query: true
+          x-dao-annotations: |
+            @Enumerated(EnumType.STRING)
+              @NotNull
+              @Type(type = "pgsql_enum")
+              @Column(name = "status")
+        tenantId:
+          description: tenant id of the key
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="tenant_id")
+        deploymentId:
+          description: deployment id of the encryption key
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="deployment_id")
+        externalId:
+          description: azure id of the key vault
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="external_id", nullable = false)
+        cloudAccountId:
+          description: Cloud Account Id of where Key Vault is stored
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="cloud_account_id")
+      type: object
+      x-dao-entity: true
+      x-dao-primary-key: id
+      x-dao-table-name: TESSELL_AZURE_KEY_VAULT
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_AZURE_KEY_VAULT")
+    AzureKeyVaultStatus:
+      description: This is a definition for Tessell encryption key status object
+      enum:
+      - AVAILABLE
+      - DELETED
+      - CREATING
+      - FAILED
+      title: EncryptionKeyStatus
+      type: string
+    EncryptionKeyAvailabilityEntity:
+      description: This is a definition for Tessell encryption keys availabilities
+      properties:
+        id:
+          $ref: '#/components/schemas/EncryptionKeyAvailabilityEntity_id'
+        status:
+          allOf:
+          - $ref: '#/components/schemas/EncryptionKeyStatus'
+          description: Availability status of encryption key
+          x-dao-query: true
+          x-dao-annotations: |
+            @Enumerated(EnumType.STRING)
+              @NotNull
+              @Type(type = "pgsql_enum")
+              @Column(name = "status")
+        externalId:
+          description: external id like arn of the encryption key
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="external_id", nullable = false)
+        deploymentId:
+          description: deployment id of the encryption key
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="deployment_id", nullable = false)
+        type:
+          allOf:
+          - $ref: '#/components/schemas/EncryptionKeyType'
+          description: type of key primary or replica
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="type", nullable = false)
+      type: object
+      x-dao-entity: true
+      x-dao-composite-primary-keys: id
+      x-dao-table-name: TESSELL_ENCRYPTION_KEYS_AVAILABILITIES
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_ENCRYPTION_KEYS_AVAILABILITIES")
+    EncryptionKeyStatus:
+      description: This is a definition for Tessell encryption key status object
+      enum:
+      - CREATING
+      - REPLICATING
+      - WAITING
+      - PROCESSING
+      - AVAILABLE
+      - DISABLED
+      - DISABLING
+      - ENABLING
+      - DELETED
+      - DELETING
+      - DELETION_FAILED
+      - FAILED
+      title: EncryptionKeyStatus
+      type: string
+    EncryptionKeyType:
+      description: This is a definition for Tessell encryption key type object
+      enum:
+      - PRIMARY
+      - REPLICA
+      title: EncryptionKeyType
+      type: string
+    SecurityStatus:
+      example:
+        message: message
+        status: status
+      properties:
+        message:
+          type: string
+        status:
+          type: string
+      title: Status
+      type: object
+    PasswordPolicyEntity:
+      description: This is a definition for Tessell password Policies
+      properties:
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "DATE_CREATED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @CreationTimestamp
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "DATE_MODIFIED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = true)
+              @UpdateTimestamp
+        tenantId:
+          description: assigned UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+            @Column(name="tenant_id", nullable = false)
+        passwordPolicy:
+          $ref: '#/components/schemas/PasswordPolicyDTO'
+      type: object
+      x-dao-entity: true
+      x-dao-primary-key: tenantId
+      x-dao-table-name: TESSELL_PASSWORD_POLICIES
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_PASSWORD_POLICIES")
+    PasswordPolicyDTO:
+      example:
+        isSpecialCharacter: true
+        isLowerCase: true
+        noInvalidAttempts: 1
+        isNumber: true
+        minLength: 6
+        isUpperCase: true
+        expiryTimeInDays: 0
+      properties:
+        expiryTimeInDays:
+          type: integer
+        minLength:
+          type: integer
+        noInvalidAttempts:
+          type: integer
+        isUpperCase:
+          type: boolean
+        isLowerCase:
+          type: boolean
+        isNumber:
+          description: Should password contain a Number
+          type: boolean
+        isSpecialCharacter:
+          description: Should password contain an Special character
+          type: boolean
+      title: PasswordPolicyDTO
+      type: object
+    PasswordPolicyResponseDTO:
+      example:
+        message:
+        - message
+        - message
+        status: status
+      properties:
+        status:
+          type: string
+        message:
+          items:
+            type: string
+          type: array
+      type: object
+    CreateAzureKeyVaultPayload:
+      properties:
+        cloudAccountId:
+          format: uuid
+          type: string
+        region:
+          type: string
+      title: CreateAzureKeyVaultPayload
+      type: object
+    RegisterKeyVaultPayload:
+      properties:
+        name:
+          type: string
+        region:
+          type: string
+        subscriptionId:
+          format: uuid
+          type: string
+        cloudAccountId:
+          format: uuid
+          type: string
+      title: RegisterKeyVaultPayload
+      type: object
+    AzureKeyVaultDTO:
+      description: Details of the Azure Key Vault
+      example:
+        resourceGroup: resourceGroup
+        dateCreated: 2000-01-23T04:56:07.000+00:00
+        cloudAccountId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        name: name
+        externalId: externalId
+        dateModified: 2000-01-23T04:56:07.000+00:00
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        region: region
+      properties:
+        id:
+          format: uuid
+          type: string
+        name:
+          type: string
+        region:
+          type: string
+        status:
+          $ref: '#/components/schemas/AzureKeyVaultStatus'
+        resourceGroup:
+          type: string
+        externalId:
+          type: string
+        cloudAccountId:
+          format: uuid
+          type: string
+        dateCreated:
+          format: date-time
+          type: string
+        dateModified:
+          format: date-time
+          type: string
+      title: AzureKeyVaultDTO
+      type: object
+    BulkDeleteEncryptionKeysPayload:
+      properties:
+        tenantId:
+          format: uuid
+          type: string
+        subscriptionId:
+          format: uuid
+          type: string
+        skipDeletion:
+          description: List of services to be skipped for deletion
+          items:
+            $ref: '#/components/schemas/SkipDeletionInfo'
+          type: array
+        scheduleDeletionAfterDays:
+          description: days after which deletion should be scheduled
+          type: integer
+      required:
+      - tenantId
+      title: ResourceBulkDeletePayloadOps
+      type: object
+    BulkDeleteEncryptionKeysStatusPayload:
+      example:
+        skipDeletion:
+        - entities:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - entities:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        tenantId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        context: '{}'
+        cleanupId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        subscriptionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        cleanupId:
+          format: uuid
+          type: string
+        status:
+          $ref: '#/components/schemas/ResourceBulkDeleteStatusOps'
+        timestamp:
+          format: date-time
+          type: string
+        tenantId:
+          format: uuid
+          type: string
+        subscriptionId:
+          format: uuid
+          type: string
+        skipDeletion:
+          description: List of services to be skipped for deletion
+          items:
+            $ref: '#/components/schemas/SkipDeletionInfo'
+          type: array
+        context:
+          type: object
+      title: ResourceBulkDeleteResponseOps
+      type: object
+    BulkDeleteEncryptionKeysContext:
+      properties:
+        encryptionkeyId:
+          description: id of the encryption key
+          format: uuid
+          type: string
+        status:
+          $ref: '#/components/schemas/EncryptionKeyStatus'
+        availabilityStatus:
+          items:
+            $ref: '#/components/schemas/BulkDeleteAvailabilityContext'
+          type: array
+      title: BulkDeleteEncryptionKeysContext
+      type: object
+    BulkDeleteAvailabilityContext:
+      properties:
+        subscriptionId:
+          format: UUID
+          type: string
+        region:
+          type: string
+        status:
+          $ref: '#/components/schemas/EncryptionKeyStatus'
+        deletionStatus:
+          $ref: '#/components/schemas/ResourceBulkDeleteStatusOps'
+      title: BulkDeleteAvailabilityContext
+      type: object
+    ApiError:
+      description: Common error response object for non 2xx responses
+      properties:
+        code:
+          description: Status code for the error response
+          type: string
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        defaultCodeSet:
+          type: boolean
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    ApiErrorDetails:
+      description: Common API exception details
+      properties:
+        resolution:
+          description: Resolution detail for API exception
+          type: string
+      type: object
+    ApiErrorOps:
+      description: Common error response object for non 2xx responses of internal
+        or ops APIs
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/TessellErrorCode'
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        serviceException:
+          $ref: '#/components/schemas/ApiError'
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    TessellErrorCode:
+      description: Error code object for API Exceptions
+      properties:
+        httpErrorCode:
+          description: Standard http error code
+          type: string
+        serviceCode:
+          description: Service error code
+          type: string
+        opCode:
+          description: Operation error code
+          type: string
+        description:
+          description: Error code description
+          type: string
+      type: object
+    WorkflowCallbackPayload:
+      description: Payload received during Argo workflow callbacks.
+      properties:
+        prevWorkflowName:
+          description: Previous workflow name corresponding to which the payload in
+            the callback is received.
+          type: string
+        newWorkflowName:
+          description: New workflow name if the earlier workflow failed and there
+            are retries left. Else null
+          type: string
+        status:
+          $ref: '#/components/schemas/ArgoWorkflowStatus'
+        payload:
+          additionalProperties:
+            type: object
+          type: object
+        context:
+          type: object
+        lastRunCount:
+          format: int32
+          type: integer
+        maxRunCount:
+          format: int32
+          type: integer
+      type: object
+    ArgoWorkflowStatus:
+      description: Argo Workflow status
+      enum:
+      - SUCCESS
+      - FAILURE
+      type: string
+    apiStatus:
+      example:
+        message: message
+        status: status
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+      title: apiStatus
+      type: object
+    cloudType:
+      description: Tessell supported cloud types
+      enum:
+      - AWS
+      - AZURE
+      - GCP
+      type: string
+    AclRevokePayload:
+      description: Payload to revoke Tessell ACLs
+      properties:
+        users:
+          description: List of users to be deleted
+          items:
+            maxLength: 256
+            minLength: 1
+            type: string
+          maxItems: 100
+          minItems: 1
+          type: array
+      required:
+      - users
+      title: AclRevokePayload
+    AclPayload:
+      description: Payload to create an entity ACL
+      example:
+        users:
+        - role: role
+          emailId: emailId
+        - role: role
+          emailId: emailId
+        - role: role
+          emailId: emailId
+        - role: role
+          emailId: emailId
+        - role: role
+          emailId: emailId
+      properties:
+        users:
+          items:
+            $ref: '#/components/schemas/AclUserPayload'
+          maxItems: 100
+          minItems: 1
+          type: array
+      required:
+      - users
+      title: AclPayload
+    AclUserPayload:
+      description: Payload to create an user's entity ACL
+      example:
+        role: role
+        emailId: emailId
+      properties:
+        emailId:
+          description: Email id of the user
+          maxLength: 256
+          minLength: 1
+          type: string
+        role:
+          description: Role Info
+          maxLength: 64
+          minLength: 1
+          type: string
+      required:
+      - emailId
+      - role
+      title: AclUserPayload
+    AclEligibleUser:
+      description: Eligible user for sharing the entity
+      example:
+        firstName: firstName
+        lastName: lastName
+        eligibleRoles:
+        - eligibleRoles
+        - eligibleRoles
+        emailId: emailId
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        emailId:
+          type: string
+        eligibleRoles:
+          items:
+            type: string
+          type: array
+      title: AclEligibleUser
+    ResourceBulkDeleteResponseOps:
+      example:
+        skipDeletion:
+        - entities:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - entities:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        tenantId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        context: '{}'
+        cleanupId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        subscriptionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        cleanupId:
+          format: uuid
+          type: string
+        status:
+          $ref: '#/components/schemas/ResourceBulkDeleteStatusOps'
+        timestamp:
+          format: date-time
+          type: string
+        tenantId:
+          format: uuid
+          type: string
+        subscriptionId:
+          format: uuid
+          type: string
+        skipDeletion:
+          description: List of services to be skipped for deletion
+          items:
+            $ref: '#/components/schemas/SkipDeletionInfo'
+          type: array
+        context:
+          type: object
+      title: ResourceBulkDeleteResponseOps
+      type: object
+    ResourceBulkDeleteStatusOps:
+      description: bulk delete status
+      enum:
+      - IN_PROGRESS
+      - FAILED
+      - SUCCESS
+      type: string
+    SkipDeletionInfo:
+      example:
+        entities:
+        - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        entityType:
+          $ref: '#/components/schemas/entityType'
+        entities:
+          description: List of entities uuids
+          items:
+            format: uuid
+            type: string
+          type: array
+      title: SkipDeletionInfo
+      type: object
+    entityType:
+      description: Tessell Entity Type
+      enum:
+      - TENANT
+      - COMPUTE_RESOURCE
+      - STORAGE
+      - COMPUTE_RESOURCE_METADATA
+      - DBSERVER_SYETEM
+      - DBSERVER_SUB_SYETEM
+      - DBSERVER_SYETEM_COMPUTE_RESOURCE
+      - DATABASE_SYETEM
+      - DATABASE
+      - DATABASE_NODE
+      - DATABASE_METADATA
+      - DMM
+      - DMM_AVAILABILITY
+      - DB_BACKUP
+      - DB_SNAPSHOT
+      - DB_LOG
+      - TASK
+      - SUB_TASK
+      - SLA
+      - SCHEDULE
+      - CLOUD_ACCOUNT
+      - CLOUD_LOCATION
+      - COMPUTE_TYPE
+      - SOFTWARE_IMAGE
+      - SOFTWARE_IMAGE_VERSION
+      - SUBSCRIPTION
+      - CUSTOM_SCRIPT
+      - DEPLOYMENT
+      - TERRAFORM
+      - DB_EXPORTER
+      - USER
+      - IDENTITY_PROVIDER
+      - ENCRYPTION_KEY
+      - TESSELL_SERVICE
+      - NETWORK
+      - NETWORK_PEERING
+      - SECRET
+      - PERSONA
+      - ACL
+      - API_KEY
+      type: string
+    apiMetadata:
+      example:
+        pagination:
+          pageOffset: 1
+          pageSize: 6
+        records: 0
+        timeZone: timeZone
+      properties:
+        timeZone:
+          type: string
+        records:
+          format: int32
+          type: integer
+        pagination:
+          $ref: '#/components/schemas/apiPaginationInfo'
+      title: apiMetadata
+      type: object
+    apiPaginationInfo:
+      example:
+        pageOffset: 1
+        pageSize: 6
+      properties:
+        pageSize:
+          format: int32
+          type: integer
+        pageOffset:
+          format: int32
+          type: integer
+      title: apiPaginationInfo
+      type: object
+    BaseEntity:
+      properties:
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "DATE_CREATED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @CreationTimestamp
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "DATE_MODIFIED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @UpdateTimestamp
+        id:
+          description: generated UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+              @GeneratedValue(generator = "UUID")
+              @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+              @Column(name = "id", updatable = false, nullable = false)
+      type: object
+    EntityAclSharingInfo:
+      description: Tessell Entity ACL Sharing Info
+      properties:
+        users:
+          items:
+            $ref: '#/components/schemas/EntityUserAclSharingInfo'
+          type: array
+      title: EntityAclSharingInfo
+    EntityUserAclSharingInfo:
+      description: Tessell Entity ACL Sharing Info for a user
+      properties:
+        emailId:
+          type: string
+        role:
+          type: string
+      title: EntityUserAclSharingInfo
+    MaturityStatus:
+      description: Maturity Status
+      enum:
+      - DRAFT
+      - PUBLISHED
+      - UNPUBLISHED
+      type: string
+    TessellTag:
+      nullable: true
+      properties:
+        name:
+          description: Case sensitive, tag name
+          maxLength: 128
+          minLength: 1
+          type: string
+        value:
+          description: Case sensitive, tag value
+          maxLength: 256
+          minLength: 0
+          type: string
+      title: TessellTag
+      type: object
+    ResourceBulkDeletePayloadOps:
+      properties:
+        tenantId:
+          format: uuid
+          type: string
+        subscriptionId:
+          format: uuid
+          type: string
+        skipDeletion:
+          description: List of services to be skipped for deletion
+          items:
+            $ref: '#/components/schemas/SkipDeletionInfo'
+          type: array
+        scheduleDeletionAfterDays:
+          description: days after which deletion should be scheduled
+          type: integer
+      required:
+      - tenantId
+      title: ResourceBulkDeletePayloadOps
+      type: object
+    inline_object:
+      properties:
+        blob:
+          description: File content
+          format: binary
+          maxLength: 512
+          minLength: 0
+          type: string
+      type: object
+    CreateInternalEncryptionKeyPayload_1:
+      properties:
+        oob:
+          default: false
+          description: of key is oob
+          type: boolean
+      title: CreateInternalEncryptionKeyPayload
+      type: object
+    EncryptionKeyDTO_1:
+      properties:
+        name:
+          description: Name of the key
+          type: string
+        description:
+          description: Description of the key
+          type: string
+        owner:
+          description: email id of the owner of the encryption key
+          type: string
+        status:
+          $ref: '#/components/schemas/EncryptionKeyStatus'
+        cloud:
+          $ref: '#/components/schemas/cloudType'
+        sharedWith:
+          $ref: '#/components/schemas/EntityAclSharingInfo'
+        maturityStatus:
+          $ref: '#/components/schemas/MaturityStatus'
+        isKeyMaterialProvidedByCustomer:
+          description: Is the key material provided by customer
+          type: boolean
+        isDefault:
+          description: Is the key default key
+          type: boolean
+        oob:
+          description: if the key is oob
+          type: boolean
+        firstKey:
+          description: is the key first key created
+          type: boolean
+        dateLastUsed:
+          description: Date when the encryption key was last used
+          format: date-time
+          type: string
+        registeredKey:
+          description: Represents if it is customer managed key registered in Tessell
+          type: boolean
+      title: EncryptionKeyDTO
+      type: object
+    EncryptionKeyConsumerView_1:
+      properties:
+        name:
+          description: Name of the key
+          type: string
+        description:
+          description: Description of the key
+          type: string
+        oob:
+          description: if the key is oob
+          type: boolean
+        cloud:
+          $ref: '#/components/schemas/cloudType'
+      title: EncryptionKeyConsumerView
+      type: object
+    EncryptionKeyDetailsDTO_1:
+      properties:
+        id:
+          format: UUID
+          type: string
+        region:
+          type: string
+        subscriptionName:
+          description: Name of the subscription
+          type: string
+      title: EncryptionKeyDetailsDTO
+    EncryptionKeyDetailsDTO_2:
+      properties:
+        availability:
+          items:
+            $ref: '#/components/schemas/CloudAvailabilityDetails'
+          type: array
+        key_material_base64:
+          description: key maternal
+          type: string
+      title: EncryptionKeyDetailsDTO
+    EncryptionKeyAvailabilityEntity_id:
+      properties:
+        subscriptionId:
+          description: subscription id of the encryption key
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="subscription_id", nullable = false)
+        encryptionKeyId:
+          allOf:
+          - $ref: '#/components/schemas/EncryptionKeyEntity'
+          x-dao-query: true
+          x-dto-annotations: |
+            @ToString.Exclude
+              @JsonBackReference
+        region:
+          description: availability region of the encryption key
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="region", nullable = false)
+        cloud:
+          allOf:
+          - $ref: '#/components/schemas/cloudType'
+          description: cloud of the encryption key availability
+          x-dao-query: true
+          x-dao-annotations: |
+            @Enumerated(EnumType.STRING)
+              @NotNull
+              @Type(type = "pgsql_enum")
+              @Column(name = "cloud")
+      type: object
+      x-dao-annotations: |
+        @EmbeddedId
+

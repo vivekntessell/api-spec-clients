@@ -1,0 +1,1414 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: support@tessell.com
+    name: Tessell Inc.
+    url: https://www.tessell.com
+  description: Tessell License Manager API Documentation
+  title: Tessell License Manager API Documentation
+  version: "1.0"
+servers:
+- description: Tessell License Manager API Base Path
+  url: http://localhost:8080/
+paths:
+  /tessell-internal/license-manager/licenses/requirement-checks:
+    get:
+      description: Checks if the licensing functionality is available for the account
+      operationId: checkLicenseRequirement
+      parameters:
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/licenseRequiredResponse'
+          description: Ok
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Checks if the licensing functionality is available for the account
+      tags:
+      - TessellLicenseManagerService
+      x-accepts: application/json
+  /tessell-internal/license-manager/licenses/availability:
+    get:
+      description: Checks if the licenses are available in the system for Acquiring
+      operationId: checkLicenseAvailability
+      parameters:
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      - example: DB
+        explode: true
+        in: query
+        name: licenseCategory
+        required: true
+        schema:
+          $ref: '#/components/schemas/licenseCategory'
+        style: form
+      - description: License vendor
+        explode: true
+        in: query
+        name: vendor
+        required: true
+        schema:
+          $ref: '#/components/schemas/vendor'
+        style: form
+      - description: Id of subscription
+        explode: true
+        in: query
+        name: subscriptionId
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: license version
+        explode: true
+        in: query
+        name: version
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: license edition
+        explode: true
+        in: query
+        name: edition
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: license version
+        explode: true
+        in: query
+        name: quantity
+        required: true
+        schema:
+          format: double
+          type: number
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/licenseAvailabilityResponse'
+          description: Ok
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Checks if the licenses are available for Acquiring
+      tags:
+      - TessellLicenseManagerService
+      x-accepts: application/json
+  /license-manager/governance/licenses:
+    get:
+      description: Returns a list detail of licenses from directory.
+      operationId: getLicensesFromDirectory
+      parameters:
+      - description: License Category
+        example: DB
+        explode: true
+        in: query
+        name: licenseCategory
+        required: true
+        schema:
+          $ref: '#/components/schemas/licenseCategory'
+        style: form
+      - description: License Type
+        explode: true
+        in: query
+        name: licenseType
+        required: false
+        schema:
+          example: Subscription, EULA
+          maxLength: 64
+          minLength: 1
+          type: string
+        style: form
+      - description: License Vendor
+        explode: true
+        in: query
+        name: vendor
+        required: false
+        schema:
+          $ref: '#/components/schemas/vendor'
+        style: form
+      - description: Flag to include/exclude to Audit
+        explode: true
+        in: query
+        name: includeAudit
+        required: false
+        schema:
+          example: true
+          type: boolean
+        style: form
+      - description: Maturity Status
+        explode: true
+        in: query
+        name: status
+        required: false
+        schema:
+          $ref: '#/components/schemas/maturityStatus'
+        style: form
+      - description: Comma separated license Ids
+        explode: true
+        in: query
+        name: licenseIds
+        required: false
+        schema:
+          example: bb89b700-698f-4597-8f54-d4055474e87c
+          type: string
+        style: form
+      - description: Id of subscription
+        explode: true
+        in: query
+        name: subscriptionId
+        required: false
+        schema:
+          example: all
+          maxLength: 128
+          minLength: 1
+          type: string
+        style: form
+      - description: Owner name
+        explode: true
+        in: query
+        name: createdBy
+        required: false
+        schema:
+          maxLength: 64
+          minLength: 1
+          type: string
+        style: form
+      - description: Date on which license was added.
+        explode: true
+        in: query
+        name: startDate
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - description: Date on which license would expire.
+        explode: true
+        in: query
+        name: endDate
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - description: Time Zone
+        in: query
+        name: timeZone
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/licenseDirectoriesResponse'
+          description: Ok
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      security: []
+      summary: Returns a list detail of licenses from directory.
+      tags:
+      - TessellLicenseManagerService
+      x-accepts: application/json
+    post:
+      description: Register license into license pool
+      operationId: registerLicenseToDirectory
+      parameters:
+      - description: Time Zone
+        in: query
+        name: timeZone
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/registerLicenseToDirectoryRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/licenseRegisterResponse'
+          description: Ok
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      security: []
+      summary: Register license into license pool
+      tags:
+      - TessellLicenseManagerService
+      x-contentType: application/json
+      x-accepts: application/json
+  /license-manager/governance/licenses/{licenseId}:
+    delete:
+      description: Deletes an existing license from directory.
+      operationId: deleteLicenseFromDirectory
+      parameters:
+      - description: Time Zone
+        in: query
+        name: timeZone
+        required: false
+        schema:
+          type: string
+      - description: License Id
+        example: bdb2aabd-c374-423f-9315-de7e6dd141cb
+        explode: false
+        in: path
+        name: licenseId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: secure
+        required: false
+        schema:
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/deleteLicenseResponse'
+          description: Ok
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      security: []
+      summary: Deletes an existing license from directory.
+      tags:
+      - TessellLicenseManagerService
+      x-accepts: application/json
+  /tessell-internal/license-manager/licenses/acquire:
+    post:
+      description: Acquire a license from a license directory.
+      operationId: acquireLicense
+      parameters:
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Time Zone
+        in: query
+        name: timeZone
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/acquireLicenseRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/acquireLicenseResponse'
+          description: Ok
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Acquire a license from a license directory.
+      tags:
+      - TessellLicenseManagerService
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-internal/license-manager/licenses/release:
+    post:
+      description: Release a previously acquired license from a license directory.
+      operationId: releaseLicense
+      parameters:
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Time Zone
+        in: query
+        name: timeZone
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/releaseLicenseRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/releaseLicenseResponse'
+          description: Ok
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Release a previously acquired license from a license directory.
+      tags:
+      - TessellLicenseManagerService
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-internal/license-manager/licenses:
+    get:
+      description: Returns detail of license directory.
+      operationId: getLicensesFromDirectoryInternal
+      parameters:
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      - example: DB
+        explode: true
+        in: query
+        name: licenseCategory
+        required: true
+        schema:
+          $ref: '#/components/schemas/licenseCategory'
+        style: form
+      - description: License Type
+        example: Subscription, EULA
+        explode: true
+        in: query
+        name: licenseType
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: License Type
+        explode: true
+        in: query
+        name: vendor
+        required: false
+        schema:
+          $ref: '#/components/schemas/vendor'
+        style: form
+      - example: true
+        explode: true
+        in: query
+        name: includeAudit
+        required: false
+        schema:
+          type: boolean
+        style: form
+      - description: Id of subscription
+        explode: true
+        in: query
+        name: subscriptionId
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: maturity status
+        explode: true
+        in: query
+        name: status
+        required: false
+        schema:
+          $ref: '#/components/schemas/maturityStatus'
+        style: form
+      - description: Comma separated licenseids
+        example: DB
+        explode: true
+        in: query
+        name: licenseIds
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: owner
+        explode: true
+        in: query
+        name: createdBy
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: startDate
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: endDate
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - description: Time Zone
+        in: query
+        name: timeZone
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/licenseDirectoriesResponse'
+          description: Ok
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Returns detail of license directory.
+      tags:
+      - TessellLicenseManagerService
+      x-accepts: application/json
+  /tessell-internal/license-manager/licenses/{licenseId}:
+    get:
+      description: Returns license by Id
+      operationId: getLicenseFromDirectoryByIdInternal
+      parameters:
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Time Zone
+        in: query
+        name: timeZone
+        required: false
+        schema:
+          type: string
+      - example: bdb2aabd-c374-423f-9315-de7e6dd141cb
+        explode: false
+        in: path
+        name: licenseId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - example: true
+        explode: true
+        in: query
+        name: includeAudit
+        required: false
+        schema:
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/licenseDirectoryResponse'
+          description: Ok
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Returns license by Id.
+      tags:
+      - TessellLicenseManagerService
+      x-accepts: application/json
+components:
+  schemas:
+    deleteLicenseResponse:
+      description: License Repositories Chronicle Response
+      example:
+        lockHash: lockHash
+        licenseId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        licenseId:
+          format: uuid
+          type: string
+        lockHash:
+          type: string
+        status:
+          $ref: '#/components/schemas/licenseStatus'
+      type: object
+    licenseMetadata:
+      items:
+        $ref: '#/components/schemas/metadataItem'
+      type: array
+    licenseJsonMetadata:
+      items:
+        $ref: '#/components/schemas/metadataItem'
+      type: array
+      x-dao-query: true
+    metadataItem:
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+      type: object
+    licenseDirectoriesResponse:
+      example:
+        metadata:
+          pagination:
+            pageOffset: 1
+            pageSize: 6
+          records: 0
+          timeZone: timeZone
+        responses:
+        - ""
+        - ""
+      properties:
+        responses:
+          items:
+            allOf:
+            - $ref: '#/components/schemas/licenseDirectoryResponse'
+          type: array
+        metadata:
+          $ref: '#/components/schemas/apiMetadata'
+      type: object
+    licenseAvailabilityResponse:
+      example:
+        availableQuantity: 0.8008281904610115
+        quantityMetric: quantityMetric
+        metadata: metadata
+        quantity: 6.027456183070403
+        licenseAvailable: true
+        edition: edition
+        subscriptionId: subscriptionId
+        version: version
+      properties:
+        licenseAvailable:
+          description: availability
+          type: boolean
+        licenseCategory:
+          $ref: '#/components/schemas/licenseCategory'
+        vendor:
+          $ref: '#/components/schemas/vendor'
+        edition:
+          description: edition for the license ie Standard/enterprise
+          type: string
+        version:
+          description: license version
+          type: string
+        subscriptionId:
+          description: Subscription identifier
+          type: string
+        availableQuantity:
+          description: quantity of license capacity to be registered
+          format: double
+          type: number
+        quantity:
+          description: quantity of license capacity to be registered
+          format: double
+          type: number
+        quantityMetric:
+          description: capacity metric to determine quantity
+          type: string
+        metadata:
+          type: string
+      type: object
+    licenseRequiredResponse:
+      example:
+        licenseRequired: true
+      properties:
+        licenseRequired:
+          type: boolean
+      type: object
+    licenseDirectoryResponse:
+      example:
+        availableQuantity: 0.8008281904610115
+        quantityMetric: quantityMetric
+        metadata: metadata
+        quantity: 6.027456183070403
+        lastModifiedAt: 2000-01-23T04:56:07.000+00:00
+        endDate: 2000-01-23T04:56:07.000+00:00
+        lastModifiedBy: lastModifiedBy
+        description: description
+        edition: edition
+        version: version
+        licenseAudit:
+        - ""
+        - ""
+        licenseKey: licenseKey
+        maxUsageAllowed: 1.4658129805029452
+        licenseId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        subscriptionId: subscriptionId
+        startDate: 2000-01-23T04:56:07.000+00:00
+      properties:
+        licenseId:
+          description: license identifier
+          format: uuid
+          type: string
+        licenseCategory:
+          $ref: '#/components/schemas/licenseCategory'
+        licenseType:
+          $ref: '#/components/schemas/licenseType'
+        vendor:
+          $ref: '#/components/schemas/vendor'
+        description:
+          type: string
+        edition:
+          description: edition for the license ie Standard/enterprise
+          type: string
+        version:
+          description: license version
+          type: string
+        subscriptionId:
+          description: Subscription identifier
+          type: string
+        licenseKey:
+          description: license key specific
+          type: string
+        availableQuantity:
+          description: quantity of license capacity to be registered
+          format: double
+          type: number
+        quantity:
+          description: quantity of license capacity to be registered
+          format: double
+          type: number
+        status:
+          $ref: '#/components/schemas/licenseStatus'
+        maturityStatus:
+          $ref: '#/components/schemas/maturityStatus'
+        quantityMetric:
+          description: capacity metric to determine quantity
+          type: string
+        maxUsageAllowed:
+          description: quantity that are permissable for provisioning
+          format: double
+          type: number
+        startDate:
+          description: start-date of the licenses.
+          format: date-time
+          type: string
+        endDate:
+          description: end-date of the license
+          format: date-time
+          type: string
+        metadata:
+          type: string
+        lastModifiedBy:
+          type: string
+        lastModifiedAt:
+          format: date-time
+          type: string
+        licenseAudit:
+          items:
+            allOf:
+            - $ref: '#/components/schemas/licenseAuditResponse'
+          type: array
+      type: object
+    licenseAuditResponse:
+      properties:
+        licenseId:
+          description: license identifier
+          format: uuid
+          type: string
+        quantityImpacted:
+          description: quantity of license capacity to be registered
+          format: double
+          type: number
+        acquirerId:
+          type: string
+        status:
+          $ref: '#/components/schemas/licenseStatus'
+        quantityMetric:
+          type: string
+        metadata:
+          type: string
+        createdBy:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+      type: object
+    licenseRegisterResponse:
+      example:
+        quantityMetric: quantityMetric
+        metadata: metadata
+        quantity: 0.8008281904610115
+        endDate: 2000-01-23T04:56:07.000+00:00
+        description: description
+        edition: edition
+        version: version
+        licenseKey: licenseKey
+        maxUsageAllowed: 6.027456183070403
+        licenseId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        subscriptionId: subscriptionId
+        startDate: 2000-01-23T04:56:07.000+00:00
+      properties:
+        licenseId:
+          description: license identifier
+          format: uuid
+          type: string
+        licenseCategory:
+          $ref: '#/components/schemas/licenseCategory'
+        licenseType:
+          $ref: '#/components/schemas/licenseType'
+        vendor:
+          $ref: '#/components/schemas/vendor'
+        description:
+          type: string
+        edition:
+          description: edition for the license ie Standard/enterprise
+          type: string
+        version:
+          description: license version
+          type: string
+        subscriptionId:
+          description: Subscription identifier
+          type: string
+        licenseKey:
+          description: license key specific
+          type: string
+        quantity:
+          description: quantity of license capacity to be registered
+          format: double
+          type: number
+        status:
+          $ref: '#/components/schemas/licenseStatus'
+        maturityStatus:
+          $ref: '#/components/schemas/maturityStatus'
+        quantityMetric:
+          description: capacity metric to determine quantity
+          type: string
+        maxUsageAllowed:
+          description: quantity that are permissable for provisioning
+          format: double
+          type: number
+        startDate:
+          description: start-date of the license
+          format: date-time
+          type: string
+        endDate:
+          description: endDate of the license
+          format: date-time
+          type: string
+        metadata:
+          type: string
+      type: object
+    vendor:
+      description: Database Engine Type
+      enum:
+      - ORACLE
+      - MICROSOFT
+      - APACHE
+      type: string
+    licenseCategory:
+      description: Class to determine licenses
+      enum:
+      - DB
+      - INTEGRATION
+      - OS
+      - OTHERS
+      type: string
+    licenseType:
+      description: Type of licenses
+      enum:
+      - EULA
+      - SUBSCRIPTION
+      - PERPETUAL
+      - OTHERS
+      type: string
+    licenseStatus:
+      description: status of license
+      enum:
+      - REGISTER
+      - TERMINATED
+      - LOCKED
+      - RELEASED
+      - FAILED
+      - DELETED
+      type: string
+    maturityStatus:
+      description: maturity of license
+      enum:
+      - DRAFT
+      - PUBLISHED
+      - DELETED
+      - ALL
+      type: string
+    registerLicenseToDirectoryRequest:
+      properties:
+        licenseCategory:
+          $ref: '#/components/schemas/licenseCategory'
+        licenseType:
+          $ref: '#/components/schemas/licenseType'
+        vendor:
+          $ref: '#/components/schemas/vendor'
+        description:
+          maxLength: 128
+          minLength: 1
+          type: string
+        edition:
+          description: Edition for the license ie Standard/enterprise
+          example: EVALUATION
+          maxLength: 64
+          minLength: 1
+          type: string
+        version:
+          description: License version
+          example: "19.0"
+          maxLength: 32
+          minLength: 1
+          type: string
+        subscriptionId:
+          description: Subscription identifier
+          example: all
+          maxLength: 128
+          minLength: 1
+          type: string
+        licenseKey:
+          description: license key specific
+          maxLength: 128
+          minLength: 1
+          type: string
+        quantity:
+          description: quantity of license capacity to be registered
+          example: 100
+          format: double
+          type: number
+        status:
+          $ref: '#/components/schemas/licenseStatus'
+        maturityStatus:
+          $ref: '#/components/schemas/maturityStatus'
+        quantityMetric:
+          description: Capacity metric to determine quantity
+          example: vCPU
+          maxLength: 64
+          minLength: 1
+          type: string
+        maxUsageAllowed:
+          description: Quantity that is permissible for provisioning
+          example: 90
+          format: double
+          type: number
+        startDate:
+          description: start-date of the license
+          format: date-time
+          type: string
+        endDate:
+          description: endDate of the license
+          format: date-time
+          type: string
+        metadata:
+          type: string
+      required:
+      - edition
+      - licenseCategory
+      - licenseType
+      - quantity
+      - quantityMetric
+      - startDate
+      - subscriptionId
+      - vendor
+      - version
+      type: object
+    acquireLicenseRequest:
+      properties:
+        licenseCategory:
+          $ref: '#/components/schemas/licenseCategory'
+        vendor:
+          $ref: '#/components/schemas/vendor'
+        edition:
+          description: edition for the license ie Standard/enterprise
+          type: string
+        acquirerId:
+          type: string
+        version:
+          description: license version
+          type: string
+        subscriptionId:
+          description: Subscription identifier
+          type: string
+        cloudAccountId:
+          description: cloud account identifier
+          format: uuid
+          type: string
+        region:
+          description: the region to replicate the secrets
+          type: string
+        quantity:
+          description: quantity of license capacity to be registered
+          format: double
+          type: number
+      required:
+      - acquirerId
+      - edition
+      - licenseCategory
+      - quantity
+      - subscriptionId
+      - vendor
+      - version
+      type: object
+    acquireLicenseResponse:
+      example:
+        licenses:
+        - ""
+        - ""
+        message: message
+        status: status
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+        licenses:
+          items:
+            allOf:
+            - $ref: '#/components/schemas/acquireLicenseSubResponse'
+          type: array
+      type: object
+    acquireLicenseSubResponse:
+      properties:
+        licenseId:
+          description: license identifier
+          format: uuid
+          type: string
+        licenseCategory:
+          $ref: '#/components/schemas/licenseCategory'
+        licenseType:
+          $ref: '#/components/schemas/licenseType'
+        vendor:
+          $ref: '#/components/schemas/vendor'
+        edition:
+          description: edition for the license ie Standard/enterprise
+          type: string
+        version:
+          description: license version
+          type: string
+        subscriptionId:
+          description: Subscription identifier
+          type: string
+        acquirerId:
+          type: string
+        cloudAccountId:
+          format: uuid
+          type: string
+        region:
+          type: string
+        quantity:
+          description: quantity of license capacity to be registered
+          format: double
+          type: number
+        status:
+          $ref: '#/components/schemas/licenseStatus'
+        quantityMetric:
+          description: capacity metric to determine quantity
+          type: string
+        lockHash:
+          type: string
+      type: object
+    releaseLicenseRequest:
+      properties:
+        licenses:
+          items:
+            allOf:
+            - $ref: '#/components/schemas/licenseReleaseObject'
+          type: array
+        lockHash:
+          type: string
+      type: object
+    licenseReleaseObject:
+      properties:
+        licenseId:
+          format: uuid
+          type: string
+        quantity:
+          description: quantity to be released
+          format: double
+          type: number
+      required:
+      - licenseId
+      - quantity
+      type: object
+    releaseLicenseResponse:
+      example:
+        lockHash: lockHash
+        licenses:
+        - ""
+        - ""
+        status: status
+      properties:
+        licenses:
+          items:
+            allOf:
+            - $ref: '#/components/schemas/licenseReleaseObject'
+          type: array
+        lockHash:
+          type: string
+        status:
+          type: string
+      type: object
+    licenseDirectoryEntity:
+      properties:
+        id:
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+              @Type(type = "pg-uuid")
+              @GeneratedValue(strategy = GenerationType.AUTO)
+        vendor:
+          description: vendor of license
+          type: string
+          x-dao-query: true
+        edition:
+          description: edition of license
+          type: string
+          x-dao-query: true
+        version:
+          description: version of license
+          type: string
+          x-dao-query: true
+        licenseCategory:
+          allOf:
+          - $ref: '#/components/schemas/licenseCategory'
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="license_category")
+              @Enumerated(EnumType.STRING)
+              @Type(type = "pgsql_enum")
+        licenseType:
+          allOf:
+          - $ref: '#/components/schemas/licenseType'
+          description: License type
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="license_type")
+              @Enumerated(EnumType.STRING)
+              @Type(type = "pgsql_enum")
+        licenseKey:
+          description: key of license
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="license_key")
+        subscriptionId:
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="subscription_id")
+        tenantId:
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="tenant_id")
+        description:
+          type: string
+          x-dao-query: true
+        deleted:
+          type: boolean
+          x-dao-query: true
+        totalQuantity:
+          description: Total number of licenses.
+          format: double
+          type: number
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="total_quantity")
+        availableQuantity:
+          description: available licenses.
+          format: double
+          type: number
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="available_quantity")
+        maxUsageAllowed:
+          description: max usage allowed for the licenses.
+          format: double
+          type: number
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="max_usage_allowed")
+        quantityMetric:
+          description: metric for license quantity
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="quantity_metric")
+        startDate:
+          description: startDate for license term
+          format: date-time
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "start_date", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+        endDate:
+          description: endDate for license term
+          format: date-time
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "end_date", columnDefinition = "TIMESTAMP WITH TIME ZONE", nullable = true, updatable = true)
+        lastModifiedAt:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "last_modified_at", columnDefinition = "TIMESTAMP WITH TIME ZONE", nullable = false, updatable = true)
+              @UpdateTimestamp
+        lastModifiedBy:
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="last_modified_by")
+        metadata:
+          type: string
+      type: object
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_LICENSE_DIRECTORY
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_LICENSE_DIRECTORY")
+    licenseUtilisationEntity:
+      properties:
+        id:
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+              @Type(type = "pg-uuid")
+              @GeneratedValue(strategy = GenerationType.AUTO)
+        createdAt:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "created_at", columnDefinition = "TIMESTAMP WITH TIME ZONE", nullable = false, updatable = false)
+              @UpdateTimestamp
+        createdBy:
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="created_by")
+        description:
+          description: Description about this transaction.
+          type: string
+          x-dao-query: true
+        tenantId:
+          description: Description about this transaction.
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="tenant_id")
+        status:
+          allOf:
+          - $ref: '#/components/schemas/licenseStatus'
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="status")
+              @Enumerated(EnumType.STRING)
+              @Type(type = "pgsql_enum")
+        targetQuantity:
+          description: Request number of licenses.
+          format: double
+          type: number
+          x-dao-annotations: |
+            @Column(name="target_quantity")
+        subscriptionId:
+          description: Subscription identifier.
+          type: string
+          x-dao-annotations: |
+            @Column(name="subscription_id")
+          x-dao-query: true
+        acquirerId:
+          description: Acquirer service identifier.
+          type: string
+          x-dao-annotations: |
+            @Column(name="acquirer_id")
+          x-dao-query: true
+        lockHash:
+          type: string
+          x-dao-annotations: |
+            @Column(name="lock_hash")
+          x-dao-query: true
+        metadata:
+          type: string
+        operation:
+          allOf:
+          - $ref: '#/components/schemas/licenseRecordOperationType'
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="operation")
+              @Enumerated(EnumType.STRING)
+              @Type(type = "pgsql_enum")
+        license_id:
+          description: foreign key reference of License Directory Table
+          format: uuid
+          type: string
+          x-dao-query: true
+      type: object
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_LICENSE_UTILISATION
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_LICENSE_UTILISATION")
+    licenseRecordOperationType:
+      enum:
+      - ACQUIRE
+      - RELEASE
+      - BLOCK
+      type: string
+    ApiErrorOps:
+      description: Common error response object for non 2xx responses of internal
+        or ops APIs
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/TessellErrorCode'
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        serviceException:
+          $ref: '#/components/schemas/ApiError'
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    TessellErrorCode:
+      description: Error code object for API Exceptions
+      properties:
+        httpErrorCode:
+          description: Standard http error code
+          type: string
+        serviceCode:
+          description: Service error code
+          type: string
+        opCode:
+          description: Operation error code
+          type: string
+        description:
+          description: Error code description
+          type: string
+      type: object
+    ApiErrorDetails:
+      description: Common API exception details
+      properties:
+        resolution:
+          description: Resolution detail for API exception
+          type: string
+      type: object
+    ApiError:
+      description: Common error response object for non 2xx responses
+      properties:
+        code:
+          description: Status code for the error response
+          type: string
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        defaultCodeSet:
+          type: boolean
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    apiMetadata:
+      example:
+        pagination:
+          pageOffset: 1
+          pageSize: 6
+        records: 0
+        timeZone: timeZone
+      properties:
+        timeZone:
+          type: string
+        records:
+          format: int32
+          type: integer
+        pagination:
+          $ref: '#/components/schemas/apiPaginationInfo'
+      title: apiMetadata
+      type: object
+    apiPaginationInfo:
+      example:
+        pageOffset: 1
+        pageSize: 6
+      properties:
+        pageSize:
+          format: int32
+          type: integer
+        pageOffset:
+          format: int32
+          type: integer
+      title: apiPaginationInfo
+      type: object
+

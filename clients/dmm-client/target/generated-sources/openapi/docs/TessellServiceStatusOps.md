@@ -1,0 +1,69 @@
+
+
+# TessellServiceStatusOps
+
+## Enum
+
+
+* `CREATING` (value: `"CREATING"`)
+
+* `CREATION_FAILED` (value: `"CREATION_FAILED"`)
+
+* `DELETED` (value: `"DELETED"`)
+
+* `DELETING` (value: `"DELETING"`)
+
+* `READY` (value: `"READY"`)
+
+* `STOPPED` (value: `"STOPPED"`)
+
+* `STOPPING` (value: `"STOPPING"`)
+
+* `CONNECTION_STOPPED` (value: `"CONNECTION_STOPPED"`)
+
+* `STARTING` (value: `"STARTING"`)
+
+* `DEGRADED` (value: `"DEGRADED"`)
+
+* `HEALING` (value: `"HEALING"`)
+
+* `DOWN` (value: `"DOWN"`)
+
+* `DELETION_FAILED` (value: `"DELETION_FAILED"`)
+
+* `WARM_STOPPED` (value: `"WARM_STOPPED"`)
+
+* `TO_BE_DELETED` (value: `"TO_BE_DELETED"`)
+
+* `DELETED_FOR_USER` (value: `"DELETED_FOR_USER"`)
+
+* `SWITCHING_OVER` (value: `"SWITCHING_OVER"`)
+
+* `REBUILDING` (value: `"REBUILDING"`)
+
+* `RESIZING_STORAGE` (value: `"RESIZING_STORAGE"`)
+
+* `RESTORING` (value: `"RESTORING"`)
+
+* `RESTORE_FAILED` (value: `"RESTORE_FAILED"`)
+
+* `START_FAILED` (value: `"START_FAILED"`)
+
+* `CONNECTION_STOP_FAILED` (value: `"CONNECTION_STOP_FAILED"`)
+
+* `VM_STOP_FAILED` (value: `"VM_STOP_FAILED"`)
+
+* `SWITCHOVER_FAILED` (value: `"SWITCHOVER_FAILED"`)
+
+* `BACKING_UP` (value: `"BACKING_UP"`)
+
+* `PATCHING` (value: `"PATCHING"`)
+
+* `PATCH_FAILED` (value: `"PATCH_FAILED"`)
+
+* `UPDATING_PARAMETER_PROFILE` (value: `"UPDATING_PARAMETER_PROFILE"`)
+
+* `UNDER_MAINTENANCE` (value: `"UNDER_MAINTENANCE"`)
+
+
+

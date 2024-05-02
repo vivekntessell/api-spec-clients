@@ -1,0 +1,47 @@
+
+
+# TessellServiceInstanceStatusOps
+
+## Enum
+
+
+* `UP` (value: `"UP"`)
+
+* `DOWN` (value: `"DOWN"`)
+
+* `STOPPED` (value: `"STOPPED"`)
+
+* `CREATING` (value: `"CREATING"`)
+
+* `DELETED` (value: `"DELETED"`)
+
+* `DELETING` (value: `"DELETING"`)
+
+* `DELETING_FOR_USER` (value: `"DELETING_FOR_USER"`)
+
+* `TO_BE_DELETED` (value: `"TO_BE_DELETED"`)
+
+* `DELETION_FAILED` (value: `"DELETION_FAILED"`)
+
+* `REBUILDING` (value: `"REBUILDING"`)
+
+* `REBUILD_FAILED` (value: `"REBUILD_FAILED"`)
+
+* `RESIZING_STORAGE` (value: `"RESIZING_STORAGE"`)
+
+* `RESIZING_STORAGE_FAILED` (value: `"RESIZING_STORAGE_FAILED"`)
+
+* `CONNECTION_STOPPED` (value: `"CONNECTION_STOPPED"`)
+
+* `CREATION_FAILED` (value: `"CREATION_FAILED"`)
+
+* `PATCHING` (value: `"PATCHING"`)
+
+* `PATCH_FAILED` (value: `"PATCH_FAILED"`)
+
+* `UPDATING_PARAMETER_PROFILE` (value: `"UPDATING_PARAMETER_PROFILE"`)
+
+* `PARAMETER_PROFILE_UPDATE_FAILED` (value: `"PARAMETER_PROFILE_UPDATE_FAILED"`)
+
+
+

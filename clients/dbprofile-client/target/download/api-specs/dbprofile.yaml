@@ -1,0 +1,1402 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: support@tessell.com
+    name: Inc
+    url: https://www.tessell.com
+  description: REST API Documentation
+  termsOfService: https://www.tessell.com/terms
+  title: REST API Documentation
+  version: "1.0"
+servers:
+  - description: Inferred Url
+    url: http://localhost:8084
+
+paths:
+  /tessell-ops/databases/profiles/options-profile-types:
+    get:
+      tags:
+        - tessell-database-profile-controller
+      summary: Get a list of available Tessell Database Options Profile Types
+      operationId: getDatabaseOptionProfileTypesOps
+      parameters:
+        - name: name
+          in: query
+          description: name
+          required: false
+          style: form
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: status
+          required: false
+          style: form
+          schema:
+            $ref: '#/components/schemas/DatabaseOptionTypeStatus'
+        - name: engine-type
+          in: query
+          description: engine-type
+          required: false
+          style: form
+          schema:
+            $ref: 'common-specification.yaml#/components/schemas/databaseEngineType'
+        - name: version
+          in: query
+          description: version
+          required: false
+          style: form
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 32
+            example: 15.5
+        - name: multiple
+          in: query
+          description: multiple (Deprecated)
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: true
+        - $ref: 'common-specification.yaml#/components/parameters/pageSize'
+        - $ref: 'common-specification.yaml#/components/parameters/pageOffset'
+        - $ref: 'common-specification.yaml#/components/parameters/timeZone'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionTypeListResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/databases/profiles/options-profile-types/{id}:
+    get:
+      tags:
+        - tessell-database-profile-controller
+      summary: View available Tessell Database Options Profile Types by Id
+      operationId: getDatabaseOptionProfileTypesOpsById
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionTypeDTO'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /databases/profiles/options-profile-types:
+    get:
+      tags:
+        - tessell-database-profile-controller
+      summary: Get a list of available Tessell Database Options Profile Types
+      operationId: getDatabaseOptionProfileTypes
+      parameters:
+        - name: status
+          in: query
+          description: Status of an Options Profile Type
+          required: false
+          style: form
+          schema:
+            $ref: '#/components/schemas/DatabaseOptionTypeStatus'
+        - name: engine-type
+          in: query
+          description: Database Engine type
+          required: false
+          style: form
+          schema:
+            $ref: 'common-specification.yaml#/components/schemas/databaseEngineType'
+        - name: version
+          in: query
+          description: Database Engine version
+          required: false
+          style: form
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 32
+            example: 15.5
+        - name: multiple
+          in: query
+          description: multiple (Deprecated)
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: true
+        - $ref: 'common-specification.yaml#/components/parameters/pageSize'
+        - $ref: 'common-specification.yaml#/components/parameters/pageOffset'
+        - $ref: 'common-specification.yaml#/components/parameters/timeZone'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionTypeListResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /databases/profiles/options-profile-types/{name}:
+    get:
+      tags:
+        - tessell-database-profile-controller
+      summary: Get Options Profile Types by name
+      operationId: getDatabaseOptionProfileTypesByName
+      parameters:
+        - name: name
+          in: path
+          description: Options Profile name
+          required: true
+          style: simple
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+            example: Postgres Default Options Profile
+        - name: load-acls
+          in: query
+          description: Flag to include / exclude ACL information
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionTypeDTO'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tessell-ops/databases/profiles/options-profiles:
+    get:
+      tags:
+        - tessell-database-profile-controller
+      summary: Get a list of available Database Options Profiles
+      operationId: getDatabaseOptionProfilesOps
+      parameters:
+        - name: tenant-id
+          in: query
+          description: tenant id
+          required: false
+          style: form
+          schema:
+            type: string
+        - name: name
+          in: query
+          description: name
+          required: false
+          style: form
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: status
+          required: false
+          style: form
+          schema:
+            $ref: '#/components/schemas/DatabaseOptionProfileStatus'
+        - name: engine-type
+          in: query
+          description: engine-type
+          required: false
+          style: form
+          schema:
+            $ref: 'common-specification.yaml#/components/schemas/databaseEngineType'
+        - name: version
+          in: query
+          description: version
+          required: false
+          style: form
+          schema:
+            type: string
+        - name: multiple
+          in: query
+          description: multiple (Deprecated)
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: true
+        - $ref: 'common-specification.yaml#/components/parameters/pageSize'
+        - $ref: 'common-specification.yaml#/components/parameters/pageOffset'
+        - $ref: 'common-specification.yaml#/components/parameters/timeZone'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionProfileListResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /databases/profiles/governance/options-profiles:
+    post:
+      tags:
+        - tessell-database-profile-controller
+      summary: Create a new Options Profile
+      operationId: createDatabaseOptionProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TessellDatabaseOptionProfileDTO'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionProfileDTO'
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+    get:
+      tags:
+        - tessell-database-profile-controller
+      summary: Get a list of available Database Options Profiles
+      operationId: getDatabaseOptionProfiles
+      parameters:
+        - name: status
+          in: query
+          description: Status of an Options Profile
+          required: false
+          style: form
+          schema:
+            $ref: '#/components/schemas/DatabaseOptionProfileStatus'
+        - name: engine-type
+          in: query
+          description: Database Engine type
+          required: false
+          style: form
+          schema:
+            $ref: 'common-specification.yaml#/components/schemas/databaseEngineType'
+        - name: version
+          in: query
+          description: Database Engine version
+          required: false
+          style: form
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 32
+            example: 15.5
+        - name: load-acls
+          in: query
+          description: Flag to include / exclude ACL information
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: false
+        - name: multiple
+          in: query
+          description: multiple (Deprecated)
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: true
+        - $ref: 'common-specification.yaml#/components/parameters/pageSize'
+        - $ref: 'common-specification.yaml#/components/parameters/pageOffset'
+        - $ref: 'common-specification.yaml#/components/parameters/timeZone'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionProfileListResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /databases/profiles/governance/options-profiles/{name}:
+    get:
+      tags:
+        - tessell-database-profile-controller
+      summary: Get an Options Profile by name
+      operationId: getDatabaseOptionProfilesByName
+      parameters:
+        - name: name
+          in: path
+          description: Options Profile name
+          required: true
+          style: simple
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+            example: Postgres Custom Option Profile
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionProfileDTO'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /databases/profiles/options-profiles:
+    get:
+      tags:
+        - tessell-database-profile-controller
+      summary: Get a list of available Tessell Database Options Profiles
+      operationId: getDatabaseOptionProfilesForConsumption
+      parameters:
+        - name: status
+          in: query
+          description: Status of an Options Profile
+          required: false
+          style: form
+          schema:
+            $ref: '#/components/schemas/DatabaseOptionProfileStatus'
+        - name: engine-type
+          in: query
+          description: Database Engine type
+          required: false
+          style: form
+          schema:
+            $ref: 'common-specification.yaml#/components/schemas/databaseEngineType'
+        - name: version
+          in: query
+          description: Database Engine type
+          required: false
+          style: form
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 32
+            example: 15.5
+        - name: load-acls
+          in: query
+          description: Flag to include / exclude ACL information
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: false
+        - name: multiple
+          in: query
+          description: multiple (Deprecated)
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: true
+        - $ref: 'common-specification.yaml#/components/parameters/pageSize'
+        - $ref: 'common-specification.yaml#/components/parameters/pageOffset'
+        - $ref: 'common-specification.yaml#/components/parameters/timeZone'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionProfileConsumptionListResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /databases/profiles/options-profiles/{name}:
+    get:
+      tags:
+        - tessell-database-profile-controller
+      summary: Get an Options Profile by name
+      operationId: getDatabaseOptionProfilesConsumptionByName
+      parameters:
+        - name: name
+          in: path
+          description: Options Profile name
+          required: true
+          style: simple
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+            example: Postgres Custom Option Profile
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionProfileConsumptionDTO'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /databases/profiles/options-profiles/{id}:
+    delete:
+      tags:
+        - tessell-database-profile-controller
+      summary: Delete an Options Profile
+      operationId: deleteDatabaseOptionProfile
+      parameters:
+        - name: id
+          in: path
+          description: Options Profile identifier
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+        - name: soft-delete
+          in: query
+          description: When set to false, it permanently deletes a Parameter Profile. When set to true, Option Profile can be recovered by contacting Tessell Support.
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+    patch:
+      tags:
+        - tessell-database-profile-controller
+      summary: Update an Options Profile
+      operationId: updateDatabaseOptionProfile
+      parameters:
+        - name: id
+          in: path
+          description: Option Profile identifier
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TessellDatabaseOptionProfileDTO'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionProfileDTO'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tessell-ops/databases/profiles/options-profiles/{id}:
+    get:
+      tags:
+        - tessell-database-profile-controller
+      summary: View available Tessell Database Options Profiles by Id
+      operationId: getDatabaseOptionProfilesOpsById
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+        - name: tenant-id
+          in: query
+          description: tenant id
+          required: false
+          style: form
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionProfileDTO'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    delete:
+      tags:
+        - tessell-database-profile-controller
+      summary: Delete a Tessell Database Options Profile
+      operationId: deleteDatabaseOptionProfileOps
+      parameters:
+        - name: id
+          in: path
+          description: Options Profile identifier
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+        - name: soft-delete
+          in: query
+          description: soft-delete
+          required: false
+          style: form
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    patch:
+      tags:
+        - tessell-database-profile-controller
+      summary: Update a Tessell Database Options Profile
+      operationId: updateDatabaseOptionProfileOps
+      parameters:
+        - name: id
+          in: path
+          description: Options Profile identifier
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TessellDatabaseOptionProfileDTO'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionProfileDTO'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /databases/profiles/governance/parameter-profiles/{name}/acls:
+    patch:
+      tags:
+        - tessell-DBProfile-acls-controller
+      summary: Create/Update ACLs of a Parameter Profile
+      operationId: createDBParameterProfileAcls
+      parameters:
+        - name: name
+          in: path
+          description: Options Profile name
+          required: true
+          style: simple
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+            example: Postgres Custom Option Profile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'common-specification.yaml#/components/schemas/AclPayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/AclPayload'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+    delete:
+      tags:
+        - tessell-DBProfile-acls-controller
+      summary: Revoke access of given users from a Parameter Profile
+      operationId: revokeDBParameterProfileAcls
+      parameters:
+        - name: name
+          in: path
+          description: Options Profile name
+          required: true
+          style: simple
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+            example: Postgres Custom Option Profile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'common-specification.yaml#/components/schemas/AclRevokePayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /databases/profiles/governance/options-profiles/{name}/acls:
+    patch:
+      tags:
+        - tessell-DBProfile-acls-controller
+      summary: Create/Update ACLs of an Options Profile
+      operationId: createDBOptionsProfileAcls
+      parameters:
+        - name: name
+          in: path
+          description: Options Profile name
+          required: true
+          style: simple
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+            example: Postgres Custom Option Profile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'common-specification.yaml#/components/schemas/AclPayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/AclPayload'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+    delete:
+      tags:
+        - tessell-DBProfile-acls-controller
+      summary: Revoke access of given users from an Options Profile
+      operationId: revokeDBOptionsProfileAcls
+      parameters:
+        - name: name
+          in: path
+          description: Options Profile name
+          required: true
+          style: simple
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+            example: Postgres Custom Option Profile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'common-specification.yaml#/components/schemas/AclRevokePayload'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /databases/profiles/governance/parameter-profiles/{name}/acls/eligible-users:
+    get:
+      tags:
+        - tessell-DBProfile-acls-controller
+      summary: Get a list of all users along with role they are eligible on a Parameter Profile
+      operationId: getPrivilegedUserForDBParameterProfile
+      parameters:
+        - name: name
+          in: path
+          description: Parameter Profile name
+          required: true
+          style: simple
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+            example: Postgres Custom Parameter Profile
+        - name: role
+          in: query
+          description: role
+          required: false
+          style: form
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+            example: Member
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                type: array
+                items:
+                  $ref: 'common-specification.yaml#/components/schemas/AclEligibleUser'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /databases/profiles/governance/options-profiles/{name}/acls/eligible-users:
+    get:
+      tags:
+        - tessell-DBProfile-acls-controller
+      summary: Get a list of all users along with role they are eligible on an Options Profile
+      operationId: getPrivilegedUserForDBOptionsProfile
+      parameters:
+        - name: name
+          in: path
+          description: Options Profile name
+          required: true
+          style: simple
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+            example: Postgres Custom Option Profile
+        - name: role
+          in: query
+          description: Name of role
+          required: false
+          style: form
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+            example: Member
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                type: array
+                items:
+                  $ref: 'common-specification.yaml#/components/schemas/AclEligibleUser'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /databases/profiles/governance/options-profiles/{name}/{action}:
+    patch:
+      tags:
+        - tessell-DBProfile-acls-controller
+      summary: Update Options Profile's Maturity Status
+      operationId: updateOptionProfileStatus
+      parameters:
+        - name: name
+          in: path
+          description: Options Profile name
+          required: true
+          style: simple
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+            example: Postgres Custom Option Profile
+        - name: action
+          in: path
+          description: Actions like DRAFT/PUBLISH/UNPUBLISH
+          required: true
+          style: simple
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 32
+            example: PUBLISH
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /databases/profiles/governance/parameter-profiles/{name}/{action}:
+    patch:
+      tags:
+        - tessell-DBProfile-acls-controller
+      summary: Update Parameter Profile's Maturity Status
+      operationId: updateParameterProfileStatus
+      parameters:
+        - name: name
+          in: path
+          description: Parameter Profile name
+          required: true
+          style: simple
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+            example: Postgres Custom Parameter Profile
+        - name: action
+          in: path
+          description: Actions like DRAFT/PUBLISH/UNPUBLISH
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'common-specification.yaml#/components/schemas/apiStatus'
+        '204':
+          description: No Content
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+components:
+  schemas:
+    TessellDatabaseOptionTypeListResponse:
+      title: TessellDatabaseOptionTypeListResponse
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/apiResponse'
+      type: object
+      properties:
+        response:
+          type: array
+          items:
+            $ref: '#/components/schemas/TessellDatabaseOptionTypeDTO'
+    TessellDatabaseOptionProfileListResponse:
+      title: TessellDatabaseOptionProfileListResponse
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/apiResponse'
+      type: object
+      properties:
+        response:
+          type: array
+          items:
+            $ref: '#/components/schemas/TessellDatabaseOptionProfileDTO'
+    TessellDatabaseOptionProfileConsumptionListResponse:
+      title: TessellDatabaseOptionProfileConsumptionListResponse
+      allOf:
+        - $ref: 'common-specification.yaml#/components/schemas/apiResponse'
+      type: object
+      properties:
+        response:
+          type: array
+          items:
+            $ref: '#/components/schemas/TessellDatabaseOptionProfileConsumptionDTO'
+    DatabaseOptionProfileDriverInfo:
+      title: DatabaseOptionProfileDriverInfo
+      type: object
+      properties:
+        data:
+          type: object
+    DatabaseOptionProfileMetadata:
+      title: DatabaseOptionProfileMetadata
+      type: object
+      properties:
+        data:
+          type: object
+    DatabaseOptionSettingType:
+      title: DatabaseOptionSettingType
+      type: object
+      properties:
+        allowedValues:
+          type: string
+        dataType:
+          type: string
+        description:
+          type: string
+        name:
+          type: string
+    DatabaseOptionType:
+      title: DatabaseOptionType
+      type: object
+      properties:
+        applyNow:
+          type: boolean
+        description:
+          type: string
+        name:
+          type: string
+        optionSettings:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseOptionSettingType'
+        permanent:
+          type: boolean
+        persistent:
+          type: boolean
+    DatabaseParameterProfileDriverInfoOld:
+      title: DatabaseParameterProfileDriverInfoOld
+      type: object
+      properties:
+        data:
+          type: object
+    DatabaseParameterProfileMetadataOld:
+      title: DatabaseParameterProfileMetadataOld
+      type: object
+      properties:
+        data:
+          type: object
+    DatabaseParameterTypeOld:
+      title: DatabaseParameterTypeOld
+      type: object
+      properties:
+        allowedValues:
+          type: string
+        applyType:
+          type: string
+        dataType:
+          type: string
+        defaultValue:
+          type: string
+        description:
+          type: string
+        name:
+          type: string
+    DatabaseProfileOptionSettingType:
+      title: DatabaseProfileOptionSettingType
+      type: object
+      required:
+        - name
+        - value
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 128
+          example: SQLNET.ENCRYPTION_TYPES_SERVER
+        value:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          example: AES256
+    DatabaseProfileOptionType:
+      title: DatabaseProfileOptionType
+      type: object
+      required:
+        - applyNow
+        - name
+        - optionSettings
+      properties:
+        applyNow:
+          type: boolean
+        name:
+          type: string
+          description: Option name
+          minLength: 1
+          maxLength: 128
+          example: NATIVE_NETWORK_ENCRYPTION
+        optionSettings:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseProfileOptionSettingType'
+          minItems: 0
+          maxItems: 50
+    DatabaseProfileParameterTypeOld:
+      title: DatabaseProfileParameterTypeOld
+      type: object
+      properties:
+        applyType:
+          type: string
+        name:
+          type: string
+        value:
+          type: string
+    TessellDatabaseOptionProfileDTO:
+      title: TessellDatabaseOptionProfileDTO
+      type: object
+      required:
+        - name
+        - engineType
+        - version
+        - options
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Tessell generated UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174000
+        name:
+          type: string
+          description: Name of an Options Profile
+          minLength: 1
+          maxLength: 64
+          example: Postgres Custom Option Profile
+        description:
+          type: string
+          description: Description of an Options Profile
+          minLength: 0
+          maxLength: 128
+          example: Custom Options Profile
+        oob:
+          type: boolean
+          description: Database Option Profile description
+        engineType:
+          $ref: 'common-specification.yaml#/components/schemas/databaseEngineType'
+        status:
+          $ref: '#/components/schemas/DatabaseOptionProfileStatus'
+        maturityStatus:
+          $ref: '#/components/schemas/DatabaseOptionProfileMaturityStatus'
+        optionTypeId:
+          type: string
+          format: uuid
+          description: Tessell option type UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174001
+        owner:
+          type: string
+          minLength: 1
+          maxLength: 128
+        tenantId:
+          type: string
+          minLength: 1
+          maxLength: 128
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+        loggedInUserRole:
+          type: string
+          description: The role of the logged in user for accessing the db profile
+          minLength: 1
+          maxLength: 128
+        options:
+          type: array
+          description: Database Option Profile's associated options
+          items:
+            $ref: '#/components/schemas/DatabaseProfileOptionType'
+          minItems: 1
+          maxItems: 1000
+        metadata:
+          description: Database Option Profile's metadata information
+          $ref: '#/components/schemas/DatabaseOptionProfileMetadata'
+        driverInfo:
+          description: Database Option Profile's metadata information for driver use
+          $ref: '#/components/schemas/DatabaseOptionProfileDriverInfo'
+        userId:
+          type: string
+          description: Database Option Profile's user id
+          format: uuid
+        sharedWith:
+          description: Users having shared access to the profile
+          $ref: 'common-specification.yaml#/components/schemas/EntityAclSharingInfo'
+        version:
+          type: string
+          description: Database Engine version
+          minLength: 1
+          maxLength: 32
+          example: '15.5'
+        dateCreated:
+          type: string
+          description: Timestamp when the entity was created
+          format: date-time
+        dateModified:
+          type: string
+          description: Timestamp when the entity was last modified
+          format: date-time
+      description: This is a definition for Tessell Database Option Profile Object
+    TessellDatabaseParameterProfileDTO:
+      title: TessellDatabaseParameterProfileDTO
+      required:
+        - name
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Tessell generated UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174000
+        name:
+          type: string
+          description: Name of the entity
+          example: sample_entity
+        description:
+          type: string
+          description: Database Parameter Profile description
+        oob:
+          type: boolean
+        engineType:
+          $ref: 'common-specification.yaml#/components/schemas/databaseEngineType'
+        parameterTypeId:
+          type: string
+          format: uuid
+          description: Tessell parameter type UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174001
+        status:
+          $ref: '#/components/schemas/DatabaseParameterProfileStatusOld'
+        maturityStatus:
+          $ref: '#/components/schemas/DatabaseParameterProfileMaturityStatusOld'
+        owner:
+          type: string
+        tenantId:
+          type: string
+        loggedInUserRole:
+          type: string
+          description: The role of the logged in user for accessing the db profile
+        parameters:
+          type: array
+          description: Database Parameter Profile's associated parameters
+          items:
+            $ref: '#/components/schemas/DatabaseProfileParameterTypeOld'
+        metadata:
+          description: Database Parameter Profile's metadata information
+          $ref: '#/components/schemas/DatabaseParameterProfileMetadataOld'
+        driverInfo:
+          description: Database Parameter Profile's metadata information for driver use
+          $ref: '#/components/schemas/DatabaseParameterProfileDriverInfoOld'
+        topology:
+          type: string
+          description: Database Parameter Profile's topology
+        userId:
+          type: string
+          description: Database Parameter Profile's user id
+          format: uuid
+        sharedWith:
+          description: Users having shared access to the db profile
+          $ref: 'common-specification.yaml#/components/schemas/EntityAclSharingInfo'
+        version:
+          type: string
+          description: Database Parameter Profile's version
+        dateCreated:
+          type: string
+          description: Timestamp when the entity was created
+          format: date-time
+        dateModified:
+          type: string
+          description: Timestamp when the entity was last modified
+          format: date-time
+      description: This is a definition for Tessell Database Parameter Profile Object
+    TessellDatabaseOptionProfileConsumptionDTO:
+      title: TessellDatabaseOptionProfileConsumptionDTO
+      required:
+        - name
+      type: object
+      properties:
+        description:
+          type: string
+        driverInfo:
+          description: Database Option Profile's metadata information for driver use
+          $ref: '#/components/schemas/DatabaseOptionProfileDriverInfo'
+        engineType:
+          description: Database Option Profile's database engine type
+          $ref: 'common-specification.yaml#/components/schemas/databaseEngineType'
+        id:
+          type: string
+          format: uuid
+          description: Tessell generated UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174000
+        optionTypeId:
+          type: string
+          format: uuid
+          description: Tessell option type UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174001
+        metadata:
+          description: Database Option Profile's metadata information
+          $ref: '#/components/schemas/DatabaseOptionProfileMetadata'
+        name:
+          type: string
+          description: Name of the entity
+          example: sample_entity
+        maturityStatus:
+          $ref: '#/components/schemas/DatabaseOptionProfileMaturityStatus'
+        options:
+          type: array
+          description: Database Option Profile's associated options
+          items:
+            $ref: '#/components/schemas/DatabaseProfileOptionType'
+        owner:
+          type: string
+        tenantId:
+          type: string
+        version:
+          type: string
+          description: Database Option Profile's version
+    TessellDatabaseParameterTypeDTO:
+      title: TessellDatabaseParameterTypeDTO
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        engineType:
+          $ref: 'common-specification.yaml#/components/schemas/databaseEngineType'
+        version:
+          type: string
+        topology:
+          type: string
+        status:
+          $ref: '#/components/schemas/DatabaseParameterTypeStatusOld'
+        parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseParameterTypeOld'
+    TessellDatabaseOptionTypeDTO:
+      title: TessellDatabaseOptionTypeDTO
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        engineType:
+          $ref: 'common-specification.yaml#/components/schemas/databaseEngineType'
+        version:
+          type: string
+        status:
+          $ref: '#/components/schemas/DatabaseOptionTypeStatus'
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseOptionType'
+    DatabaseParameterProfileStatusOld:
+      description: Database ParameterProfile Status
+      type: string
+      enum:
+        - DELETED
+        - DELETING
+        - DRAFT
+        - PUBLISH
+        - UNPUBLISH
+    DatabaseOptionProfileStatus:
+      description: Database OptionsProfile Status
+      type: string
+      enum:
+        - DELETED
+        - DELETING
+        - DRAFT
+        - PUBLISH
+        - UNPUBLISH
+    DatabaseParameterProfileMaturityStatusOld:
+      description: Database ParameterProfile Status
+      type: string
+      enum:
+        - DRAFT
+        - PUBLISHED
+        - UNPUBLISHED
+    DatabaseOptionProfileMaturityStatus:
+      description: Database OptionsProfile Status
+      type: string
+      enum:
+        - DRAFT
+        - PUBLISHED
+        - UNPUBLISHED
+    DatabaseOptionTypeStatus:
+      type: string
+      enum:
+        - DISABLED
+        - ENABLED
+    DatabaseParameterTypeStatusOld:
+      type: string
+      enum:
+        - DISABLED
+        - ENABLED

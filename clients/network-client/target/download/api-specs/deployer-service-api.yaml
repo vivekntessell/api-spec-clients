@@ -1,0 +1,1609 @@
+openapi: 3.0.3
+
+info:
+  contact:
+    email: support@tessell.com
+    name: Tessell Inc.
+    url: https://www.tessell.com
+  description: Deployer Service API Documentation
+  title: Deployer Service API Documentation
+  version: "1.0"
+
+servers:
+  - description: Deployer Service API Base Path
+    url: http://localhost:8080/tessell-internal/
+
+paths:
+  /deployer/deployments:
+    get:
+      tags:
+        - deployer-service
+      description: Returns list containing all deployments.
+      summary: Returns list containing all deployments. Using the name filter, a deployment can be found using name.
+      operationId: getDeployments
+      parameters:
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/pageOffset"
+        - $ref: "#/components/parameters/timeZone"
+        - $ref: "#/components/parameters/subscriptionId"
+        - description: name
+          in: query
+          name: name
+          required: false
+          schema:
+            type: string
+        - description: Status of the deployment
+          name: status
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/DeploymentStatus"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ApiResponse"
+          description: OK
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+
+  /deployer/deployment:
+    post:
+      tags:
+        - deployer-service
+      description: Create a new deployment.
+      summary: Create a new deployment. This is an asynchronous call, returns immediately to the caller, initial state of the deployment will be 'PENDING'.
+      operationId: createDeployment
+      parameters:
+        - $ref: "#/components/parameters/timeZone"
+        - $ref: "#/components/parameters/subscriptionId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeploymentCreateRequest"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/DeploymentResponse"
+          description: OK
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+
+  /deployer/deployment/force-retry/id/{id}:
+    patch:
+      tags:
+        - deployer-service
+      description: Retry an existing deployment.
+      summary: Retry an existing deployment.
+      operationId: forceRetryDeploymentById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Deployment Identifier.
+        - $ref: "#/components/parameters/timeZone"
+        - $ref: "#/components/parameters/subscriptionId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeploymentUpdateRequest"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/DeploymentResponse"
+          description: OK
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+
+  /deployer/deployment/{name}:
+    get:
+      tags:
+        - deployer-service
+      description: Get Details of Deployment identified by name.
+      summary: Get Details of Deployment identified by name.
+      operationId: getDeploymentByName
+      parameters:
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
+          description: Deployment Name.
+        - $ref: "#/components/parameters/timeZone"
+        - $ref: "#/components/parameters/subscriptionId"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/DeploymentResponse"
+          description: OK
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+
+  /deployer/deployment/refresh/id/{id}:
+    get:
+      tags:
+        - deployer-service
+      description: Refreshes a deployment
+      summary: Refreshes a deployment (Useful when re-reading external changes to a deployment).
+      operationId: refreshDeploymentById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Deployment Identifier.
+        - $ref: "#/components/parameters/timeZone"
+        - $ref: "#/components/parameters/subscriptionId"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/DeploymentResponse"
+          description: OK
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+
+  /deployer/deployment/id/{id}:
+    get:
+      tags:
+        - deployer-service
+      description: Get Details of Deployment identified by identifier.
+      summary: Get Details of Deployment identified by identifier. Stdout field in the response object can be used to implement a progress bar, by emitting messages from terraform.
+      operationId: getDeploymentById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Deployment identifier.
+        - in: query
+          name: showHistory
+          required: false
+          schema:
+            type: boolean
+            default: false
+          description: Deployment identifier.
+        - $ref: "#/components/parameters/timeZone"
+        - $ref: "#/components/parameters/subscriptionId"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/DeploymentResponse"
+          description: OK
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+
+    put:
+      tags:
+        - deployer-service
+      description: Update an existing deployment.
+      summary: Update an existing deployment. Deployment can be updated if there is change in input or base terraform. If terraform calculates no delta changes, then deployment is not updated.
+      operationId: updateDeploymentById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Deployment identifier.
+        - $ref: "#/components/parameters/timeZone"
+        - $ref: "#/components/parameters/subscriptionId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeploymentUpdateRequest"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/DeploymentUpdateResponse"
+          description: OK
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+
+    delete:
+      tags:
+        - deployer-service
+      description: Delete an existing deployment.
+      summary: Delete an existing deployment.
+      operationId: deleteDeploymentById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Deployment identifier.
+        - $ref: "#/components/parameters/timeZone"
+        - $ref: "#/components/parameters/subscriptionId"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/DeploymentResponse"
+          description: OK
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+
+  /deployer/terraforms:
+    get:
+      tags:
+        - deployer-service
+      description: Returns a list containing all registered terraform
+      summary: Returns a list containing all registered terraform. Using the name filter, a terraform can be found using name.
+      operationId: getTerraforms
+      parameters:
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/pageOffset"
+        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/timeZone"
+        - description: name
+          in: query
+          name: name
+          required: false
+          schema:
+            type: string
+        - description: Status of the deployment
+          name: status
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/TerraformStatus"
+        - description: include Blob
+          in: query
+          name: includeBlob
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ApiResponse"
+          description: OK
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+
+  /deployer/terraform:
+    post:
+      tags:
+        - deployer-service
+      description: Register a new terraform (blob is provided as base64 encode string).
+      summary: Register a new terraform (blob is provided as base64 encode string).
+      operationId: registerBase64EncodedTerraform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TerraformRegisterBase64EncodedTerraform"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/TerraformResponse"
+          description: OK
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+
+  /deployer/terraform/upload/{name}:
+    put:
+      tags:
+        - deployer-service
+      description: Updates an existing terraform by uploading terraform as file or tarball.
+      summary: Updates an existing terraform by uploading terraform as file or tarball.
+      operationId: updateTerraformByUploadingByName
+      parameters:
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
+          description: Terraform name.
+        - $ref: "#/components/parameters/timeZone"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/TerraformFormUpdateRequestByUpload"
+            encoding:
+              uploadRequest:
+                contentType: application/json
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/TerraformResponse"
+          description: OK
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+
+  /deployer/terraform/upload:
+    post:
+      tags:
+        - deployer-service
+      description: Create or register a new terraform by uploading terraform as file or tarball.
+      summary: Create or register a new terraform by uploading terraform as file or tarball.
+      operationId: uploadTerraform
+      parameters:
+        - $ref: "#/components/parameters/timeZone"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/TerraformUploadFormRequest"
+            encoding:
+              uploadRequest:
+                contentType: application/json
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/TerraformResponse"
+          description: OK
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+
+  /deployer/terraform/upload/id/{id}:
+    put:
+      tags:
+        - deployer-service
+      description: Updates an existing terraform by uploading terraform as file or tarball.
+      summary: Updates an existing terraform by uploading terraform as file or tarball.
+      operationId: updateTerraformByUploading
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Terraform Identifier.
+        - $ref: "#/components/parameters/timeZone"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/TerraformFormUpdateRequestByUpload"
+            encoding:
+              uploadRequest:
+                contentType: application/json
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/TerraformResponse"
+          description: OK
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+
+  /deployer/terraform/{name}:
+    get:
+      tags:
+        - deployer-service
+      description: Get details of a terraform for the given name.
+      summary: Get details of a terraform for the given name.
+      operationId: getTerraformByName
+      parameters:
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
+          description: Terraform name.
+        - description: include Blob
+          in: query
+          name: includeBlob
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - $ref: "#/components/parameters/timeZone"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/TerraformResponse"
+          description: OK
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+
+  /deployer/terraform/id/{id}:
+    get:
+      tags:
+        - deployer-service
+      description: Get details of a terraform
+      summary: Get details of a terraform.
+      operationId: getTerraformById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Terraform Identifier.
+        - description: include Blob
+          in: query
+          name: includeBlob
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - $ref: "#/components/parameters/timeZone"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/TerraformResponse"
+          description: OK
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+
+    put:
+      tags:
+        - deployer-service
+      description: Updates an existing terraform
+      summary: Updates an existing terraform.
+      operationId: updateTerraform
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Terraform Identifier.
+        - $ref: "#/components/parameters/timeZone"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TerraformUpdateRequest"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/TerraformResponse"
+          description: OK
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+
+  /deployer/terraforms/sync:
+    post:
+      tags:
+        - deployer-service
+      description: Runs terraform synchronizer.
+      summary: Runs terraform synchronizer.
+      operationId: runTerraformSynchronizer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              format: url
+              description: Url to terraforms.json
+      responses:
+        200:
+          description: OK
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+
+  /deployer/healthz:
+    get:
+      tags:
+        - deployer-service
+      description: Returns health information about the deployer service
+      summary: Returns health information about the deployer service
+      operationId: healthz
+      responses:
+        200:
+          description: Ok
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        500:
+          description: Service is not up or internal error
+
+components:
+  schemas:
+    DeploymentHistoryResponse:
+      description: Deployment History Response Object
+      type: object
+      properties:
+        operationType:
+          $ref: "#/components/schemas/DeploymentOperationType"
+        parameters:
+          description: Parameters passed to deployment during execution. This parameters are passed as it to terraform. Service does not validate these parameters.
+          type: object
+          additionalProperties:
+            type: string
+            description: Value of the key.
+        terraformVersion:
+          type: string
+          description: Version for terraform when operation was invoked.
+        status:
+          $ref: "#/components/schemas/DeploymentStatus"
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+        artifacts:
+          type: string
+          format: byte
+          description: Resource artifacts generated during deployment. It is up to caller to interpret this field.
+        terraformState:
+          type: string
+          format: byte
+          description: terraform state generated during deployment. It is up to caller to interpret this field.
+
+    DeploymentResponse:
+      description: Deployment Response Object
+      type: object
+      properties:
+        id:
+          description: Deployment Identifier
+          type: string
+          format: uuid
+        status:
+          $ref: "#/components/schemas/DeploymentStatus"
+        artifacts:
+          type: string
+          format: byte
+          description: Resource artifacts generated during deployment. It is up to caller to interpret this field.
+        description:
+          type: string
+          description: Description of the deployment.
+          maxLength: 512
+        name:
+          type: string
+          description: Name of the deployment
+          maxLength: 128
+        state:
+          type: string
+          description: Next state in the state machine.
+        parameters:
+          description: Parameters passed to deployment during execution. This parameters are passed as it to terraform. Service does not validate these parameters.
+          type: object
+          additionalProperties:
+            type: string
+            description: Value of the key.
+        history:
+          description: History of LCM operations on this deployment.
+          type: array
+          items:
+            $ref: "#/components/schemas/DeploymentHistoryResponse"
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+        dateLastStatusUpdate:
+          description: Timestamp when the entity was last updated
+          format: date-time
+          type: string
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+        terraformId:
+          description: Terraform Identifier
+          type: string
+          format: uuid
+
+    DeploymentUpdateResponse:
+      description: Deployment Update Response Object
+      type: object
+      properties:
+        id:
+          description: Deployment Identifier
+          type: string
+          format: uuid
+        description:
+          type: string
+          description: Description of the deployment.
+          maxLength: 512
+        name:
+          type: string
+          description: Name of the deployment
+          maxLength: 128
+        status:
+          $ref: "#/components/schemas/DeploymentStatus"
+        artifacts:
+          type: string
+          format: byte
+          description: Resource artifacts generated during deployment. It is up to caller to interpret this field.
+        parameters:
+          description: Parameters passed to deployment during execution. This parameters are passed as it to terraform. Service does not validate these parameters.
+          type: object
+          additionalProperties:
+            type: string
+            description: Value of the key.
+        state:
+          type: string
+          description: Next state in the state machine.
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+        dateLastStatusUpdate:
+          description: Timestamp when the entity was last updated
+          format: date-time
+          type: string
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+
+    DeploymentStatus:
+      description: Deployment Status
+      type: string
+      x-dao-query: true
+      x-dao-annotations: |
+        @Enumerated(EnumType.STRING)
+          @Type(type = "pgsql_enum")
+      enum:
+        - PENDING
+        - RUNNING
+        - DEPLOYED
+        - FAILED
+        - UPDATING
+        - UPDATED
+        - UPDATE_FAILED
+        - DESTROYING
+        - DESTROYED
+        - DESTROY_FAILED
+
+    DeploymentCreateRequest:
+      description: Create Deployment Request
+      type: object
+      properties:
+        terraformId:
+          type: string
+          format: uuid
+          description: Terraform Identifier
+          nullable: false
+        description:
+          type: string
+          description: Description of deployment.
+          minLength: 4
+          maxLength: 512
+        callback:
+          type: string
+          format: url
+          description: Callback url, this callback is called for every state change.
+        parameters:
+          description: Parameters passed to deployment during execution. This parameters are passed as it to terraform. Service does not validate these parameters.
+          type: object
+          additionalProperties:
+            type: string
+            description: Value of the key.
+        name:
+          type: string
+          description: Name of the deployment.
+          minLength: 4
+          maxLength: 128
+        id:
+          type: string
+          format: uuid
+          description: If provided, then use the provided uuid as the deployment identifier.
+        nRetries:
+          type: integer
+          format: int32
+          description: Number of times retry terraform apply step, incase of failure.
+
+    DeploymentUpdateRequest:
+      description: Update Deployment Request
+      type: object
+      properties:
+        callback:
+          type: string
+          format: url
+          description: Callback url, this callback is called for every state change.
+        description:
+          type: string
+          description: Description of deployment.
+          minLength: 4
+          maxLength: 512
+        parameters:
+          description: Parameters passed to deployment during execution. This parameters are passed as it to terraform. Service does not validate these parameters.
+          type: object
+          additionalProperties:
+            type: string
+            description: Value of the key.
+
+    TerraformRegisterRequest:
+      description: Terraform Register Request Object
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the terraform.
+          minLength: 4
+          maxLength: 128
+        id:
+          type: string
+          format: uuid
+          description: If provided, then use the provided uuid as the terraform identifier.
+        url:
+          type: string
+          format: url
+          description: URL for fetching the terraform. The terraform can be single file or tarball containing many terraform files.
+        terraformBlobType:
+          $ref: "#/components/schemas/TerraformBlobType"
+        description:
+          description: Description of the terraform.
+          type: string
+          minLength: 4
+          maxLength: 512
+        version:
+          description: Version of the terraform
+          type: string
+          minLength: 1
+          maxLength: 32
+
+    TerraformUploadRequest:
+      description: Terraform Upload Request Object
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Terraform identifier
+        name:
+          type: string
+          description: Name of the terraform.
+          minLength: 4
+          maxLength: 128
+        terraformBlobType:
+          $ref: "#/components/schemas/TerraformBlobType"
+        description:
+          description: Description of the terraform.
+          type: string
+          minLength: 4
+          maxLength: 512
+        version:
+          description: Version of the terraform
+          type: string
+          minLength: 1
+          maxLength: 32
+
+    TerraformUploadFormRequest:
+      description: Terraform Upload Request Object
+      type: object
+      properties:
+        uploadRequest:
+          $ref: "#/components/schemas/TerraformUploadRequest"
+        blob:
+          description: File to upload
+          type: string
+          format: binary
+
+    TerraformUpdateRequest:
+      description: Terraform Update Request Object
+      type: object
+      properties:
+        terraformBlobType:
+          $ref: "#/components/schemas/TerraformBlobType"
+        url:
+          type: string
+          format: url
+          description: URL for fetching the terraform. The terraform can be single file or tarball containing many terraform files.
+        description:
+          description: Description of the terraform.
+          type: string
+          minLength: 4
+          maxLength: 512
+        version:
+          description: Version of the terraform
+          type: string
+          minLength: 1
+          maxLength: 32
+        blob:
+          type: string
+          format: byte
+          description: Base64 encode terraform as binary blob.
+
+    TerraformFormUpdateRequestByUpload:
+      description: Terraform Update Request Object
+      type: object
+      properties:
+        uploadRequest:
+          $ref: "#/components/schemas/TerraformUpdateRequestByUpload"
+        blob:
+          description: File to upload
+          type: string
+          format: binary
+          nullable: false
+
+    TerraformUpdateRequestByUpload:
+      description: Terraform Update Request Object
+      type: object
+      properties:
+        terraformBlobType:
+          $ref: "#/components/schemas/TerraformBlobType"
+        description:
+          description: Description of the terraform.
+          type: string
+          minLength: 4
+          maxLength: 512
+        version:
+          description: Version of the terraform
+          type: string
+          minLength: 1
+          maxLength: 32
+
+    TerraformRegisterBase64EncodedTerraform:
+      description: Terraform register request for base64 encoded blob.
+      type: object
+      properties:
+        blob:
+          type: string
+          format: byte
+        terraformBlobType:
+          $ref: "#/components/schemas/TerraformBlobType"
+        description:
+          description: Description of the terraform.
+          type: string
+        version:
+          description: Version of the terraform. This is for application or caller use only.
+          type: string
+        name:
+          type: string
+          description: Name of the terraform.
+        id:
+          type: string
+          format: uuid
+          description: If provided, then use the provided uuid as the terraform identifier.
+        status:
+          "$ref": "#/components/schemas/TerraformStatus"
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+
+    TerraformBlobType:
+      type: string
+      x-dao-annotations: |
+        @Enumerated(EnumType.STRING)
+          @Type(type = "pgsql_enum")
+      enum:
+        - FILE
+        - TARBALL
+      description: Type of tarball that will be downloaded. e.g. File or tarball
+
+    TerraformResponse:
+      description: Terraform Response Object
+      type: object
+      x-tessell-object-converter: "#/components/schemas/Terraform"
+      properties:
+        url:
+          type: string
+          format: url
+          description: URL for fetching the terraform. The terraform can be single file or tarball containing many terraform files.
+        terraformBlobType:
+          $ref: "#/components/schemas/TerraformBlobType"
+        description:
+          description: Description of the terraform.
+          type: string
+        version:
+          description: Version of the terraform. This is for application or caller use only.
+          type: string
+        name:
+          type: string
+          description: Name of the terraform.
+        blob:
+          type: string
+          description: Blob
+          format: byte
+        id:
+          type: string
+          format: uuid
+          description: If provided, then use the provided uuid as the terraform identifier.
+        status:
+          "$ref": "#/components/schemas/TerraformStatus"
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+
+    TerraformStatus:
+      type: string
+      description: Status of the terraform.
+      x-dao-annotations: |
+        @Enumerated(EnumType.STRING)
+          @Type(type = "pgsql_enum")
+      enum:
+        - DOWNLOADING
+        - AVAILABLE
+        - FAILED
+
+    Terraform:
+      description: Terraform Entity Object
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_TERRAFORMS
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_TERRAFORMS")
+      type: object
+      properties:
+        blob:
+          type: string
+          format: byte
+          description: Terraform configuration files (tf) in binary.
+        url:
+          type: string
+          format: url
+          description: URL for fetching the terraform. The terraform can be single file or tarball containing many terraform files.
+        terraformBlobType:
+          x-dao-annotations: |
+            @Column(name = "terraform_blob_type", nullable = false)
+              @Enumerated(EnumType.STRING)
+              @Type(type = "pgsql_enum")
+          allOf:
+            - $ref: "#/components/schemas/TerraformBlobType"
+        description:
+          description: Description of the terraform.
+          type: string
+        version:
+          description: Version of the terraform. This is for application or caller use only.
+          type: string
+        name:
+          x-dao-query: true
+          type: string
+          maxLength: 128
+          description: Name of the terraform.
+        id:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+              @Column(name = "id", updatable = false, nullable = false)
+          type: string
+          format: uuid
+          description: If provided, then use the provided uuid as the terraform identifier.
+        status:
+          "$ref": "#/components/schemas/TerraformStatus"
+        dateCreated:
+          x-dao-annotations: |
+            @Column(name = "DATE_CREATED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @CreationTimestamp
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+        dateModified:
+          x-dao-annotations: |
+            @Column(name = "DATE_MODIFIED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL")
+              @UpdateTimestamp
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+
+    Deployment:
+      description: Deployment Entity
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_DEPLOYMENTS
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_DEPLOYMENTS")
+      type: object
+      properties:
+        terraformId:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Type(type = "pg-uuid")
+              @NotNull
+              @Column(name = "terraform_id")
+          type: string
+          format: uuid
+          description: Terraform Identifier
+        subscriptionId:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "subscription_id", nullable = false)
+          type: string
+          format: uuid
+          description: Subscription Identifier.
+        callback:
+          type: string
+          format: url
+          description: Callback url
+        description:
+          type: string
+          description: Description of the deployment.
+          maxLength: 512
+        name:
+          x-dao-query: true
+          type: string
+          maxLength: 128
+          description: Name of the deployment.
+        id:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+              @Column(name = "id", updatable = false, nullable = false)
+          type: string
+          format: uuid
+          description: If provided, then use the provided uuid as the deployment identifier.
+        artifacts:
+          type: string
+          format: byte
+          description: Deployed Artifacts
+        status:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "status")
+              @Enumerated(EnumType.STRING)
+              @Type(type = "pgsql_enum")
+          allOf:
+            - $ref: "#/components/schemas/DeploymentStatus"
+        history:
+          x-dao-annotations: |
+            @OneToMany(mappedBy = "deployment", cascade = CascadeType.ALL)
+              @OrderBy("dateCreated")
+          x-dto-annotations: |
+            @JsonManagedReference
+              @ToString.Exclude
+          type: array
+          items:
+            $ref: "#/components/schemas/DeploymentHistory"
+        nRetries:
+          x-dao-annotations: |
+            @Column(name = "num_retries")
+          type: integer
+          description: Number of times terraform apply steps needs to retried.
+        dateCreated:
+          x-dao-annotations: |
+            @Column(name = "DATE_CREATED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @CreationTimestamp
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+        dateLastStatusUpdate:
+          x-dao-annotations: |
+            @Column(name = "DATE_LAST_STATUS_UPDATE", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL")
+          description: Latest state change timestamp.
+          format: date-time
+          type: string
+        dateModified:
+          x-dao-annotations: |
+            @Column(name = "DATE_MODIFIED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL")
+              @UpdateTimestamp
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+
+    DeploymentOperationType:
+      type: string
+      enum:
+        - CREATE
+        - UPDATE
+        - DESTROY
+
+    DeploymentHistory:
+      description: Deployment History Entity
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_DEPLOYMENT_HISTORY
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_DEPLOYMENT_HISTORY")
+      type: object
+      properties:
+        id:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+              @Type(type = "pg-uuid")
+              @GeneratedValue(strategy = GenerationType.AUTO)
+              @Column(name = "id", updatable = false, nullable = false)
+          type: string
+          format: uuid
+        deployment:
+          x-dao-annotations: |
+            @ManyToOne(fetch = FetchType.LAZY)
+              @JoinColumn(name="deployment_id", nullable=false)
+          x-dto-annotations: |
+            @ToString.Exclude
+              @JsonBackReference
+          allOf:
+            - $ref: "#/components/schemas/Deployment"
+        artifacts:
+          type: string
+          format: byte
+          description: Deployed Artifacts
+        state:
+          type: string
+          description: Next state in the state machine.
+        terraformState:
+          x-dao-annotations: |
+            @Column(name = "terraform_state", nullable = false)
+          type: string
+          format: byte
+          description: Terraform State in Binary Format
+        terraformPlan:
+          x-dao-annotations: |
+            @Column(name = "terraform_plan", nullable = false)
+          type: string
+          format: byte
+          description: Terraform Plan in Binary Format
+        operationType:
+          x-dao-annotations: |
+            @Column(name = "operation_type")
+              @Enumerated(EnumType.STRING)
+              @Type(type = "pgsql_enum")
+          allOf:
+            - $ref: "#/components/schemas/DeploymentOperationType"
+        parameters:
+          x-dao-annotations: |
+            @Type(type = "jsonb")
+              @Column(columnDefinition = "jsonb")
+          description: Parameters passed to deployment during execution. This parameters are passed as it to terraform. Service does not validate these parameters.
+          type: object
+          additionalProperties:
+            type: string
+            description: Value of the key.
+        terraformVersion:
+          type: string
+          description: Version for terraform when operation was invoked.
+        status:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "status")
+              @Enumerated(EnumType.STRING)
+              @Type(type = "pgsql_enum")
+          allOf:
+            - $ref: "#/components/schemas/DeploymentStatus"
+        dateCreated:
+          x-dao-annotations: |
+            @Column(name = "DATE_CREATED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @CreationTimestamp
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+        dateModified:
+          x-dao-annotations: |
+            @Column(name = "DATE_MODIFIED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL")
+              @UpdateTimestamp
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+
+    DeploymentOld:
+      description: Deployment Entity
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_DEPLOYMENTS
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_DEPLOYMENTS")
+      type: object
+      properties:
+        terraformId:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Type(type = "pg-uuid")
+              @NotNull
+              @Column(name = "terraform_id")
+          type: string
+          format: uuid
+          description: Terraform Identifier
+        subscriptionId:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "subscription_id", nullable = false)
+          type: string
+          format: uuid
+          description: Subscription Identifier.
+        callback:
+          type: string
+          format: url
+          description: Callback url
+        artifacts:
+          type: string
+          format: byte
+          description: Deployed Artifacts
+        description:
+          type: string
+          description: Description of the deployment.
+          maxLength: 512
+        state:
+          type: string
+          description: Next state in the state machine.
+        parameters:
+          x-dao-annotations: |
+            @Type(type = "jsonb")
+              @Column(columnDefinition = "jsonb")
+          description: Parameters passed to deployment during execution. This parameters are passed as it to terraform. Service does not validate these parameters.
+          type: object
+          additionalProperties:
+            type: string
+            description: Value of the key.
+        status:
+          $ref: "#/components/schemas/DeploymentStatus"
+        name:
+          x-dao-query: true
+          type: string
+          maxLength: 128
+          description: Name of the deployment.
+        id:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+              @Column(name = "id", updatable = false, nullable = false)
+          type: string
+          format: uuid
+          description: If provided, then use the provided uuid as the deployment identifier.
+        terraformState:
+          x-dao-annotations: |
+            @Column(name = "terraform_state", nullable = false)
+          type: string
+          format: byte
+          description: Terraform State in Binary Format
+        history:
+          x-dao-annotations: |
+            @OneToMany(mappedBy = "deployment", cascade = CascadeType.ALL)
+              @OrderBy("dateCreated")
+          x-dto-annotations: |
+            @JsonManagedReference
+              @ToString.Exclude
+          type: array
+          items:
+            $ref: "#/components/schemas/DeploymentHistory"
+        dateCreated:
+          x-dao-annotations: |
+            @Column(name = "DATE_CREATED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @CreationTimestamp
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+        dateLastStatusUpdate:
+          x-dao-annotations: |
+            @Column(name = "DATE_LAST_STATUS_UPDATE", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL")
+          description: Latest state change timestamp.
+          format: date-time
+          type: string
+        dateModified:
+          x-dao-annotations: |
+            @Column(name = "DATE_MODIFIED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL")
+              @UpdateTimestamp
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+
+    DeploymentHistoryOld:
+      description: Deployment History Entity
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_DEPLOYMENT_HISTORY
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_DEPLOYMENT_HISTORY")
+      type: object
+      properties:
+        id:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+              @Type(type = "pg-uuid")
+              @GeneratedValue(strategy = GenerationType.AUTO)
+              @Column(name = "id", updatable = false, nullable = false)
+          type: string
+          format: uuid
+        deployment:
+          x-dao-annotations: |
+            @ManyToOne(fetch = FetchType.LAZY)
+              @JoinColumn(name="deployment_id", nullable=false)
+          x-dto-annotations: |
+            @ToString.Exclude
+              @JsonBackReference
+          allOf:
+            - $ref: "#/components/schemas/Deployment"
+        operationType:
+          x-dao-annotations: |
+            @Column(name = "operation_type")
+              @Enumerated(EnumType.STRING)
+              @Type(type = "pgsql_enum")
+          allOf:
+            - $ref: "#/components/schemas/DeploymentOperationType"
+        parameters:
+          x-dao-annotations: |
+            @Type(type = "jsonb")
+              @Column(columnDefinition = "jsonb")
+          description: Parameters passed to deployment during execution. This parameters are passed as it to terraform. Service does not validate these parameters.
+          type: object
+          additionalProperties:
+            type: string
+            description: Value of the key.
+        terraformVersion:
+          type: string
+          description: Version for terraform when operation was invoked.
+        status:
+          x-dao-annotations: |
+            @Column(name = "status")
+              @Enumerated(EnumType.STRING)
+              @Type(type = "pgsql_enum")
+          allOf:
+            - $ref: "#/components/schemas/DeploymentStatus"
+        dateCreated:
+          x-dao-annotations: |
+            @Column(name = "DATE_CREATED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @CreationTimestamp
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+        dateModified:
+          x-dao-annotations: |
+            @Column(name = "DATE_MODIFIED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL")
+              @UpdateTimestamp
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+
+    ApiMetadata:
+      example:
+        pagination:
+          pageOffset: 0
+          pageSize: 6
+        records: 1
+        timeZone: timeZone
+      properties:
+        pagination:
+          $ref: "#/components/schemas/ApiPaginationInfo"
+        records:
+          format: int32
+          type: integer
+        timeZone:
+          type: string
+      title: ApiMetadata
+      type: object
+
+    ApiPaginationInfo:
+      example:
+        pageOffset: 0
+        pageSize: 6
+      properties:
+        pageOffset:
+          format: int32
+          type: integer
+        pageSize:
+          format: int32
+          type: integer
+      title: ApiPaginationInfo
+      type: object
+
+    ApiResponse:
+      example:
+        metadata:
+          pagination:
+            pageOffset: 0
+            pageSize: 6
+          records: 1
+          timeZone: timeZone
+        response: "{}"
+      properties:
+        metadata:
+          $ref: "#/components/schemas/ApiMetadata"
+        response:
+          type: object
+      title: ApiResponse
+      type: object
+
+  parameters:
+    pageSize:
+      name: pageSize
+      in: query
+      required: false
+      description: "Page size when returning a list of software images"
+      schema:
+        type: integer
+        default: 10
+    pageOffset:
+      name: pageOffset
+      in: query
+      required: false
+      description: "Page Offset when returning a list of software images"
+      schema:
+        type: integer
+        default: 0
+    timeZone:
+      name: timeZone
+      in: query
+      required: false
+      description: "Time zone"
+      schema:
+        type: string
+    name:
+      name: name
+      in: query
+      required: false
+      description: "Name of a software image"
+      schema:
+        type: string
+      example:
+        name: software-image-1
+    id:
+      name: id
+      in: query
+      required: false
+      description: "Identifier of a software image"
+      schema:
+        type: string
+        format: uuid
+      example:
+        id: CA7DA101-256C-455B-8E15-7B79EA2FDC36
+    cloudType:
+      name: cloudType
+      in: query
+      description: "Cloud type of the software image"
+      required: false
+      explode: true
+      schema:
+        $ref: "common-specification.yaml#/components/schemas/cloudType"
+      style: form
+      example:
+        cloudType: "aws"
+    tenantId:
+      name: tenantId
+      in: query
+      description: "Tenant ID"
+      required: false
+      explode: true
+      schema:
+        type: string
+        format: uuid
+      style: form
+      example:
+        tenantId: E5430DC2-14C8-4598-A2CC-78B280CBB6B3
+    subscriptionName:
+      in: query
+      name: subscriptionName
+      description: "Subscription Name"
+      required: false
+      explode: true
+      schema:
+        type: string
+      style: form
+      example:
+        subscriptionName: "AMEX Sales"
+    regionName:
+      in: query
+      name: regionName
+      description: "Region Name"
+      required: false
+      explode: true
+      schema:
+        type: string
+      style: form
+      example:
+        regionName: "us-east-1"
+    subscriptionId:
+      in: query
+      name: subscriptionId
+      description: "Subscription Identifier"
+      required: false
+      explode: true
+      schema:
+        type: string
+        format: uuid
+    regionId:
+      in: query
+      name: regionId
+      description: "Region Identifier"
+      required: false
+      explode: true
+      schema:
+        type: string
+        format: uuid
+      style: form
+      example:
+        regionName: "us-east-1"
+    personas:
+      in: query
+      name: personas
+      description: "Personas list"
+      required: false
+      explode: true
+      schema:
+        type: string
+        format: list
+      style: form
+      example:
+        personas: ["CloudAdmin", "TessellAdmin"]

@@ -1,0 +1,57 @@
+
+
+# InfraResourceType
+
+## Enum
+
+
+* `AWS_EC2_REPO` (value: `"AWS_EC2_REPO"`)
+
+* `AWS_EKS` (value: `"AWS_EKS"`)
+
+* `AWS_LAMBDA` (value: `"AWS_LAMBDA"`)
+
+* `AWS_SQS` (value: `"AWS_SQS"`)
+
+* `AWS_VPC` (value: `"AWS_VPC"`)
+
+* `AWS_S3` (value: `"AWS_S3"`)
+
+* `AWS_DYNAMODB` (value: `"AWS_DYNAMODB"`)
+
+* `AZURE_AKS` (value: `"AZURE_AKS"`)
+
+* `AZURE_AQS` (value: `"AZURE_AQS"`)
+
+* `AZURE_BLOB_STORAGE` (value: `"AZURE_BLOB_STORAGE"`)
+
+* `AZURE_FUNCTION` (value: `"AZURE_FUNCTION"`)
+
+* `AZURE_WORKSPACE` (value: `"AZURE_WORKSPACE"`)
+
+* `AZURE_VNET` (value: `"AZURE_VNET"`)
+
+* `AWS_IAM` (value: `"AWS_IAM"`)
+
+* `AZURE_LOG_ANALYTICS_WORKSPACE` (value: `"AZURE_LOG_ANALYTICS_WORKSPACE"`)
+
+* `AZURE_RESOURCE_GROUP` (value: `"AZURE_RESOURCE_GROUP"`)
+
+* `RECOVERY_SERVICE_VAULT` (value: `"RECOVERY_SERVICE_VAULT"`)
+
+* `AZURE_STORAGE_ACCOUNT` (value: `"AZURE_STORAGE_ACCOUNT"`)
+
+* `AZURE_USER_ASSIGNED_IDENTITY` (value: `"AZURE_USER_ASSIGNED_IDENTITY"`)
+
+* `AZURE_APP_GTW` (value: `"AZURE_APP_GTW"`)
+
+* `AZURE_KEY_VAULT` (value: `"AZURE_KEY_VAULT"`)
+
+* `METADATA_REPO` (value: `"METADATA_REPO"`)
+
+* `AZURE_B2C_TENANT` (value: `"AZURE_B2C_TENANT"`)
+
+* `AZURE_DNS` (value: `"AZURE_DNS"`)
+
+
+

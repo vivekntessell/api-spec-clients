@@ -1,0 +1,1719 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: support@tessell.com
+    name: Tessell Inc.
+    url: https://www.tessell.com
+  description: Compute Governance  API Documentation
+  title: Compute Governance API Documentation
+  version: "1.0"
+servers:
+- description: Compute Governance API Base Path
+  url: http://localhost:8080/
+paths:
+  /compute-service/computes:
+    get:
+      description: Get a list of Compute Profiles
+      operationId: getComputeProfiles
+      parameters:
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Whether to include availability info
+        explode: true
+        in: query
+        name: include-availability
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: Subscription Name
+        example: default
+        explode: true
+        in: query
+        name: subscription-name
+        required: false
+        schema:
+          maxLength: 255
+          minLength: 1
+          type: string
+        style: form
+      - description: Cloud Region
+        examples:
+          aws:
+            summary: aws region example
+            value: us-east-1
+          azure:
+            summary: azure region example
+            value: eastUS
+        in: query
+        name: region
+        required: false
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Cloud type of the compute
+        example:
+          cloudType: aws
+        explode: true
+        in: query
+        name: cloud-type
+        required: false
+        schema:
+          $ref: '#/components/schemas/cloudType'
+        style: form
+      - description: Use Case of the compute
+        explode: true
+        in: query
+        name: use-cases
+        required: false
+        schema:
+          items:
+            $ref: '#/components/schemas/ComputeUseCase'
+          type: array
+        style: form
+      - description: Includes Internal Computes
+        explode: true
+        in: query
+        name: include-internal
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: Returns All Computes
+        explode: true
+        in: query
+        name: all-computes
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Compute'
+                type: array
+          description: List of compute profiles
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get a list of Compute Profiles.
+      tags:
+      - TessellComputeServiceView
+      x-accepts: application/json
+  /compute-service/all-available-vcpus:
+    get:
+      description: Get all available vcpus, even if some are disabled for an user
+      operationId: getAllAvailableVcpus
+      parameters:
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      - description: Timezone for return data
+        in: query
+        name: time-zone
+        required: false
+        schema:
+          default: UTC
+          type: string
+      - description: Cloud type of the compute
+        example:
+          cloudType: aws
+        explode: true
+        in: query
+        name: cloud-type
+        required: false
+        schema:
+          $ref: '#/components/schemas/cloudType'
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getAllAvailableVcpusResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get all available vcpus, even if some are disabled for an user
+      tags:
+      - TessellComputeServiceView
+      x-accepts: application/json
+  /compute-service/governance/computes:
+    get:
+      description: Get all compute profiles.
+      operationId: getAllComputeProfiles
+      parameters:
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Whether to include availability info
+        explode: true
+        in: query
+        name: include-availability
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: Subscription Name
+        example: default
+        explode: true
+        in: query
+        name: subscription-name
+        required: false
+        schema:
+          maxLength: 255
+          minLength: 1
+          type: string
+        style: form
+      - description: Cloud type of the compute
+        example:
+          cloudType: aws
+        explode: true
+        in: query
+        name: cloud-type
+        required: false
+        schema:
+          $ref: '#/components/schemas/cloudType'
+        style: form
+      - description: Use Case of the compute
+        explode: true
+        in: query
+        name: use-cases
+        required: false
+        schema:
+          items:
+            $ref: '#/components/schemas/ComputeUseCase'
+          type: array
+        style: form
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ComputeAdminView'
+                type: array
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get all compute profiles.
+      tags:
+      - TessellComputeServiceAdminView
+      x-accepts: application/json
+  /compute-service/governance/computes/{name}/subscription/{subscription-name}:
+    patch:
+      description: Enable/Disable compute profile
+      operationId: updateComputeStatus
+      parameters:
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Compute Name
+        example: tesl_2_b
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+        style: simple
+      - description: Subscription Name
+        example: default
+        explode: false
+        in: path
+        name: subscription-name
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 1
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateComputeStatusRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Enable/Disable compute profile
+      tags:
+      - TessellComputeServiceAdminView
+      x-contentType: application/json
+      x-accepts: application/json
+  /compute-service/governance/computes/{name}/subscription/{subscription-name}/regions:
+    patch:
+      description: Update compute regions
+      operationId: updateComputeRegions
+      parameters:
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Compute Name
+        example: tesl_2_b
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+        style: simple
+      - description: Subscription Name
+        example: default
+        explode: false
+        in: path
+        name: subscription-name
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 1
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateComputeRegionRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateComputeRegionResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Update compute regions
+      tags:
+      - TessellComputeServiceAdminView
+      x-contentType: application/json
+      x-accepts: application/json
+  /compute-service/tessell-internal/compute/id/{id}:
+    get:
+      description: Returns a compute profile.
+      operationId: iGetComputeProfileById
+      parameters:
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Compute Profile identifier
+        example: 6e10cbc2-9153-4ac9-bbf1-299ffcfd8d52
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Whether to include availability info
+        explode: true
+        in: query
+        name: include-availability
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: Subscription ID
+        in: query
+        name: subscription-id
+        required: false
+        schema:
+          format: uuid
+          type: string
+      - description: Flag to include/exclude disabled in computes curation in response
+        explode: true
+        in: query
+        name: include-disabled
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComputeInternalView'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Returns a compute profile.
+      tags:
+      - TessellComputeInternalView
+      x-accepts: application/json
+  /compute-service/tessell-internal/compute/{cloudType}/name/{name}:
+    get:
+      description: Returns a compute profile.
+      operationId: iGetComputeProfileByName
+      parameters:
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Cloud type of the compute
+        example:
+          cloudType: aws
+        explode: false
+        in: path
+        name: cloudType
+        required: true
+        schema:
+          $ref: '#/components/schemas/cloudType'
+        style: simple
+      - description: Compute Name
+        example: tesl_2_b
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          maxLength: 128
+          minLength: 1
+          type: string
+        style: simple
+      - description: Whether to include availability info
+        explode: true
+        in: query
+        name: include-availability
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: Subscription ID
+        in: query
+        name: subscription-id
+        required: false
+        schema:
+          format: uuid
+          type: string
+      - description: Flag to include/exclude disabled in computes curation in response
+        explode: true
+        in: query
+        name: include-disabled
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComputeInternalView'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Returns a compute profile.
+      tags:
+      - TessellComputeInternalView
+      x-accepts: application/json
+  /compute-service/tessell-internal/compute/id/{id}/getUpdatedId:
+    get:
+      description: Returns Computes Updated Id.
+      operationId: iGetComputeUpdatedId
+      parameters:
+      - description: Timezone for return data
+        in: query
+        name: time-zone
+        required: false
+        schema:
+          default: UTC
+          type: string
+      - description: Compute profile identifier
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getComputeUpdatedId'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Returns Computes Updated Id
+      tags:
+      - TessellComputeInternalView
+      x-accepts: application/json
+components:
+  parameters:
+    cloud-type-in-query:
+      description: Cloud type of the compute
+      example:
+        cloudType: aws
+      explode: true
+      in: query
+      name: cloud-type
+      required: false
+      schema:
+        $ref: '#/components/schemas/cloudType'
+      style: form
+    cloud-type-in-path:
+      description: Cloud type of the compute
+      example:
+        cloudType: aws
+      explode: false
+      in: path
+      name: cloudType
+      required: true
+      schema:
+        $ref: '#/components/schemas/cloudType'
+      style: simple
+    use-cases-in-query:
+      description: Use Case of the compute
+      explode: true
+      in: query
+      name: use-cases
+      required: false
+      schema:
+        items:
+          $ref: '#/components/schemas/ComputeUseCase'
+        type: array
+      style: form
+    include-internal-in-query:
+      description: Includes Internal Computes
+      explode: true
+      in: query
+      name: include-internal
+      required: false
+      schema:
+        default: false
+        type: boolean
+      style: form
+    all-computes-in-query:
+      description: Returns All Computes
+      explode: true
+      in: query
+      name: all-computes
+      required: false
+      schema:
+        default: false
+        type: boolean
+      style: form
+    include-availability-in-query:
+      description: Whether to include availability info
+      explode: true
+      in: query
+      name: include-availability
+      required: false
+      schema:
+        default: false
+        type: boolean
+      style: form
+    compute-name-in-path:
+      description: Compute Name
+      example: tesl_2_b
+      explode: false
+      in: path
+      name: name
+      required: true
+      schema:
+        maxLength: 128
+        minLength: 1
+        type: string
+      style: simple
+    subscription-name-in-path:
+      description: Subscription Name
+      example: default
+      explode: false
+      in: path
+      name: subscription-name
+      required: true
+      schema:
+        maxLength: 255
+        minLength: 1
+        type: string
+      style: simple
+    subscription-name-in-query:
+      description: Subscription Name
+      example: default
+      explode: true
+      in: query
+      name: subscription-name
+      required: false
+      schema:
+        maxLength: 255
+        minLength: 1
+        type: string
+      style: form
+    include-disabled-in-query:
+      description: Flag to include/exclude disabled in computes curation in response
+      explode: true
+      in: query
+      name: include-disabled
+      required: false
+      schema:
+        default: false
+        type: boolean
+      style: form
+  schemas:
+    getAllAvailableVcpusResponse:
+      description: Response returned by service view all vcpus API
+      example:
+        vcpus:
+        - 0
+        - 0
+      properties:
+        vcpus:
+          items:
+            format: int32
+            type: integer
+          type: array
+      type: object
+    ComputeAdminView:
+      description: Compute Response Object
+      example:
+        useCases:
+        - null
+        - null
+        metadata:
+          storageUtilizations:
+          - tsmMetaSize: 7
+            tsmUsableStorageGB: 1
+          - tsmMetaSize: 7
+            tsmUsableStorageGB: 1
+        profileInfo:
+          writeIops: 6
+          maxStorageGB: 2
+          maxNoOfDisks: 5
+          maxIops: 4
+          vcpus: 9
+          maxThroughputMBps: 2
+          readIops: 0
+          memoryGB: 1.4658129
+          allowedVcpuValues:
+          - 3
+          - 3
+          io2BlockExpressEnabled: false
+          minStorageGB: 5
+          storageGB: 7
+          workloadType: workloadType
+        name: name
+        description: description
+        availability:
+        - regions:
+          - us-east-1
+          - eu-west-2
+          subscriptionName: default
+          allRegions:
+          - us-east-1
+          - us-east-2
+          - eu-west-2
+        - regions:
+          - us-east-1
+          - eu-west-2
+          subscriptionName: default
+          allRegions:
+          - us-east-1
+          - us-east-2
+          - eu-west-2
+        family: family
+        tsm: false
+      properties:
+        description:
+          description: Description of the Compute.
+          maxLength: 512
+          type: string
+        name:
+          description: Name of the Tessell Compute
+          maxLength: 128
+          type: string
+        family:
+          description: Name of the Tessell Family
+          maxLength: 128
+          type: string
+        cloudType:
+          $ref: '#/components/schemas/cloudType'
+        availability:
+          items:
+            $ref: '#/components/schemas/ComputeAdminView_availability'
+          type: array
+        tsm:
+          default: false
+          description: Is TSM Shape
+          type: boolean
+        profileInfo:
+          $ref: '#/components/schemas/ComputeProfileInfo'
+        useCases:
+          items:
+            $ref: '#/components/schemas/ComputeUseCase'
+          type: array
+        metadata:
+          $ref: '#/components/schemas/ComputeMetadata'
+      type: object
+    Compute:
+      description: Compute Response Object
+      example:
+        isInternal: true
+        useCases:
+        - null
+        - null
+        metadata:
+          storageUtilizations:
+          - tsmMetaSize: 7
+            tsmUsableStorageGB: 1
+          - tsmMetaSize: 7
+            tsmUsableStorageGB: 1
+        profileInfo:
+          writeIops: 6
+          maxStorageGB: 2
+          maxNoOfDisks: 5
+          maxIops: 4
+          vcpus: 9
+          maxThroughputMBps: 2
+          readIops: 0
+          memoryGB: 1.4658129
+          allowedVcpuValues:
+          - 3
+          - 3
+          io2BlockExpressEnabled: false
+          minStorageGB: 5
+          storageGB: 7
+          workloadType: workloadType
+        name: name
+        description: description
+        availability:
+        - regions:
+          - us-east-1
+          - eu-west-2
+          subscriptionName: default
+        - regions:
+          - us-east-1
+          - eu-west-2
+          subscriptionName: default
+        family: family
+        tsm: false
+      properties:
+        description:
+          description: Description of the Compute.
+          maxLength: 512
+          type: string
+        name:
+          description: Name of the Compute
+          maxLength: 128
+          type: string
+        family:
+          description: Name of the Tessell Family
+          maxLength: 128
+          type: string
+        cloudType:
+          $ref: '#/components/schemas/cloudType'
+        availability:
+          items:
+            $ref: '#/components/schemas/Compute_availability'
+          type: array
+        tsm:
+          default: false
+          description: Is TSM Shape
+          type: boolean
+        profileInfo:
+          $ref: '#/components/schemas/ComputeProfileInfo'
+        useCases:
+          items:
+            $ref: '#/components/schemas/ComputeUseCase'
+          type: array
+        isInternal:
+          type: boolean
+        metadata:
+          $ref: '#/components/schemas/ComputeMetadata'
+      type: object
+    ComputeInternalView:
+      description: Compute Response Object (Internal View)
+      example:
+        metadata:
+          storageUtilizations:
+          - tsmMetaSize: 7
+            tsmUsableStorageGB: 1
+          - tsmMetaSize: 7
+            tsmUsableStorageGB: 1
+        cloudShape: cloudShape
+        profileInfo:
+          writeIops: 6
+          maxStorageGB: 7
+          maxNoOfDisks: 5
+          maxIops: 6
+          noOfDisks: 5
+          vcpus: 9
+          hyperThreading: hyperThreading
+          tsm: true
+          cpuConfig:
+            cores: 2
+            threads: 4
+            allowedCoreValues:
+            - 7
+            - 7
+          maxThroughputMBps: 1
+          tsmMetaSize: 1
+          readIops: 0
+          memoryGB: 1.4658129
+          allowedVcpuValues:
+          - 3
+          - 3
+          io2BlockExpressEnabled: false
+          usableStorageGB: 1
+          minStorageGB: 2
+          workloadType: workloadType
+        description: description
+        availability:
+        - regions:
+          - aws/us-east-1
+          - aws/eu-west-2
+          subscriptionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - regions:
+          - aws/us-east-1
+          - aws/eu-west-2
+          subscriptionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        tsm: false
+        isInternal: true
+        useCases:
+        - null
+        - null
+        name: name
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        family: family
+      properties:
+        description:
+          description: Description of the Compute.
+          maxLength: 512
+          type: string
+        name:
+          description: Name of the Compute.
+          maxLength: 128
+          type: string
+        family:
+          description: Name of the Tessell Family
+          maxLength: 128
+          type: string
+        cloudShape:
+          description: Actual Cloud Shape
+          maxLength: 128
+          type: string
+        cloudType:
+          $ref: '#/components/schemas/cloudType'
+        availability:
+          items:
+            $ref: '#/components/schemas/ComputeInternalView_availability'
+          type: array
+        profileInfo:
+          $ref: '#/components/schemas/ComputeProfileInfoInternal'
+        tsm:
+          default: false
+          description: Is TSM Shape
+          type: boolean
+        id:
+          description: If provided, then use the provided uuid as the compute identifier.
+          format: uuid
+          type: string
+        useCases:
+          items:
+            $ref: '#/components/schemas/ComputeUseCase'
+          type: array
+        isInternal:
+          type: boolean
+        metadata:
+          $ref: '#/components/schemas/ComputeMetadata'
+        status:
+          $ref: '#/components/schemas/ComputeStatus'
+      type: object
+    ComputeEntity:
+      description: Compute Entity
+      properties:
+        description:
+          description: Description of the Compute.
+          maxLength: 512
+          type: string
+        name:
+          description: Name of the Tessell Compute.
+          maxLength: 128
+          type: string
+          x-dao-query: true
+        family:
+          description: Name of the Tessell Compute Family.
+          maxLength: 128
+          type: string
+          x-dao-query: true
+        cloudShape:
+          description: Cloud Shape.
+          maxLength: 128
+          type: string
+          x-dao-query: true
+        cloudType:
+          allOf:
+          - $ref: '#/components/schemas/cloudType'
+          description: Cloud Type.
+          x-dao-query: true
+          x-dao-annotations: |
+            @Enumerated(EnumType.STRING)
+        cloudAndRegionAvailability:
+          description: Cloud location and region details..
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="cloud_location")
+        cloudAndRegionAvailabilityList:
+          description: Cloud location and region details..
+          items:
+            type: string
+          type: array
+          x-dao-annotations: |
+            @Column(name="cloud_locations", columnDefinition = "text[]")
+            @Type(type = "list-array")
+        profileInfo:
+          allOf:
+          - $ref: '#/components/schemas/ComputeProfileEntity'
+          x-dao-column-converter: true
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="profile_info_v2")
+        id:
+          description: If provided, then use the provided uuid as the compute identifier.
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+              @Column(name = "id", updatable = false, nullable = false)
+        tsm:
+          description: Is TSM Shape
+          type: boolean
+          x-dao-query: true
+        useCasesInfo:
+          allOf:
+          - $ref: '#/components/schemas/ComputeUseCasesInfo'
+          description: List of Use Cases
+          x-dao-column-converter: true
+        isInternal:
+          description: Is Internal
+          type: boolean
+          x-dao-query: true
+        metadata:
+          allOf:
+          - $ref: '#/components/schemas/ComputeMetadata'
+          x-dao-query: true
+          x-dao-annotations: |
+            @Type(type = "jsonb")
+            @Column(columnDefinition = "jsonb", name="metadata")
+        status:
+          allOf:
+          - $ref: '#/components/schemas/ComputeStatus'
+          x-dao-query: true
+          x-dao-annotations: |
+            @Enumerated(EnumType.STRING)
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "DATE_CREATED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @CreationTimestamp
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "DATE_MODIFIED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @UpdateTimestamp
+      type: object
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_COMPUTES
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_COMPUTES")
+        @TypeDef(
+                        name = "list-array",
+                        typeClass = ListArrayType.class
+                )
+    ComputeCurationEntity:
+      description: Compute Curation Entity
+      properties:
+        curationId:
+          description: Curation Identifier
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+              @Column(name = "curation_id", nullable = false)
+        computeId:
+          description: Compute identifier
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "compute_id", nullable = false)
+        cloudAndRegionAvailability:
+          description: Cloud and Region
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="cloud_location")
+        cloudAndRegionAvailabilityList:
+          description: Cloud and Region
+          items:
+            type: string
+          type: array
+          x-dao-annotations: |
+            @Column(name="cloud_locations", columnDefinition = "text[]")
+            @Type(type = "list-array")
+        tenantId:
+          description: Tenant Identifier.
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "tenant_id", nullable = false)
+        subscriptionId:
+          description: Subscription Identifier
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "subscription_id", nullable = false)
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "date_created", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @CreationTimestamp
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "date_modified", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @UpdateTimestamp
+      type: object
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_COMPUTE_CURATIONS
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_COMPUTE_CURATIONS")
+        @TypeDef(
+                name = "list-array",
+                typeClass = ListArrayType.class
+        )
+      x-dao-primary-key: curationId
+    ComputeOldDataMappingEntity:
+      description: Compute Old Data Mapping Entity
+      properties:
+        computeOldId:
+          description: Compute Old Id
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+              @Column(name = "compute_old_id", nullable = false)
+        computeId:
+          description: Compute New Id
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "compute_id", nullable = false)
+      type: object
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_COMPUTE_OLD_DATA_MAPPINGS
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_COMPUTE_OLD_DATA_MAPPINGS")
+      x-dao-primary-key: computeOldId
+    ComputeProfileEntity:
+      description: Compute Profile entity that will be stored in Metadata
+      properties:
+        readIops:
+          description: Read IOPS throughput supported by an instance
+          type: integer
+        writeIops:
+          description: Write IOPS throughput supported by an instance
+          format: int32
+          type: integer
+        memoryGB:
+          description: Amount of memory (GB) in this compute
+          format: float
+          type: number
+        noOfDisks:
+          description: No of disks attached to a compute instance
+          format: int32
+          type: integer
+        maxNoOfDisks:
+          description: No of disks attached to a compute instance
+          format: int32
+          type: integer
+        minStorageGB:
+          description: Amount of min storage (GiB) supported by this compute shape
+          format: int32
+          type: integer
+        maxStorageGB:
+          description: Amount of max storage (GiB) supported by this compute shape
+          format: int32
+          type: integer
+        vcpus:
+          description: Number of VCPUs in this compute
+          format: int32
+          type: integer
+        allowedVcpuValues:
+          description: Allowed Values of Vcpu in the shape
+          items:
+            format: int32
+            type: integer
+          type: array
+        io2BlockExpressEnabled:
+          default: false
+          description: Shape Supports io2 Block Express volume
+          type: boolean
+        cpuConfig:
+          $ref: '#/components/schemas/CpuConfig'
+        hyperThreading:
+          description: Hyperthreading status
+          type: string
+        workloadType:
+          description: Type of compute
+          type: string
+        usableStorageGB:
+          description: Amount of usable storage (GiB) supported by this compute shape
+          format: int32
+          type: integer
+        tsm:
+          description: Is TSM Shape
+          type: boolean
+        tsmMetaSize:
+          description: Storage Required for TSM
+          format: int32
+          type: integer
+        architecture:
+          $ref: '#/components/schemas/ComputeArchitecture'
+        maxThroughputMBps:
+          description: Maximum Throughput supported by underlying disks (in MB/s)
+          format: int32
+          type: integer
+        maxIops:
+          description: Maximum IOPS supported by underlying disks
+          type: integer
+      type: object
+    ComputeProfileInfoInternal:
+      description: Compute Profile Metadata for Internal Use
+      example:
+        writeIops: 6
+        maxStorageGB: 7
+        maxNoOfDisks: 5
+        maxIops: 6
+        noOfDisks: 5
+        vcpus: 9
+        hyperThreading: hyperThreading
+        tsm: true
+        cpuConfig:
+          cores: 2
+          threads: 4
+          allowedCoreValues:
+          - 7
+          - 7
+        maxThroughputMBps: 1
+        tsmMetaSize: 1
+        readIops: 0
+        memoryGB: 1.4658129
+        allowedVcpuValues:
+        - 3
+        - 3
+        io2BlockExpressEnabled: false
+        usableStorageGB: 1
+        minStorageGB: 2
+        workloadType: workloadType
+      properties:
+        readIops:
+          description: Read IOPS throughput supported by an instance
+          type: integer
+        writeIops:
+          description: Write IOPS throughput supported by an instance
+          format: int32
+          type: integer
+        memoryGB:
+          description: Amount of memory (GB) in this compute
+          format: float
+          type: number
+        noOfDisks:
+          description: No of disks attached to a compute instance
+          format: int32
+          type: integer
+        maxNoOfDisks:
+          description: No of disks attached to a compute instance
+          format: int32
+          type: integer
+        minStorageGB:
+          description: Amount of min storage (GiB) supported by this compute shape
+          format: int32
+          type: integer
+        maxStorageGB:
+          description: Amount of max storage (GiB) supported by this compute shape
+          format: int32
+          type: integer
+        vcpus:
+          description: Number of VCPUs in this compute
+          format: int32
+          type: integer
+        allowedVcpuValues:
+          description: Allowed Values of Vcpu in the shape
+          items:
+            format: int32
+            type: integer
+          type: array
+        io2BlockExpressEnabled:
+          default: false
+          description: Shape Supports io2 Block Express volume
+          type: boolean
+        cpuConfig:
+          $ref: '#/components/schemas/CpuConfig'
+        hyperThreading:
+          description: Hyperthreading status
+          type: string
+        workloadType:
+          description: Type of compute
+          type: string
+        usableStorageGB:
+          description: Amount of usable storage (GiB) supported by this compute shape
+          format: int32
+          type: integer
+        tsm:
+          description: Is TSM Shape
+          type: boolean
+        tsmMetaSize:
+          description: Storage Required for TSM
+          format: int32
+          type: integer
+        architecture:
+          $ref: '#/components/schemas/ComputeArchitecture'
+        maxThroughputMBps:
+          description: Maximum Throughput supported by underlying disks (in MB/s)
+          format: int32
+          type: integer
+        maxIops:
+          description: Maximum IOPS supported by underlying disks
+          type: integer
+      type: object
+    ComputeProfileInfo:
+      description: Compute Profile Metadata
+      example:
+        writeIops: 6
+        maxStorageGB: 2
+        maxNoOfDisks: 5
+        maxIops: 4
+        vcpus: 9
+        maxThroughputMBps: 2
+        readIops: 0
+        memoryGB: 1.4658129
+        allowedVcpuValues:
+        - 3
+        - 3
+        io2BlockExpressEnabled: false
+        minStorageGB: 5
+        storageGB: 7
+        workloadType: workloadType
+      properties:
+        readIops:
+          description: Read IOPS throughput supported by an instance
+          type: integer
+        writeIops:
+          description: Write IOPS throughput supported by an instance
+          format: int32
+          type: integer
+        memoryGB:
+          description: Amount of memory (GB) in this compute
+          format: float
+          type: number
+        maxNoOfDisks:
+          description: No of disks attached to a compute instance
+          format: int32
+          type: integer
+        minStorageGB:
+          description: Amount of min storage (GB) supported by this compute shape
+            (Only for Standard)
+          format: int32
+          type: integer
+        maxStorageGB:
+          description: Amount of max storage (GB) supported by this compute shape
+            (Only for Standard)
+          format: int32
+          type: integer
+        storageGB:
+          description: Amount of storage (GB) supported by this compute shape (Only
+            for High Performance)
+          format: int32
+          type: integer
+        vcpus:
+          description: Number of VCPUs in this compute
+          format: int32
+          type: integer
+        allowedVcpuValues:
+          description: Allowed Values of Vcpu in the shape
+          items:
+            format: int32
+            type: integer
+          type: array
+        io2BlockExpressEnabled:
+          default: false
+          description: Shape Supports io2 Block Express volume
+          type: boolean
+        workloadType:
+          description: Type of compute
+          type: string
+        architecture:
+          $ref: '#/components/schemas/ComputeArchitecture'
+        maxThroughputMBps:
+          description: Maximum Throughput supported by underlying disks (in MB/s)
+          format: int32
+          type: integer
+        maxIops:
+          description: Maximum IOPS supported by underlying disks
+          type: integer
+      type: object
+    CpuConfig:
+      example:
+        cores: 2
+        threads: 4
+        allowedCoreValues:
+        - 7
+        - 7
+      properties:
+        cores:
+          description: Number of cores in the shape
+          format: int32
+          type: integer
+        threads:
+          description: Number of threads in the shape
+          format: int32
+          type: integer
+        allowedCoreValues:
+          description: Allowed Values of Core in the shape
+          items:
+            format: int32
+            type: integer
+          type: array
+      type: object
+    UpdateComputeStatusRequest:
+      properties:
+        cloud:
+          $ref: '#/components/schemas/cloudType'
+        status:
+          $ref: '#/components/schemas/ComputeProfileStatus'
+      required:
+      - cloud
+      - status
+      type: object
+    UpdateComputeRegionRequest:
+      properties:
+        cloud:
+          $ref: '#/components/schemas/cloudType'
+        regions:
+          items:
+            type: string
+          type: array
+      required:
+      - cloud
+      - regions
+      type: object
+    UpdateComputeRegionResponse:
+      example:
+        regions:
+        - regions
+        - regions
+        subscriptionName: subscriptionName
+        name: name
+      properties:
+        subscriptionName:
+          type: string
+        name:
+          type: string
+        cloud:
+          $ref: '#/components/schemas/cloudType'
+        regions:
+          items:
+            type: string
+          type: array
+      type: object
+    getComputeUpdatedId:
+      example:
+        existingId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        oldId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        oldId:
+          format: uuid
+          type: string
+        existingId:
+          format: uuid
+          type: string
+      type: object
+    ComputeProfileStatus:
+      description: Compute Profile Response
+      enum:
+      - ENABLED
+      - DISABLED
+      - DELETED
+      type: string
+      x-dao-query: true
+      x-dao-annotations: |
+        @Enumerated(EnumType.STRING)
+          @NotNull
+    ComputeStatus:
+      description: Compute Status
+      enum:
+      - ENABLED
+      - DEPRECATED
+      type: string
+    ComputeArchitecture:
+      description: Compute Architecture
+      enum:
+      - x86
+      - arm64
+      type: string
+    ComputeUseCasesInfo:
+      properties:
+        useCases:
+          items:
+            $ref: '#/components/schemas/ComputeUseCase'
+          type: array
+      type: object
+    ComputeUseCase:
+      description: Compute Use Cases
+      enum:
+      - PROVISIONING
+      - BMA
+      - MILVUS
+      type: string
+    computeProfileMaxThroughputMBps:
+      description: Maximum Throughput supported by underlying disks (in MB/s)
+      format: int32
+      type: integer
+    computeProfileMaxIops:
+      description: Maximum IOPS supported by underlying disks
+      type: integer
+    ComputeMetadata:
+      description: Metadata for a compute resource
+      example:
+        storageUtilizations:
+        - tsmMetaSize: 7
+          tsmUsableStorageGB: 1
+        - tsmMetaSize: 7
+          tsmUsableStorageGB: 1
+      properties:
+        storageUtilizations:
+          items:
+            $ref: '#/components/schemas/ComputeMetadata_storageUtilizations'
+          type: array
+      title: ComputeMetadata
+      type: object
+    StorageUtilizationDatabaseEngineTypes:
+      description: Database Engine Type
+      enum:
+      - GENERIC
+      - ORACLE
+      - POSTGRESQL
+      - SQLSERVER
+      - MYSQL
+      - APACHE_KAFKA
+      - MONGODB
+      - MILVUS
+      type: string
+    cloudType:
+      description: Tessell supported cloud types
+      enum:
+      - AWS
+      - AZURE
+      - GCP
+      type: string
+    ApiError:
+      description: Common error response object for non 2xx responses
+      properties:
+        code:
+          description: Status code for the error response
+          type: string
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        defaultCodeSet:
+          type: boolean
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    ApiErrorDetails:
+      description: Common API exception details
+      properties:
+        resolution:
+          description: Resolution detail for API exception
+          type: string
+      type: object
+    apiStatus:
+      example:
+        message: message
+        status: status
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+      title: apiStatus
+      type: object
+    ApiErrorOps:
+      description: Common error response object for non 2xx responses of internal
+        or ops APIs
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/TessellErrorCode'
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        serviceException:
+          $ref: '#/components/schemas/ApiError'
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    TessellErrorCode:
+      description: Error code object for API Exceptions
+      properties:
+        httpErrorCode:
+          description: Standard http error code
+          type: string
+        serviceCode:
+          description: Service error code
+          type: string
+        opCode:
+          description: Operation error code
+          type: string
+        description:
+          description: Error code description
+          type: string
+      type: object
+    ComputeAdminView_availability:
+      example:
+        regions:
+        - us-east-1
+        - eu-west-2
+        subscriptionName: default
+        allRegions:
+        - us-east-1
+        - us-east-2
+        - eu-west-2
+      properties:
+        subscriptionName:
+          example: default
+          type: string
+        status:
+          $ref: '#/components/schemas/ComputeProfileStatus'
+        regions:
+          example:
+          - us-east-1
+          - eu-west-2
+          items:
+            type: string
+          type: array
+        allRegions:
+          example:
+          - us-east-1
+          - us-east-2
+          - eu-west-2
+          items:
+            type: string
+          type: array
+      type: object
+    Compute_availability:
+      example:
+        regions:
+        - us-east-1
+        - eu-west-2
+        subscriptionName: default
+      properties:
+        subscriptionName:
+          example: default
+          type: string
+        status:
+          $ref: '#/components/schemas/ComputeProfileStatus'
+        regions:
+          example:
+          - us-east-1
+          - eu-west-2
+          items:
+            type: string
+          type: array
+      type: object
+    ComputeInternalView_availability:
+      example:
+        regions:
+        - aws/us-east-1
+        - aws/eu-west-2
+        subscriptionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        subscriptionId:
+          format: uuid
+          type: string
+        regions:
+          example:
+          - aws/us-east-1
+          - aws/eu-west-2
+          items:
+            type: string
+          type: array
+      type: object
+    ComputeMetadata_storageUtilizations:
+      example:
+        tsmMetaSize: 7
+        tsmUsableStorageGB: 1
+      properties:
+        engineType:
+          $ref: '#/components/schemas/StorageUtilizationDatabaseEngineTypes'
+        tsmMetaSize:
+          type: integer
+        tsmUsableStorageGB:
+          type: integer
+      type: object
+

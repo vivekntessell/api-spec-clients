@@ -1,0 +1,1812 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: support@tessell.com
+    name: Tessell Inc
+    url: https://www.tessell.com
+  description: Tessell REST API Documentation
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0
+  termsOfService: https://www.tessell.com/terms
+  title: Tessell REST API Documentation
+  version: "1.0"
+servers:
+- description: Inferred Url
+  url: http://tessell-security:8080
+paths:
+  /tessell-ops/secret-store/secrets:
+    get:
+      operationId: getAllSecrets
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Type of the Secret
+        explode: true
+        in: query
+        name: secret-type
+        required: false
+        schema:
+          $ref: '#/components/schemas/SecretType'
+        style: form
+      - description: Group ID for the secret, eg serviceID
+        explode: true
+        in: query
+        name: group-id
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecretsApiResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get all secrets metadata
+      tags:
+      - secret-store
+      x-accepts: application/json
+  /tessell-ops/secret-store/secret:
+    delete:
+      operationId: deleteSecrets
+      parameters:
+      - description: Secrets in given regions will be deleted for the keyName
+        explode: true
+        in: query
+        name: key-name
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Secrets in all regions will be deleted for the given group
+        explode: true
+        in: query
+        name: delete-by-group-id
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Secrets in all regions will be deleted
+        explode: true
+        in: query
+        name: delete-in-all-regions
+        required: false
+        schema:
+          default: true
+          type: boolean
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteSecretPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecretsApiResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Delete secrets on given condition
+      tags:
+      - secret-store
+      x-contentType: application/json
+      x-accepts: application/json
+    get:
+      operationId: getSecret
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Type of the Secret
+        explode: true
+        in: query
+        name: secret-type
+        required: true
+        schema:
+          $ref: '#/components/schemas/SecretType'
+        style: form
+      - description: UUID of the secret
+        explode: true
+        in: query
+        name: id
+        required: false
+        schema:
+          format: UUID
+          type: string
+        style: form
+      - description: Key name of the secret
+        explode: true
+        in: query
+        name: key-name
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: External Id of the secret
+        explode: true
+        in: query
+        name: external-id
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Group ID for the secret, eg serviceID
+        explode: true
+        in: query
+        name: group-id
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Subscription Id
+        explode: true
+        in: query
+        name: subscription-id
+        required: false
+        schema:
+          format: UUID
+          type: string
+        style: form
+      - description: cloud
+        explode: true
+        in: query
+        name: cloud
+        required: false
+        schema:
+          $ref: '#/components/schemas/cloudType'
+        style: form
+      - description: Cloud Account Id of the secret
+        explode: true
+        in: query
+        name: cloud-account-id
+        required: false
+        schema:
+          format: UUID
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecretDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get a secret
+      tags:
+      - secret-store
+      x-accepts: application/json
+    post:
+      operationId: createSecret
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: false
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSecretPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecretDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Create a secret
+      tags:
+      - secret-store
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-ops/secret-store/secret/{id}:
+    delete:
+      operationId: deleteSecretValue
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: id
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: UUID
+          type: string
+        style: simple
+      - description: Secrets in all regions will be deleted
+        explode: true
+        in: query
+        name: delete-in-all-regions
+        required: false
+        schema:
+          default: true
+          type: boolean
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteSecretPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecretDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Delete secret's value
+      tags:
+      - secret-store
+      x-contentType: application/json
+      x-accepts: application/json
+    get:
+      operationId: getSecretById
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: id
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: UUID
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecretDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get secret
+      tags:
+      - secret-store
+      x-accepts: application/json
+    patch:
+      operationId: updateSecretValue
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: id
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: UUID
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSecretPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecretDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Update secret's value
+      tags:
+      - secret-store
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-ops/secret-store/secret/{id}/availability:
+    patch:
+      operationId: updateSecretAvailability
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: id
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: UUID
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSecretAvailability'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecretDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Update secret's availability
+      tags:
+      - secret-store
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-ops/secret-store/secret/{id}/replicate:
+    patch:
+      operationId: replicate secret to different cloud account
+      parameters:
+      - description: id
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: UUID
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplicateSecret'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecretDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Replicate secret
+      tags:
+      - secret-store
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-ops/secret-store/secret/replicate:
+    patch:
+      operationId: replicate secret by keyName
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplicateSecret'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecretDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Replicate secret
+      tags:
+      - secret-store
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-ops/secret-store/bulk-delete:
+    delete:
+      operationId: bulkDeleteSecrets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkDeleteSecretsPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceBulkDeleteResponseOps'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: delete the secrets for subscription or tenant-id.
+      tags:
+      - secret-store
+      x-contentType: application/json
+      x-accepts: application/json
+    post:
+      operationId: getBulkDeleteSecretsStatus
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkDeleteSecretsStatusPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceBulkDeleteResponseOps'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: get status of bulk delete api
+      tags:
+      - secret-store
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-ops/secret-store/secret-encryption-key-mappings:
+    get:
+      operationId: getSecretEncryptionKeyMapping
+      parameters:
+      - description: tenant-id
+        explode: true
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: Subscription Id
+        explode: true
+        in: query
+        name: subscription-id
+        required: false
+        schema:
+          format: UUID
+          type: string
+        style: form
+      - description: cloud
+        explode: true
+        in: query
+        name: cloud
+        required: false
+        schema:
+          $ref: '#/components/schemas/cloudType'
+        style: form
+      - description: Cloud Account Id of the key
+        explode: true
+        in: query
+        name: cloud-account-id
+        required: false
+        schema:
+          format: UUID
+          type: string
+        style: form
+      - description: Region of the key
+        explode: true
+        in: query
+        name: region
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecretKeyMapApiResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: get current mappings for key to be used to encrypt secret in a cloud
+        location
+      tags:
+      - secret-store-key-map
+      x-accepts: application/json
+    post:
+      operationId: createSecretEncryptionKeyMapping
+      parameters:
+      - description: tenant-id
+        explode: true
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/SecretKeyMapCreatePayload'
+              type: array
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SecretEncryptionEntity'
+                type: array
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: create a mapping for key to be used to encrypt secret in a cloud location
+      tags:
+      - secret-store-key-map
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-ops/secret-store/secret-encryption-key-mappings/{id}:
+    delete:
+      operationId: deleteSecretEncryptionKeyMapping
+      parameters:
+      - description: tenant-id
+        explode: true
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: id of the key mapping
+        explode: true
+        in: path
+        name: id
+        required: true
+        schema:
+          format: UUID
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecretEncryptionEntity'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: delete a mapping for key to be used to encrypt secret in a cloud location
+      tags:
+      - secret-store-key-map
+      x-accepts: application/json
+    patch:
+      operationId: updateSecretEncryptionKeyMapping
+      parameters:
+      - description: tenant-id
+        explode: true
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: id of the key mapping
+        explode: true
+        in: path
+        name: id
+        required: true
+        schema:
+          format: UUID
+          type: string
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SecretKeyMapUpdatePayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecretEncryptionEntity'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: update a mapping for key to be used to encrypt secret in a cloud location
+      tags:
+      - secret-store-key-map
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-ops/secret-store/encrypt-secrets:
+    post:
+      operationId: encryptAllSecrets
+      parameters:
+      - description: tenant-id
+        explode: true
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecretsMigrationApiResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: encrypt all existing secrets that are not already encrypted
+      tags:
+      - secret-store
+      x-accepts: application/json
+  /tessell-ops/secret-store/add-tags:
+    post:
+      operationId: addAdditionalTagsToSecrets
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagsAdditionApiResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Add tags required to clean up the existing secrets
+      tags:
+      - secret-store
+      x-accepts: application/json
+components:
+  schemas:
+    CreateSecretPayload:
+      example:
+        secretType: TENANT_ASSET
+        cloud: AWS
+        subscriptionId: 5gh40f64-5717-4562-b3fc-2c963f66afa6
+        cloudAccountId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        region: us-east-2
+        secret:
+          keyName: DB-CRED_9d79e1f8-1bk3-4b79-8580-e935ea3b8ca3
+          value:
+            masterPassword: Tessell123
+            monitorPassword: Pass10ZmBR3VA7
+            saPassword: Pass#1bQN6vK3kl
+      properties:
+        secretType:
+          $ref: '#/components/schemas/SecretType'
+        cloud:
+          $ref: '#/components/schemas/cloudType'
+        subscriptionId:
+          format: uuid
+          type: string
+        cloudAccountId:
+          format: uuid
+          type: string
+        regions:
+          items:
+            type: string
+          type: array
+        groupId:
+          type: string
+        tags:
+          description: The tags associated with the secret
+          items:
+            $ref: '#/components/schemas/TessellTag'
+          type: array
+        secret:
+          $ref: '#/components/schemas/Secret'
+      title: CreateSecretPayload
+      type: object
+    Secret:
+      properties:
+        keyName:
+          description: Key Name of the secret
+          type: string
+        value:
+          description: Value of the secret
+          type: string
+          x-dto-annotations: |
+            @ToString.Exclude
+        file:
+          description: Value of the secret in bytes
+          format: byte
+          type: string
+          x-dto-annotations: |
+            @ToString.Exclude
+      title: Secret
+      type: object
+    UpdateSecretPayload:
+      example:
+        file: file
+        value: value
+      properties:
+        value:
+          description: Value of the secret
+          type: string
+        file:
+          description: Value of the secret in bytes
+          format: byte
+          type: string
+      title: UpdateSecretPayload
+      type: object
+    UpdateSecretAvailability:
+      description: This is a definition for Tessell secret region availability
+      example:
+        regions:
+        - regions
+        - regions
+      properties:
+        regions:
+          items:
+            type: string
+          type: array
+      title: UpdateSecretAvailability
+      type: object
+    ReplicateSecret:
+      description: This is a definition for Tessell secret replication across data
+        plane
+      example:
+        cloudAccounts:
+        - cloudAccountId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          subscriptionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          region: region
+        - cloudAccountId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          subscriptionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          region: region
+        keyName: keyName
+      properties:
+        keyName:
+          description: Key Name of the secret
+          type: string
+        cloudAccounts:
+          items:
+            $ref: '#/components/schemas/SecretStoreCloudAccount'
+          type: array
+      title: ReplicateSecret
+      type: object
+    SecretStoreCloudAccount:
+      description: Cloud account
+      example:
+        cloudAccountId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        subscriptionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        region: region
+      properties:
+        cloud:
+          $ref: '#/components/schemas/cloudType'
+        subscriptionId:
+          format: uuid
+          type: string
+        cloudAccountId:
+          format: uuid
+          type: string
+        region:
+          type: string
+      title: CloudAccount
+      type: object
+    DeleteSecretPayload:
+      example:
+        regions:
+        - regions
+        - regions
+        softDelete: true
+      properties:
+        regions:
+          items:
+            type: string
+          type: array
+        softDelete:
+          description: Soft delete the secret
+          type: boolean
+      title: deleteSecretPayload
+      type: object
+    SecretDTO:
+      example:
+        id: 123e4567-e89b-12d3-a456-426614174000
+        tenantId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        secret:
+          keyName: DB-CRED_9d79e1f8-1bk3-4b79-8580-e935ea3b8ca3
+          value:
+            masterPassword: Tessell123
+            monitorPassword: Pass10ZmBR3VA7
+            saPassword: Pass#1bQN6vK3kl
+        secretType: TENANT_ASSET
+        regionAvailability:
+        - name: ap-south-1
+          cloudAccountId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+          externalId: arn:aws:secretsmanager:ap-south-1:213776060323:secret:DB-CRED_9d79e1f8-1bk3-4b79-8580-e935ea3b8ca3-e9KLch
+          isPrimary: true
+        - name: us-east-1
+          cloudAccountId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+          externalId: arn:aws:secretsmanager:us-east-1:213776060323:secret:DB-CRED_9d79e1f8-1bk3-4b79-8580-e935ea3b8ca3-e9KLch
+          isPrimary: false
+        dateCreated: 2023-01-16T14:14:39.089000Z
+        dateModified: 2023-01-16T14:14:39.089000Z
+      properties:
+        id:
+          format: uuid
+          type: string
+        tenantId:
+          type: string
+        secret:
+          $ref: '#/components/schemas/Secret'
+        secretType:
+          $ref: '#/components/schemas/SecretType'
+        groupId:
+          type: string
+        tags:
+          description: The tags associated with the secret
+          items:
+            $ref: '#/components/schemas/TessellTag'
+          type: array
+        regionAvailability:
+          description: Cloud and Location detail
+          items:
+            $ref: '#/components/schemas/SecretAvailabilityEntity'
+          type: array
+        primaryAvailabilityExternalId:
+          description: primaryAvailabilityExternalId
+          type: string
+        dateCreated:
+          description: Timestamp when the secret was created
+          format: date-time
+          type: string
+        dateModified:
+          description: Timestamp when the secret was last modified, either by system
+            or by user
+          format: date-time
+          type: string
+      title: SecretDTO
+      type: object
+    SecretKeyMapCreatePayload:
+      example:
+        cloud: AWS
+        subscriptionId: 5gh40f64-5717-4562-b3fc-2c963f66afa6
+        cloudAccountId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        region: us-east-2
+        keyExternalID: arn:aws:kms:ap-south-1:548045437132:key/mrk-515b486e4b90453e87a886dfc7199be0
+      properties:
+        cloud:
+          $ref: '#/components/schemas/cloudType'
+        subscriptionId:
+          format: uuid
+          type: string
+        cloudAccountId:
+          format: uuid
+          type: string
+        region:
+          type: string
+        keyExternalID:
+          type: string
+      title: SecretKeyMapCreatePayload
+      type: object
+    SecretKeyMapUpdatePayload:
+      example:
+        cloud: AWS
+        subscriptionId: 5gh40f64-5717-4562-b3fc-2c963f66afa6
+        cloudAccountId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        region: us-east-2
+        keyExternalID: arn:aws:kms:ap-south-1:548045437132:key/mrk-515b486e4b90453e87a886dfc7199be0
+      properties:
+        status:
+          $ref: '#/components/schemas/SecretEncryptionKeyStatus'
+      title: SecretKeyMapUpdatePayload
+      type: object
+    SecretsApiResponse:
+      example:
+        metadata:
+          pagination:
+            pageOffset: 1
+            pageSize: 6
+          records: 0
+          timeZone: timeZone
+        response:
+        - id: 123e4567-e89b-12d3-a456-426614174000
+          tenantId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+          secret:
+            keyName: DB-CRED_9d79e1f8-1bk3-4b79-8580-e935ea3b8ca3
+            value:
+              masterPassword: Tessell123
+              monitorPassword: Pass10ZmBR3VA7
+              saPassword: Pass#1bQN6vK3kl
+          secretType: TENANT_ASSET
+          regionAvailability:
+          - name: ap-south-1
+            cloudAccountId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            externalId: arn:aws:secretsmanager:ap-south-1:213776060323:secret:DB-CRED_9d79e1f8-1bk3-4b79-8580-e935ea3b8ca3-e9KLch
+            isPrimary: true
+          - name: us-east-1
+            cloudAccountId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            externalId: arn:aws:secretsmanager:us-east-1:213776060323:secret:DB-CRED_9d79e1f8-1bk3-4b79-8580-e935ea3b8ca3-e9KLch
+            isPrimary: false
+          dateCreated: 2023-01-16T14:14:39.089000Z
+          dateModified: 2023-01-16T14:14:39.089000Z
+        - id: 123e4567-e89b-12d3-a456-426614174000
+          tenantId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+          secret:
+            keyName: DB-CRED_9d79e1f8-1bk3-4b79-8580-e935ea3b8ca3
+            value:
+              masterPassword: Tessell123
+              monitorPassword: Pass10ZmBR3VA7
+              saPassword: Pass#1bQN6vK3kl
+          secretType: TENANT_ASSET
+          regionAvailability:
+          - name: ap-south-1
+            cloudAccountId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            externalId: arn:aws:secretsmanager:ap-south-1:213776060323:secret:DB-CRED_9d79e1f8-1bk3-4b79-8580-e935ea3b8ca3-e9KLch
+            isPrimary: true
+          - name: us-east-1
+            cloudAccountId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            externalId: arn:aws:secretsmanager:us-east-1:213776060323:secret:DB-CRED_9d79e1f8-1bk3-4b79-8580-e935ea3b8ca3-e9KLch
+            isPrimary: false
+          dateCreated: 2023-01-16T14:14:39.089000Z
+          dateModified: 2023-01-16T14:14:39.089000Z
+      properties:
+        metadata:
+          $ref: '#/components/schemas/apiMetadata'
+        response:
+          items:
+            $ref: '#/components/schemas/SecretDTO'
+          type: array
+      title: SecretsApiResponse
+      type: object
+    SecretsMigrationApiResponse:
+      example:
+        metadata:
+          pagination:
+            pageOffset: 1
+            pageSize: 6
+          records: 0
+          timeZone: timeZone
+        response:
+        - id: 123e4567-e89b-12d3-a456-426614174000
+          tenantId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+          secret:
+            keyName: DB-CRED_9d79e1f8-1bk3-4b79-8580-e935ea3b8ca3
+            value:
+              masterPassword: Tessell123
+              monitorPassword: Pass10ZmBR3VA7
+              saPassword: Pass#1bQN6vK3kl
+          secretType: TENANT_ASSET
+          regionAvailability:
+          - name: ap-south-1
+            cloudAccountId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            externalId: arn:aws:secretsmanager:ap-south-1:213776060323:secret:DB-CRED_9d79e1f8-1bk3-4b79-8580-e935ea3b8ca3-e9KLch
+            isPrimary: true
+          - name: us-east-1
+            cloudAccountId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            externalId: arn:aws:secretsmanager:us-east-1:213776060323:secret:DB-CRED_9d79e1f8-1bk3-4b79-8580-e935ea3b8ca3-e9KLch
+            isPrimary: false
+          dateCreated: 2023-01-16T14:14:39.089000Z
+          dateModified: 2023-01-16T14:14:39.089000Z
+        - id: 123e4567-e89b-12d3-a456-426614174000
+          tenantId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+          secret:
+            keyName: DB-CRED_9d79e1f8-1bk3-4b79-8580-e935ea3b8ca3
+            value:
+              masterPassword: Tessell123
+              monitorPassword: Pass10ZmBR3VA7
+              saPassword: Pass#1bQN6vK3kl
+          secretType: TENANT_ASSET
+          regionAvailability:
+          - name: ap-south-1
+            cloudAccountId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            externalId: arn:aws:secretsmanager:ap-south-1:213776060323:secret:DB-CRED_9d79e1f8-1bk3-4b79-8580-e935ea3b8ca3-e9KLch
+            isPrimary: true
+          - name: us-east-1
+            cloudAccountId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            externalId: arn:aws:secretsmanager:us-east-1:213776060323:secret:DB-CRED_9d79e1f8-1bk3-4b79-8580-e935ea3b8ca3-e9KLch
+            isPrimary: false
+          dateCreated: 2023-01-16T14:14:39.089000Z
+          dateModified: 2023-01-16T14:14:39.089000Z
+        errorMessage: errorMessage
+      properties:
+        metadata:
+          $ref: '#/components/schemas/apiMetadata'
+        errorMessage:
+          description: error occurred during migration of secrets
+          type: string
+        response:
+          items:
+            $ref: '#/components/schemas/SecretDTO'
+          type: array
+      title: SecretsMigrationApiResponse
+      type: object
+    TagsAdditionApiResponse:
+      example:
+        metadata:
+          pagination:
+            pageOffset: 1
+            pageSize: 6
+          records: 0
+          timeZone: timeZone
+        response:
+        - cloudLocation: cloudLocation
+          cloudAccountId: 123e4567-e89b-12d3-a456-426614174000
+          secretEncryptionKeyId: 123e4567-e89b-12d3-a456-426614174000
+          externalId: arn:aws:secretsmanager:ap-south-1:213776060323:secret:DB-CRED_9d79e1f8-1bk3-4b79-8580-e935ea3b8ca3-e9KLch
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          secret: ""
+          status: ""
+        - cloudLocation: cloudLocation
+          cloudAccountId: 123e4567-e89b-12d3-a456-426614174000
+          secretEncryptionKeyId: 123e4567-e89b-12d3-a456-426614174000
+          externalId: arn:aws:secretsmanager:ap-south-1:213776060323:secret:DB-CRED_9d79e1f8-1bk3-4b79-8580-e935ea3b8ca3-e9KLch
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          secret: ""
+          status: ""
+        errorMessage: errorMessage
+      properties:
+        metadata:
+          $ref: '#/components/schemas/apiMetadata'
+        errorMessage:
+          description: error occurred during addition of tags
+          type: string
+        response:
+          items:
+            $ref: '#/components/schemas/SecretAvailabilityEntity'
+          type: array
+      title: TagsAdditionApiResponse
+      type: object
+    SecretKeyMapApiResponse:
+      example:
+        metadata:
+          pagination:
+            pageOffset: 1
+            pageSize: 6
+          records: 0
+          timeZone: timeZone
+        response:
+        - dateCreated: 2000-01-23T04:56:07.000+00:00
+          keyExternalID: arn:aws:kms:ap-south-1:548045437132:key/mrk-515b486e4b90453e87a886dfc7199be0
+          cloudAccountId: 123e4567-e89b-12d3-a456-426614174000
+          tenantId: 123e4567-e89b-12d3-a456-426614174000
+          dateModified: 2000-01-23T04:56:07.000+00:00
+          id: 123e4567-e89b-12d3-a456-426614174000
+          region: us-east-1
+          status: ""
+        - dateCreated: 2000-01-23T04:56:07.000+00:00
+          keyExternalID: arn:aws:kms:ap-south-1:548045437132:key/mrk-515b486e4b90453e87a886dfc7199be0
+          cloudAccountId: 123e4567-e89b-12d3-a456-426614174000
+          tenantId: 123e4567-e89b-12d3-a456-426614174000
+          dateModified: 2000-01-23T04:56:07.000+00:00
+          id: 123e4567-e89b-12d3-a456-426614174000
+          region: us-east-1
+          status: ""
+      properties:
+        metadata:
+          $ref: '#/components/schemas/apiMetadata'
+        response:
+          items:
+            $ref: '#/components/schemas/SecretEncryptionEntity'
+          type: array
+      title: SecretKeyMapApiResponse
+      type: object
+    SecretType:
+      description: Type of a secret
+      enum:
+      - TENANT_ASSET
+      - INFRA_ASSET
+      - CLOUD_ACCOUNT_CREDENTIAL
+      - SHARED_SECRET
+      title: SecretType
+      type: string
+    SecretAvailabilityStatus:
+      description: Status of the Secrets availability
+      enum:
+      - AVAILABLE
+      - DELETED
+      - DELETION_FAILED
+      title: SecretAvailabilityStatus
+      type: string
+    SecretEncryptionKeyStatus:
+      description: Status of the Secret encryption keys
+      enum:
+      - ACTIVE
+      - INACTIVE
+      title: SecretEncryptionKeyStatus
+      type: string
+    SecretEntity:
+      description: This is a definition for Secrets in Tessell
+      example:
+        id: 123e4567-e89b-12d3-a456-426614174000
+        tenantId: 123e4567-e89b-12d3-a456-426614174000
+        keyName: STRIPE_API_KEY_TERLS
+        subscriptionId: 123e4567-e89b-12d3-a456-426614174000
+        cloud: AWS
+        cloudAccountId: 123e4567-e89b-12d3-a456-426614174000
+        primaryAvailabilityId: 123e4567-e89b-12d3-a456-426614174000
+        secretType: INFRA_ASSET
+        dateCreated: 2000-01-23T04:56:07+00:00
+        dateModified: 2000-01-23T04:56:07+00:00
+      properties:
+        id:
+          description: generated UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+            @Column(name = "id", updatable = false, nullable = false)
+        tenantId:
+          description: Tenant ID
+          example: 123e4567-e89b-12d3-a456-426614174000
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "tenant_id")
+        groupId:
+          description: Group ID, grouping the secrets
+          example: 123e4567-e89b-12d3-a456-426614174000
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "group_id")
+        keyName:
+          description: Key Name
+          example: masterPassword
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "key_name", nullable = false)
+            @NotNull
+        cloudType:
+          allOf:
+          - $ref: '#/components/schemas/cloudType'
+          description: Cloud
+          x-dao-query: true
+          x-dao-annotations: |
+            @Enumerated(EnumType.STRING)
+            @NotNull
+            @Type(type = "pgsql_enum")
+            @Column(name = "cloud_type")
+        subscriptionId:
+          description: subscriptionId
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "subscription_id")
+        cloudAccountId:
+          description: cloudAccountId
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "cloud_account_id")
+        primaryAvailabilityExternalId:
+          description: primaryAvailabilityExternalId
+          example: arn:aws:secretsmanager:ap-south-1:213776060323:secret:DB-CRED_9d79e1f8-1bk3-4b79-8580-e935ea3b8ca3-e9KLch
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "primary_availability_external_id")
+        secretType:
+          allOf:
+          - $ref: '#/components/schemas/SecretType'
+          description: Type of the secret
+          x-dao-query: true
+          x-dao-annotations: |
+            @Enumerated(EnumType.STRING)
+            @NotNull
+            @Type(type = "pgsql_enum")
+            @Column(name = "secret_type")
+        regionAvailability:
+          description: Cloud and Location detail
+          items:
+            $ref: '#/components/schemas/SecretAvailabilityEntity'
+          type: array
+          x-dao-annotations: |
+            @OneToMany(mappedBy = "secret", cascade = CascadeType.ALL)
+          x-dto-annotations: |
+            @JsonManagedReference
+            @ToString.Exclude
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "date_created", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+            @CreationTimestamp
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "date_modified", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false)
+            @UpdateTimestamp
+      title: SecretEntity
+      type: object
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_SECRETS
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_SECRETS", uniqueConstraints = @UniqueConstraint(columnNames = {"id"}))
+    SecretAvailabilityEntity:
+      description: This is a definition for Secrets Availability in Tessell
+      example:
+        cloudLocation: cloudLocation
+        cloudAccountId: 123e4567-e89b-12d3-a456-426614174000
+        secretEncryptionKeyId: 123e4567-e89b-12d3-a456-426614174000
+        externalId: arn:aws:secretsmanager:ap-south-1:213776060323:secret:DB-CRED_9d79e1f8-1bk3-4b79-8580-e935ea3b8ca3-e9KLch
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        secret: ""
+        status: ""
+      properties:
+        id:
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+            @Type(type = "pg-uuid")
+            @GeneratedValue(strategy = GenerationType.AUTO)
+            @Column(name = "id", updatable = false, nullable = false)
+        secret:
+          allOf:
+          - $ref: '#/components/schemas/SecretEntity'
+          x-dao-foreign-key-reference: true
+          x-dao-annotations: |
+            @ManyToOne(fetch = FetchType.LAZY)
+            @JoinColumn(name="secret_id", nullable=false)
+          x-dto-annotations: |
+            @ToString.Exclude
+            @JsonBackReference
+        cloudLocation:
+          description: Cloud location of the secret
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="cloud_location", nullable = false)
+        cloudAccountId:
+          description: cloudAccountId
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "cloud_account_id")
+        externalId:
+          description: External Id of the Secret
+          example: arn:aws:secretsmanager:ap-south-1:213776060323:secret:DB-CRED_9d79e1f8-1bk3-4b79-8580-e935ea3b8ca3-e9KLch
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name="external_id", nullable = false)
+        secretEncryptionKeyId:
+          description: Id of the Secret Encryption Key used
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+          type: string
+          x-dao-annotations: |
+            @Column(name="secret_encryption_key_id")
+        status:
+          allOf:
+          - $ref: '#/components/schemas/SecretAvailabilityStatus'
+          description: Status of the secret availability
+          x-dao-query: true
+          x-dao-annotations: |
+            @Enumerated(EnumType.STRING)
+            @NotNull
+            @Type(type = "pgsql_enum")
+            @Column(name = "status")
+      title: SecretAvailabilityEntity
+      type: object
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_SECRETS_AVAILABILITIES
+      x-dao-entity-annotations: |
+        @Table(name = "TESSELL_SECRETS_AVAILABILITIES")
+    SecretEncryptionEntity:
+      description: This is the mapping of kms keys to be used for a given cloud location
+        to encrypt the secrets in that cloud location
+      example:
+        dateCreated: 2000-01-23T04:56:07.000+00:00
+        keyExternalID: arn:aws:kms:ap-south-1:548045437132:key/mrk-515b486e4b90453e87a886dfc7199be0
+        cloudAccountId: 123e4567-e89b-12d3-a456-426614174000
+        tenantId: 123e4567-e89b-12d3-a456-426614174000
+        dateModified: 2000-01-23T04:56:07.000+00:00
+        id: 123e4567-e89b-12d3-a456-426614174000
+        region: us-east-1
+        status: ""
+      properties:
+        id:
+          description: generated UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+            @Type(type = "pg-uuid")
+            @GeneratedValue(strategy = GenerationType.AUTO)
+            @Column(name = "id", updatable = false, nullable = false)
+        tenantId:
+          description: Tenant ID
+          example: 123e4567-e89b-12d3-a456-426614174000
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "tenant_id", nullable = false)
+        cloudAccountId:
+          description: cloudAccountId
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "cloud_account_id")
+        region:
+          description: region
+          example: us-east-1
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "region")
+        keyExternalID:
+          description: keyExternalID
+          example: arn:aws:kms:ap-south-1:548045437132:key/mrk-515b486e4b90453e87a886dfc7199be0
+          type: string
+          x-dao-query: true
+          x-dao-annotations: |
+            @Column(name = "key_external_id", nullable = false)
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "date_created", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+            @CreationTimestamp
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+          x-dao-annotations: |
+            @Column(name = "date_modified", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false)
+            @UpdateTimestamp
+        status:
+          allOf:
+          - $ref: '#/components/schemas/SecretEncryptionKeyStatus'
+          description: Status of the secret encryption key ID
+          x-dao-query: true
+          x-dao-annotations: |
+            @Enumerated(EnumType.STRING)
+            @NotNull
+            @Type(type = "pgsql_enum")
+            @Column(name = "status")
+      title: SecretEncryptionEntity
+      type: object
+      x-dao-entity: true
+      x-dao-table-name: TESSELL_SECRETS_ENCRYPTION
+      x-dao-entity-annotations: "@Table(\n  name = \"TESSELL_SECRETS_ENCRYPTION\"\
+        , \n  uniqueConstraints = {\n    @UniqueConstraint(columnNames = {\"id\"}),\n\
+        \    @UniqueConstraint(columnNames = {\"cloud_account_id\", \"tenant_id\"\
+        , \"region\"})\n  }\n)\n"
+    BulkDeleteSecretsPayload:
+      example:
+        scheduleDeletionAfterDays: 0
+        skipDeletion:
+        - entities:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - entities:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        tenantId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        subscriptionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        tenantId:
+          format: uuid
+          type: string
+        subscriptionId:
+          format: uuid
+          type: string
+        skipDeletion:
+          description: List of services to be skipped for deletion
+          items:
+            $ref: '#/components/schemas/SkipDeletionInfo'
+          type: array
+        scheduleDeletionAfterDays:
+          description: days after which deletion should be scheduled
+          type: integer
+      required:
+      - tenantId
+      title: ResourceBulkDeletePayloadOps
+      type: object
+    BulkDeleteSecretsStatusPayload:
+      example:
+        skipDeletion:
+        - entities:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - entities:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        tenantId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        context: '{}'
+        cleanupId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        subscriptionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        cleanupId:
+          format: uuid
+          type: string
+        status:
+          $ref: '#/components/schemas/ResourceBulkDeleteStatusOps'
+        timestamp:
+          format: date-time
+          type: string
+        tenantId:
+          format: uuid
+          type: string
+        subscriptionId:
+          format: uuid
+          type: string
+        skipDeletion:
+          description: List of services to be skipped for deletion
+          items:
+            $ref: '#/components/schemas/SkipDeletionInfo'
+          type: array
+        context:
+          type: object
+      title: ResourceBulkDeleteResponseOps
+      type: object
+    ApiErrorOps:
+      description: Common error response object for non 2xx responses of internal
+        or ops APIs
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/TessellErrorCode'
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        serviceException:
+          $ref: '#/components/schemas/ApiError'
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    TessellErrorCode:
+      description: Error code object for API Exceptions
+      properties:
+        httpErrorCode:
+          description: Standard http error code
+          type: string
+        serviceCode:
+          description: Service error code
+          type: string
+        opCode:
+          description: Operation error code
+          type: string
+        description:
+          description: Error code description
+          type: string
+      type: object
+    ApiErrorDetails:
+      description: Common API exception details
+      properties:
+        resolution:
+          description: Resolution detail for API exception
+          type: string
+      type: object
+    ApiError:
+      description: Common error response object for non 2xx responses
+      properties:
+        code:
+          description: Status code for the error response
+          type: string
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        defaultCodeSet:
+          type: boolean
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    cloudType:
+      description: Tessell supported cloud types
+      enum:
+      - AWS
+      - AZURE
+      - GCP
+      type: string
+    ResourceBulkDeleteResponseOps:
+      example:
+        skipDeletion:
+        - entities:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - entities:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        tenantId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        context: '{}'
+        cleanupId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        subscriptionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        cleanupId:
+          format: uuid
+          type: string
+        status:
+          $ref: '#/components/schemas/ResourceBulkDeleteStatusOps'
+        timestamp:
+          format: date-time
+          type: string
+        tenantId:
+          format: uuid
+          type: string
+        subscriptionId:
+          format: uuid
+          type: string
+        skipDeletion:
+          description: List of services to be skipped for deletion
+          items:
+            $ref: '#/components/schemas/SkipDeletionInfo'
+          type: array
+        context:
+          type: object
+      title: ResourceBulkDeleteResponseOps
+      type: object
+    ResourceBulkDeleteStatusOps:
+      description: bulk delete status
+      enum:
+      - IN_PROGRESS
+      - FAILED
+      - SUCCESS
+      type: string
+    SkipDeletionInfo:
+      example:
+        entities:
+        - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        entityType:
+          $ref: '#/components/schemas/entityType'
+        entities:
+          description: List of entities uuids
+          items:
+            format: uuid
+            type: string
+          type: array
+      title: SkipDeletionInfo
+      type: object
+    entityType:
+      description: Tessell Entity Type
+      enum:
+      - TENANT
+      - COMPUTE_RESOURCE
+      - STORAGE
+      - COMPUTE_RESOURCE_METADATA
+      - DBSERVER_SYETEM
+      - DBSERVER_SUB_SYETEM
+      - DBSERVER_SYETEM_COMPUTE_RESOURCE
+      - DATABASE_SYETEM
+      - DATABASE
+      - DATABASE_NODE
+      - DATABASE_METADATA
+      - DMM
+      - DMM_AVAILABILITY
+      - DB_BACKUP
+      - DB_SNAPSHOT
+      - DB_LOG
+      - TASK
+      - SUB_TASK
+      - SLA
+      - SCHEDULE
+      - CLOUD_ACCOUNT
+      - CLOUD_LOCATION
+      - COMPUTE_TYPE
+      - SOFTWARE_IMAGE
+      - SOFTWARE_IMAGE_VERSION
+      - SUBSCRIPTION
+      - CUSTOM_SCRIPT
+      - DEPLOYMENT
+      - TERRAFORM
+      - DB_EXPORTER
+      - USER
+      - IDENTITY_PROVIDER
+      - ENCRYPTION_KEY
+      - TESSELL_SERVICE
+      - NETWORK
+      - NETWORK_PEERING
+      - SECRET
+      - PERSONA
+      - ACL
+      - API_KEY
+      type: string
+    TessellTag:
+      nullable: true
+      properties:
+        name:
+          description: Case sensitive, tag name
+          maxLength: 128
+          minLength: 1
+          type: string
+        value:
+          description: Case sensitive, tag value
+          maxLength: 256
+          minLength: 0
+          type: string
+      title: TessellTag
+      type: object
+    apiMetadata:
+      example:
+        pagination:
+          pageOffset: 1
+          pageSize: 6
+        records: 0
+        timeZone: timeZone
+      properties:
+        timeZone:
+          type: string
+        records:
+          format: int32
+          type: integer
+        pagination:
+          $ref: '#/components/schemas/apiPaginationInfo'
+      title: apiMetadata
+      type: object
+    apiPaginationInfo:
+      example:
+        pageOffset: 1
+        pageSize: 6
+      properties:
+        pageSize:
+          format: int32
+          type: integer
+        pageOffset:
+          format: int32
+          type: integer
+      title: apiPaginationInfo
+      type: object
+    ResourceBulkDeletePayloadOps:
+      example:
+        scheduleDeletionAfterDays: 0
+        skipDeletion:
+        - entities:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - entities:
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          - 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        tenantId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        subscriptionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        tenantId:
+          format: uuid
+          type: string
+        subscriptionId:
+          format: uuid
+          type: string
+        skipDeletion:
+          description: List of services to be skipped for deletion
+          items:
+            $ref: '#/components/schemas/SkipDeletionInfo'
+          type: array
+        scheduleDeletionAfterDays:
+          description: days after which deletion should be scheduled
+          type: integer
+      required:
+      - tenantId
+      title: ResourceBulkDeletePayloadOps
+      type: object
+

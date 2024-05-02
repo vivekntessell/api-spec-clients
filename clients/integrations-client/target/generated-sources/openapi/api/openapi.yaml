@@ -1,0 +1,1405 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: support@tessell.com
+    name: Inc
+    url: https://www.tessell.com
+  description: REST API Documentation
+  termsOfService: https://www.tessell.com/terms
+  title: REST API Documentation
+  version: "1.0"
+servers:
+- description: Inferred Url
+  url: http://localhost:8084
+paths:
+  /integration-types:
+    get:
+      operationId: getIntegrationTypes
+      parameters:
+      - description: integration-type
+        explode: true
+        in: query
+        name: integration-type
+        required: false
+        schema:
+          $ref: '#/components/schemas/TessellIntegrationType'
+        style: form
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellIntegrationTypeListResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get a list of supported Integration Types
+      tags:
+      - tessell-integration
+      x-accepts: application/json
+  /integration-types/{id}:
+    get:
+      operationId: getIntegrationTypeById
+      parameters:
+      - description: ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellIntegrationTypeDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get Integration Type by Id
+      tags:
+      - tessell-integration
+      x-accepts: application/json
+  /integrations:
+    get:
+      operationId: getIntegrationsConsumerView
+      parameters:
+      - description: integration-type
+        explode: true
+        in: query
+        name: integration-type
+        required: false
+        schema:
+          $ref: '#/components/schemas/TessellIntegrationType'
+        style: form
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellIntegrationListResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get a list of active Integrations (consumer view)
+      tags:
+      - tessell-integration
+      x-accepts: application/json
+  /integrations/{id}:
+    get:
+      operationId: getIntegrationByIdConsumerView
+      parameters:
+      - description: id
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellIntegrationDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get active Integration by Id (consumer view)
+      tags:
+      - tessell-integration
+      x-accepts: application/json
+  /integrations/governance:
+    get:
+      operationId: getIntegrations
+      parameters:
+      - description: ID of an Integration
+        explode: true
+        in: query
+        name: id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: form
+      - description: Type of an Integration
+        explode: true
+        in: query
+        name: integration-type
+        required: false
+        schema:
+          $ref: '#/components/schemas/TessellIntegrationType'
+        style: form
+      - description: Flag indicating if ACL information should be included for all
+          entities
+        explode: true
+        in: query
+        name: include-shared-with-users
+        required: false
+        schema:
+          type: boolean
+        style: form
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      - description: List of Email Addresses for entity or resource owners
+        in: query
+        name: owners
+        required: false
+        schema:
+          items:
+            type: string
+          type: array
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellIntegrationListResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get a list of active Integrations
+      tags:
+      - tessell-integration
+      x-accepts: application/json
+    post:
+      operationId: createIntegration
+      parameters:
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TessellIntegrationDTO'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellIntegrationDTO'
+          description: OK
+        "201":
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Create a new Integration
+      tags:
+      - tessell-integration
+      x-contentType: application/json
+      x-accepts: application/json
+  /integrations/governance/{id}:
+    delete:
+      operationId: deleteIntegration
+      parameters:
+      - description: ID of an Integration
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      responses:
+        "200":
+          description: OK
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Delete an Integration
+      tags:
+      - tessell-integration
+      x-accepts: application/json
+    get:
+      operationId: getIntegrationById
+      parameters:
+      - description: ID of an Integration
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellIntegrationDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get active Integration Details by Id
+      tags:
+      - tessell-integration
+      x-accepts: application/json
+  /integrations/governance/{id}/{action}:
+    patch:
+      operationId: updateIntegration
+      parameters:
+      - description: ID of an Integration
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Update the integration maturity status as "publish" and "unpublish"
+        explode: false
+        in: path
+        name: action
+        required: true
+        schema:
+          maxLength: 16
+          minLength: 1
+          type: string
+        style: simple
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Update an Integration
+      tags:
+      - tessell-integration
+      x-accepts: application/json
+  /tessell-ops/integrations/{id}:
+    get:
+      operationId: getIntegrationByIdOps
+      parameters:
+      - description: id
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellIntegrationDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get Integration by ID
+      tags:
+      - tessell-integration
+      x-accepts: application/json
+  /integrations/governance/{id}/acls:
+    delete:
+      operationId: revokeIntegrationAcls
+      parameters:
+      - description: ID of an Integration
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AclRevokePayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Revoke access of given users on an Integration
+      tags:
+      - tessell-integration
+      x-contentType: application/json
+      x-accepts: application/json
+    patch:
+      operationId: createIntegrationAcls
+      parameters:
+      - description: ID of an Integration
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AclPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AclPayload'
+          description: OK
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Create/Update ACLs of an Integration
+      tags:
+      - tessell-integration
+      x-contentType: application/json
+      x-accepts: application/json
+  /integrations/governance/{id}/acls/eligible-users:
+    get:
+      operationId: getEligibleUsersForIntegration
+      parameters:
+      - description: ID of an Integration
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Name of roles
+        explode: true
+        in: query
+        name: role
+        required: false
+        schema:
+          items:
+            maxLength: 64
+            minLength: 1
+            type: string
+          maxItems: 10
+          type: array
+        style: form
+      - description: Id of the Tenant
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AclEligibleUser'
+                type: array
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get a list of all users along with role they are eligible on an Integration
+      tags:
+      - tessell-integration
+      x-accepts: application/json
+components:
+  schemas:
+    TessellIntegrationTypeListResponse:
+      allOf:
+      - $ref: '#/components/schemas/apiResponse'
+      example:
+        response:
+        - owner: owner
+          metadata:
+            supportedEngineTypes:
+            - {}
+            - {}
+          dateCreated: 2000-01-23T04:56:07.000+00:00
+          name: name
+          multiple: true
+          description: description
+          dateModified: 2000-01-23T04:56:07.000+00:00
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - owner: owner
+          metadata:
+            supportedEngineTypes:
+            - {}
+            - {}
+          dateCreated: 2000-01-23T04:56:07.000+00:00
+          name: name
+          multiple: true
+          description: description
+          dateModified: 2000-01-23T04:56:07.000+00:00
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        response:
+          items:
+            $ref: '#/components/schemas/TessellIntegrationTypeDTO'
+          type: array
+      title: TessellIntegrationTypeListResponse
+      type: object
+    TessellIntegrationListResponse:
+      allOf:
+      - $ref: '#/components/schemas/apiResponse'
+      example:
+        response:
+        - owner: owner
+          metadata:
+            sumologic:
+              site: site
+              apiKey: apiKey
+            oem:
+              oemUploadPort: 0
+              sysmanPassword: sysmanPassword
+              oemConsolePort: 1
+              ip: ip
+              serverName: serverName
+              agentPort: 6
+              agentPassword: agentPassword
+            cloudwatchMetrics:
+              cloudwatchNamespace: cloudwatchNamespace
+              awsToken: awsToken
+              awsSecret: awsSecret
+            datadog:
+              site: site
+              apiKey: apiKey
+            splunk:
+              hostname: hostname
+              apiToken: apiToken
+              port: 5
+              index: index
+            qualys:
+              serverUri: https://openapi-generator.tech
+              customerId: customerId
+              activationId: activationId
+            newrelic:
+              apiKey: apiKey
+          description: Integration for Monitoring
+          dateModified: 2000-01-23T04:56:07.000+00:00
+          sharedWith:
+            users:
+            - role: role
+              emailId: emailId
+            - role: role
+              emailId: emailId
+          integrationTypeMetadata:
+            supportedEngineTypes:
+            - {}
+            - {}
+          dateCreated: 2000-01-23T04:56:07.000+00:00
+          loggedInUserRole: loggedInUserRole
+          name: Datadog Integration
+          tenantId: tenantId
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - owner: owner
+          metadata:
+            sumologic:
+              site: site
+              apiKey: apiKey
+            oem:
+              oemUploadPort: 0
+              sysmanPassword: sysmanPassword
+              oemConsolePort: 1
+              ip: ip
+              serverName: serverName
+              agentPort: 6
+              agentPassword: agentPassword
+            cloudwatchMetrics:
+              cloudwatchNamespace: cloudwatchNamespace
+              awsToken: awsToken
+              awsSecret: awsSecret
+            datadog:
+              site: site
+              apiKey: apiKey
+            splunk:
+              hostname: hostname
+              apiToken: apiToken
+              port: 5
+              index: index
+            qualys:
+              serverUri: https://openapi-generator.tech
+              customerId: customerId
+              activationId: activationId
+            newrelic:
+              apiKey: apiKey
+          description: Integration for Monitoring
+          dateModified: 2000-01-23T04:56:07.000+00:00
+          sharedWith:
+            users:
+            - role: role
+              emailId: emailId
+            - role: role
+              emailId: emailId
+          integrationTypeMetadata:
+            supportedEngineTypes:
+            - {}
+            - {}
+          dateCreated: 2000-01-23T04:56:07.000+00:00
+          loggedInUserRole: loggedInUserRole
+          name: Datadog Integration
+          tenantId: tenantId
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        response:
+          items:
+            $ref: '#/components/schemas/TessellIntegrationDTO'
+          type: array
+      title: TessellIntegrationListResponse
+      type: object
+    TessellIntegrationMetadata:
+      example:
+        sumologic:
+          site: site
+          apiKey: apiKey
+        oem:
+          oemUploadPort: 0
+          sysmanPassword: sysmanPassword
+          oemConsolePort: 1
+          ip: ip
+          serverName: serverName
+          agentPort: 6
+          agentPassword: agentPassword
+        cloudwatchMetrics:
+          cloudwatchNamespace: cloudwatchNamespace
+          awsToken: awsToken
+          awsSecret: awsSecret
+        datadog:
+          site: site
+          apiKey: apiKey
+        splunk:
+          hostname: hostname
+          apiToken: apiToken
+          port: 5
+          index: index
+        qualys:
+          serverUri: https://openapi-generator.tech
+          customerId: customerId
+          activationId: activationId
+        newrelic:
+          apiKey: apiKey
+      properties:
+        cloudwatchMetrics:
+          $ref: '#/components/schemas/TessellIntegrationCloudwatchMetrics'
+        datadog:
+          $ref: '#/components/schemas/TessellIntegrationDatadog'
+        sumologic:
+          $ref: '#/components/schemas/TessellIntegrationSumologic'
+        newrelic:
+          $ref: '#/components/schemas/TessellIntegrationNewRelic'
+        qualys:
+          $ref: '#/components/schemas/TessellIntegrationQualys'
+        oem:
+          $ref: '#/components/schemas/TessellIntegrationOEM'
+        splunk:
+          $ref: '#/components/schemas/TessellIntegrationSplunk'
+      title: IntegrationMetadata
+      type: object
+    TessellIntegrationTypeDTO:
+      example:
+        owner: owner
+        metadata:
+          supportedEngineTypes:
+          - {}
+          - {}
+        dateCreated: 2000-01-23T04:56:07.000+00:00
+        name: name
+        multiple: true
+        description: description
+        dateModified: 2000-01-23T04:56:07.000+00:00
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        id:
+          format: uuid
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+        owner:
+          type: string
+        integrationType:
+          $ref: '#/components/schemas/TessellIntegrationType'
+        multiple:
+          type: boolean
+        maturityStatus:
+          $ref: '#/components/schemas/TessellIntegrationTypeMaturityStatus'
+        metadata:
+          $ref: '#/components/schemas/IntegrationTypeMetadata'
+      title: TessellIntegrationTypeDTO
+      type: object
+    TessellIntegrationDTO:
+      example:
+        owner: owner
+        metadata:
+          sumologic:
+            site: site
+            apiKey: apiKey
+          oem:
+            oemUploadPort: 0
+            sysmanPassword: sysmanPassword
+            oemConsolePort: 1
+            ip: ip
+            serverName: serverName
+            agentPort: 6
+            agentPassword: agentPassword
+          cloudwatchMetrics:
+            cloudwatchNamespace: cloudwatchNamespace
+            awsToken: awsToken
+            awsSecret: awsSecret
+          datadog:
+            site: site
+            apiKey: apiKey
+          splunk:
+            hostname: hostname
+            apiToken: apiToken
+            port: 5
+            index: index
+          qualys:
+            serverUri: https://openapi-generator.tech
+            customerId: customerId
+            activationId: activationId
+          newrelic:
+            apiKey: apiKey
+        description: Integration for Monitoring
+        dateModified: 2000-01-23T04:56:07.000+00:00
+        sharedWith:
+          users:
+          - role: role
+            emailId: emailId
+          - role: role
+            emailId: emailId
+        integrationTypeMetadata:
+          supportedEngineTypes:
+          - {}
+          - {}
+        dateCreated: 2000-01-23T04:56:07.000+00:00
+        loggedInUserRole: loggedInUserRole
+        name: Datadog Integration
+        tenantId: tenantId
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        id:
+          format: uuid
+          type: string
+        name:
+          description: Name of an Integration
+          example: Datadog Integration
+          maxLength: 32
+          minLength: 1
+          type: string
+        description:
+          description: Description of an Integration
+          example: Integration for Monitoring
+          maxLength: 64
+          minLength: 1
+          type: string
+        tenantId:
+          description: Tenant Id
+          maxLength: 128
+          minLength: 1
+          type: string
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+        owner:
+          maxLength: 128
+          minLength: 1
+          type: string
+        loggedInUserRole:
+          maxLength: 128
+          minLength: 1
+          type: string
+        sharedWith:
+          $ref: '#/components/schemas/EntityAclSharingInfo'
+        integrationType:
+          $ref: '#/components/schemas/TessellIntegrationType'
+        status:
+          $ref: '#/components/schemas/TessellIntegrationStatus'
+        maturityStatus:
+          $ref: '#/components/schemas/TessellIntegrationMaturityStatus'
+        metadata:
+          $ref: '#/components/schemas/TessellIntegrationMetadata'
+        integrationTypeMetadata:
+          $ref: '#/components/schemas/IntegrationTypeMetadata'
+      required:
+      - integrationType
+      - metadata
+      - name
+      title: TessellIntegrationDTO
+      type: object
+    TessellIntegrationCloudwatchMetrics:
+      example:
+        cloudwatchNamespace: cloudwatchNamespace
+        awsToken: awsToken
+        awsSecret: awsSecret
+      properties:
+        cloudwatchNamespace:
+          maxLength: 256
+          minLength: 1
+          type: string
+        awsToken:
+          maxLength: 1000
+          minLength: 1
+          type: string
+        awsSecret:
+          maxLength: 1000
+          minLength: 1
+          type: string
+      required:
+      - awsSecret
+      - awsToken
+      - cloudwatchNamespace
+      title: TessellIntegrationCloudwatchMetrics
+      type: object
+    TessellIntegrationDatadog:
+      example:
+        site: site
+        apiKey: apiKey
+      properties:
+        apiKey:
+          maxLength: 128
+          minLength: 1
+          type: string
+        site:
+          maxLength: 128
+          minLength: 1
+          type: string
+      required:
+      - apiKey
+      - site
+      title: TessellIntegrationDatadog
+      type: object
+    TessellIntegrationSplunk:
+      example:
+        hostname: hostname
+        apiToken: apiToken
+        port: 5
+        index: index
+      properties:
+        hostname:
+          maxLength: 128
+          minLength: 1
+          type: string
+        port:
+          description: server port for splunk
+          format: int32
+          type: integer
+        apiToken:
+          maxLength: 128
+          minLength: 1
+          type: string
+        index:
+          maxLength: 128
+          minLength: 1
+          type: string
+        serverType:
+          $ref: '#/components/schemas/TessellIntegrationSplunkServerType'
+      required:
+      - hostname
+      - port
+      - serverType
+      title: TessellIntegrationSplunk
+      type: object
+    TessellIntegrationSumologic:
+      example:
+        site: site
+        apiKey: apiKey
+      properties:
+        apiKey:
+          maxLength: 128
+          minLength: 1
+          type: string
+        site:
+          maxLength: 128
+          minLength: 1
+          type: string
+      required:
+      - apiKey
+      - site
+      title: TessellIntegrationSumologic
+      type: object
+    TessellIntegrationNewRelic:
+      example:
+        apiKey: apiKey
+      properties:
+        apiKey:
+          maxLength: 128
+          minLength: 1
+          type: string
+      required:
+      - apiKey
+      title: TessellIntegrationNewRelic
+      type: object
+    TessellIntegrationQualys:
+      example:
+        serverUri: https://openapi-generator.tech
+        customerId: customerId
+        activationId: activationId
+      properties:
+        customerId:
+          maxLength: 128
+          minLength: 1
+          type: string
+        activationId:
+          maxLength: 128
+          minLength: 1
+          type: string
+        serverUri:
+          format: uri
+          type: string
+      required:
+      - activationId
+      - customerId
+      - serverUri
+      title: TessellIntegrationQualys
+      type: object
+    TessellIntegrationOEM:
+      example:
+        oemUploadPort: 0
+        sysmanPassword: sysmanPassword
+        oemConsolePort: 1
+        ip: ip
+        serverName: serverName
+        agentPort: 6
+        agentPassword: agentPassword
+      properties:
+        serverName:
+          maxLength: 128
+          minLength: 1
+          type: string
+        ip:
+          format: ip4
+          type: string
+        agentPassword:
+          description: Agent registration password.
+          maxLength: 256
+          minLength: 1
+          type: string
+        sysmanPassword:
+          description: OEM sysman password.
+          maxLength: 256
+          minLength: 1
+          type: string
+        oemUploadPort:
+          description: Port for agent to upload the data.
+          format: int32
+          type: integer
+        agentPort:
+          description: Port for installation and other communication.
+          format: int32
+          type: integer
+        oemConsolePort:
+          description: OEM console port
+          format: int32
+          type: integer
+      required:
+      - agentPassword
+      - agentPort
+      - ip
+      - oemConsolePort
+      - oemUploadPort
+      - serverName
+      - sysmanPassword
+      title: TessellIntegrationOEM
+      type: object
+    TessellIntegrationType:
+      description: Tessell supported Integration types
+      enum:
+      - DATADOG
+      - SUMOLOGIC
+      - NEWRELIC
+      - QUALYS
+      - OEM
+      - SPLUNK
+      type: string
+    TessellIntegrationTypeMaturityStatus:
+      description: Tessell Integration type maturity statuses
+      enum:
+      - PUBLISHED
+      - UNPUBLISHED
+      type: string
+    TessellIntegrationMaturityStatus:
+      description: Tessell Integration maturity statuses
+      enum:
+      - PUBLISHED
+      - UNPUBLISHED
+      - DRAFT
+      type: string
+    TessellIntegrationStatus:
+      description: Tessell Integration statuses
+      enum:
+      - ACTIVE
+      - DELETING
+      - DELETED
+      type: string
+    TessellIntegrationSplunkServerType:
+      description: Server types for splunk
+      enum:
+      - SPLUNK_RECEIVER
+      - DEPLOYMENT_SERVER
+      type: string
+    IntegrationTypeMetadata:
+      description: Metadata for integration type
+      example:
+        supportedEngineTypes:
+        - {}
+        - {}
+      properties:
+        supportedEngineTypes:
+          items:
+            $ref: '#/components/schemas/IntegrationTypeMetadata_supportedEngineTypes'
+          type: array
+      title: IntegrationTypeMetadata
+      type: object
+    ApiError:
+      description: Common error response object for non 2xx responses
+      properties:
+        code:
+          description: Status code for the error response
+          type: string
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        defaultCodeSet:
+          type: boolean
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    ApiErrorDetails:
+      description: Common API exception details
+      properties:
+        resolution:
+          description: Resolution detail for API exception
+          type: string
+      type: object
+    apiStatus:
+      example:
+        message: message
+        status: status
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+      title: apiStatus
+      type: object
+    ApiErrorOps:
+      description: Common error response object for non 2xx responses of internal
+        or ops APIs
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/TessellErrorCode'
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        serviceException:
+          $ref: '#/components/schemas/ApiError'
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    TessellErrorCode:
+      description: Error code object for API Exceptions
+      properties:
+        httpErrorCode:
+          description: Standard http error code
+          type: string
+        serviceCode:
+          description: Service error code
+          type: string
+        opCode:
+          description: Operation error code
+          type: string
+        description:
+          description: Error code description
+          type: string
+      type: object
+    AclRevokePayload:
+      description: Payload to revoke Tessell ACLs
+      properties:
+        users:
+          description: List of users to be deleted
+          items:
+            maxLength: 256
+            minLength: 1
+            type: string
+          maxItems: 100
+          minItems: 1
+          type: array
+      required:
+      - users
+      title: AclRevokePayload
+    AclPayload:
+      description: Payload to create an entity ACL
+      example:
+        users:
+        - role: role
+          emailId: emailId
+        - role: role
+          emailId: emailId
+        - role: role
+          emailId: emailId
+        - role: role
+          emailId: emailId
+        - role: role
+          emailId: emailId
+      properties:
+        users:
+          items:
+            $ref: '#/components/schemas/AclUserPayload'
+          maxItems: 100
+          minItems: 1
+          type: array
+      required:
+      - users
+      title: AclPayload
+    AclUserPayload:
+      description: Payload to create an user's entity ACL
+      example:
+        role: role
+        emailId: emailId
+      properties:
+        emailId:
+          description: Email id of the user
+          maxLength: 256
+          minLength: 1
+          type: string
+        role:
+          description: Role Info
+          maxLength: 64
+          minLength: 1
+          type: string
+      required:
+      - emailId
+      - role
+      title: AclUserPayload
+    AclEligibleUser:
+      description: Eligible user for sharing the entity
+      example:
+        firstName: firstName
+        lastName: lastName
+        eligibleRoles:
+        - eligibleRoles
+        - eligibleRoles
+        emailId: emailId
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        emailId:
+          type: string
+        eligibleRoles:
+          items:
+            type: string
+          type: array
+      title: AclEligibleUser
+    apiResponse:
+      example:
+        metadata:
+          pagination:
+            pageOffset: 0
+            pageSize: 6
+          records: 1
+          timeZone: timeZone
+        response: '{}'
+      properties:
+        metadata:
+          $ref: '#/components/schemas/apiMetadata'
+        response:
+          type: object
+      title: ApiResponse
+      type: object
+    apiMetadata:
+      properties:
+        timeZone:
+          type: string
+        records:
+          format: int32
+          type: integer
+        pagination:
+          $ref: '#/components/schemas/apiPaginationInfo'
+      title: apiMetadata
+      type: object
+    apiPaginationInfo:
+      properties:
+        pageSize:
+          format: int32
+          type: integer
+        pageOffset:
+          format: int32
+          type: integer
+      title: apiPaginationInfo
+      type: object
+    EntityAclSharingInfo:
+      description: Tessell Entity ACL Sharing Info
+      example:
+        users:
+        - role: role
+          emailId: emailId
+        - role: role
+          emailId: emailId
+      properties:
+        users:
+          items:
+            $ref: '#/components/schemas/EntityUserAclSharingInfo'
+          type: array
+      title: EntityAclSharingInfo
+    EntityUserAclSharingInfo:
+      description: Tessell Entity ACL Sharing Info for a user
+      example:
+        role: role
+        emailId: emailId
+      properties:
+        emailId:
+          type: string
+        role:
+          type: string
+      title: EntityUserAclSharingInfo
+    databaseEngineType:
+      description: Database Engine Type
+      enum:
+      - ORACLE
+      - POSTGRESQL
+      - SQLSERVER
+      - MYSQL
+      - APACHE_KAFKA
+      - MONGODB
+      - MILVUS
+      type: string
+    IntegrationTypeMetadata_supportedEngineTypes:
+      example: {}
+      properties:
+        engineType:
+          $ref: '#/components/schemas/databaseEngineType'
+      type: object
+

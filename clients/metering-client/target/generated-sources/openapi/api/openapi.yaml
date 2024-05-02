@@ -1,0 +1,1665 @@
+openapi: 3.0.0
+info:
+  description: Metering API
+  title: Tessell Metering Service API
+  version: v1beta
+servers:
+- url: http://tessell-metering:8080
+  variables:
+    serviceName:
+      default: metering
+      description: Tessell Metering
+paths:
+  /billing/meters:
+    get:
+      description: Get all hourly/daily/weekly/monthly Meters that include all usage
+        and cost related details till date.
+      operationId: getMeteringData
+      parameters:
+      - description: The subscription name in the tenant
+        explode: true
+        in: query
+        name: subscription-name
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: cloud-type
+        required: false
+        schema:
+          $ref: '#/components/schemas/CloudType'
+        style: form
+      - explode: true
+        in: query
+        name: engine
+        required: false
+        schema:
+          $ref: '#/components/schemas/databaseEngineType'
+        style: form
+      - description: The User Name
+        explode: true
+        in: query
+        name: user-name
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The timestamp of the start date of the meter
+        explode: true
+        in: query
+        name: start-date
+        required: false
+        schema:
+          format: string
+          type: number
+        style: form
+      - description: The timestamp of the end date of the meter
+        explode: true
+        in: query
+        name: end-date
+        required: false
+        schema:
+          format: string
+          type: number
+        style: form
+      - description: The Entity Type
+        explode: true
+        in: query
+        name: entity-type
+        required: false
+        schema:
+          $ref: '#/components/schemas/TessellMeteringEntityType'
+        style: form
+      - description: The name of the entity. Entity name will be compute resource
+          name when entity type is COMPUTE_RESOURCE, backup name in case of BACKUP
+          and am name in case of LOGS.
+        explode: true
+        in: query
+        name: entity-name
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The compute shape of a database
+        explode: true
+        in: query
+        name: compute-shape
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The name of the service
+        explode: true
+        in: query
+        name: service-name
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The name of the availability machine
+        explode: true
+        in: query
+        name: availability-machine-name
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: duration
+        required: false
+        schema:
+          $ref: '#/components/schemas/MeterDuration'
+        style: form
+      - description: Whether or not to include backup and logs information along with
+          AM.
+        explode: true
+        in: query
+        name: am-details
+        required: false
+        schema:
+          type: boolean
+        style: form
+      - description: The id of the service
+        explode: true
+        in: query
+        name: service-id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: form
+      - description: The id of the availability machine
+        explode: true
+        in: query
+        name: availability-machine-id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: form
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TessellMeterDTO'
+                type: array
+          description: The list of Meter objects
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      x-accepts: application/json
+  /tessell-ops/meters/hourly:
+    post:
+      description: Start hourly metering job
+      operationId: hourlyMeter
+      responses:
+        "200":
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      x-accepts: application/json
+  /tessell-ops/meters/daily:
+    post:
+      description: Start daily meter aggregator job
+      operationId: dailyAggregator
+      responses:
+        "200":
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      x-accepts: application/json
+  /tessell-ops/meters/monthly:
+    post:
+      description: Start monthly meter aggregator job
+      operationId: monthlyAggregator
+      responses:
+        "200":
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      x-accepts: application/json
+  /tessell-ops/billing/monthly:
+    post:
+      description: Start monthly billing job
+      operationId: monthlyBilling
+      responses:
+        "200":
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      x-accepts: application/json
+  /billing/bills:
+    get:
+      description: Get all the Bills
+      operationId: getBills
+      parameters:
+      - description: The Name of the Bill
+        explode: true
+        in: query
+        name: name
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The timestamp of the start date of the meter
+        explode: true
+        in: query
+        name: start-date
+        required: false
+        schema:
+          format: string
+          type: number
+        style: form
+      - description: The timestamp of the end date of the meter
+        explode: true
+        in: query
+        name: end-date
+        required: false
+        schema:
+          format: string
+          type: number
+        style: form
+      - description: Whether the bill is system generated.
+        explode: true
+        in: query
+        name: system-generated
+        required: false
+        schema:
+          type: boolean
+        style: form
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TessellBillDTO'
+                type: array
+          description: List of Bills
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      x-accepts: application/json
+    post:
+      description: Generate a bill based on the meters present for a provided start-date
+        and end-date,
+      operationId: generateBill
+      parameters:
+      - description: The timestamp of the start date of the meter
+        explode: true
+        in: query
+        name: start-date
+        required: true
+        schema:
+          format: string
+          type: number
+        style: form
+      - description: The timestamp of the end date of the meter
+        explode: true
+        in: query
+        name: end-date
+        required: true
+        schema:
+          format: string
+          type: number
+        style: form
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: system-generated
+        explode: true
+        in: query
+        name: system-generated
+        required: false
+        schema:
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellBillDTO'
+          description: The Bill Object
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      x-accepts: application/json
+  /billing/rates:
+    get:
+      description: Get Tessell's billing rates for all computes and storage
+      operationId: getRates
+      parameters:
+      - explode: true
+        in: query
+        name: cloud-type
+        required: false
+        schema:
+          $ref: '#/components/schemas/CloudType'
+        style: form
+      - explode: true
+        in: query
+        name: entity-type
+        required: false
+        schema:
+          $ref: '#/components/schemas/TessellBillingEntityType'
+        style: form
+      - explode: true
+        in: query
+        name: entity-name
+        required: false
+        schema:
+          $ref: '#/components/schemas/TessellMeteringRateCardEntityName'
+        style: form
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TessellBillingRateCardDTO'
+                type: array
+          description: The list of Tessell billing rates
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      x-accepts: application/json
+  /tessell-ops/billing/rates:
+    patch:
+      description: Update rate card
+      operationId: updateRates
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/TessellBillingRateCardDTO'
+              type: array
+        description: Update rates
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TessellBillingRateCardDTO'
+                type: array
+          description: Updated rates
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-ops/billing/discounts:
+    get:
+      description: Get tenant discount percentage
+      operationId: getTenantDiscount
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDiscountDTO'
+          description: The list of Tessell billing rates
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      x-accepts: application/json
+    patch:
+      description: Update tenant discount percentage
+      operationId: updateTenantDiscount
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TessellDiscountDTO'
+        description: Update tenant discount percentage
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDiscountDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      x-contentType: application/json
+      x-accepts: application/json
+  /billing/credits:
+    get:
+      description: Get all the tenant's credits provided by the tessell
+      operationId: getCredits
+      parameters:
+      - description: Credit name
+        explode: true
+        in: query
+        name: name
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Credit status
+        explode: true
+        in: query
+        name: status
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Credit type
+        explode: true
+        in: query
+        name: type
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TessellCreditDTO'
+                type: array
+          description: List of Credits
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      x-accepts: application/json
+  /billing/credits/{id}:
+    get:
+      description: Get credit by credit's Id that you want to fetch
+      operationId: getCredit
+      parameters:
+      - description: Credit Id
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellCreditDTO'
+          description: Details of a credit
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      x-accepts: application/json
+  /tessell-ops/billing/credits:
+    get:
+      description: Get a tenant's credits
+      operationId: getCreditsInternal
+      parameters:
+      - description: Credit name
+        explode: true
+        in: query
+        name: name
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Credit status
+        explode: true
+        in: query
+        name: status
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Credit type
+        explode: true
+        in: query
+        name: type
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: tenant-id
+        explode: true
+        in: query
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TessellCreditDTO'
+                type: array
+          description: List of Credits
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      x-accepts: application/json
+    post:
+      description: Add a new credit entry
+      operationId: createCredit
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TessellCreditDTO'
+        description: Add new credit entry
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellCreditDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-ops/billing/credits/{id}:
+    delete:
+      description: Mark a credit as deleted
+      operationId: deleteCredit
+      parameters:
+      - description: Credit id
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      x-accepts: application/json
+    patch:
+      description: Update credit entry
+      operationId: updateCreditEntity
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Credit Id
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TessellCreditDTO'
+        description: Update credit entry
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellCreditDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-ops/billing/invoices:
+    patch:
+      description: Update tenant invoice config
+      operationId: updateTenantInvoiceConfig
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TessellInvoiceConfigDTO'
+        description: Update tenant invoice config
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellInvoiceConfigDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      x-contentType: application/json
+      x-accepts: application/json
+  /billing/summary:
+    get:
+      description: Get billing summary for a tenant
+      operationId: getBillingSummary
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellBillSummaryDTO'
+          description: Billing configuration details of this tenant
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      x-accepts: application/json
+  /tessell-ops/billing/notification:
+    post:
+      description: send notification to recipients
+      operationId: sendInvoiceNotification
+      responses:
+        "200":
+          description: successfully sent the notification
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      x-accepts: application/json
+  /billing/profile:
+    get:
+      description: Returns the details of the Billing profile that include billing
+        address and payment details
+      operationId: getBillingProfile
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TessellBillingProfileDTO'
+                type: array
+          description: The list of all billing Profiles
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      x-accepts: application/json
+    patch:
+      description: Update Billing profile that include billing address and payment
+        details
+      operationId: updateBillingProfile
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TessellBillingProfileDTO'
+        description: Update billing profile entry
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellBillingProfileDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-ops/billing/profile:
+    patch:
+      description: Update billing profile internal
+      operationId: updateProfileInternal
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TessellBillingProfileDTO'
+        description: Update billing profile entry
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellBillingProfileDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-ops/billing/credit-check:
+    post:
+      description: check if we allow provision .
+      operationId: checkCredits
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellCheckCreditsDTO'
+          description: The list of all billing Profiles
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      x-accepts: application/json
+  /tessell-ops/billing/disable/{disable}:
+    patch:
+      description: update the skip bill generation i.e toggle skip bill generation
+      operationId: changeSkipBillGeneration
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: boolean value of enable/disable
+        explode: false
+        in: path
+        name: disable
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      x-accepts: application/json
+  /billing/cost-till-date:
+    get:
+      description: Returns the meter cost for this month.
+      operationId: getCostTillDate
+      parameters:
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellMonthlyCostInfoDTO'
+          description: meter cost for this month
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      x-accepts: application/json
+components:
+  schemas:
+    TessellMeterDTO:
+      description: This is a definition for Tessell Meter
+      example:
+        computeShape: computeShape
+        usageUnit: usageUnit
+        metadata: '{}'
+        internal: true
+        cost: 6.027456183070403
+        objectStorePath: objectStorePath
+        usage: 0.8008281904610115
+        discount: 1.4658129805029452
+        amDetails:
+        - usageUnit: usageUnit
+          meterHours: 2
+          dateCreated: 2000-01-23T04:56:07.000+00:00
+          usage: 5.637376656633329
+          entityId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          region: region
+          userName: userName
+        - usageUnit: usageUnit
+          meterHours: 2
+          dateCreated: 2000-01-23T04:56:07.000+00:00
+          usage: 5.637376656633329
+          entityId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          region: region
+          userName: userName
+        entityId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        userName: userName
+        availabilityMachineId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        meterHours: 5
+        subscriptionName: subscriptionName
+        region: region
+      properties:
+        subscriptionName:
+          description: The subscription Name of the tenant
+          type: string
+        entityId:
+          description: The entity Id
+          format: uuid
+          type: string
+        entityType:
+          $ref: '#/components/schemas/TessellMeteringEntityType'
+        availabilityMachineId:
+          description: The Availability machine Id
+          format: uuid
+          type: string
+        computeShape:
+          description: The compute shape of the entity
+          type: string
+        objectStorePath:
+          description: The storage path of the resource
+          type: string
+        engineType:
+          $ref: '#/components/schemas/databaseEngineType'
+        cloudType:
+          $ref: '#/components/schemas/CloudType'
+        region:
+          description: The region of the resource
+          type: string
+        userName:
+          description: The User Name
+          type: string
+        usage:
+          description: The usage for the duration of the meter
+          format: double
+          type: number
+        usageUnit:
+          description: The units of the usage
+          type: string
+        cost:
+          description: The cost incurred for the duration of the meter
+          format: double
+          type: number
+        discount:
+          description: The discount applied to this entity for the duration of the
+            meter
+          format: double
+          type: number
+        meterHours:
+          description: The number of hours that were involved in the meter
+          type: integer
+        metadata:
+          description: Meter metadata
+          type: object
+        internal:
+          description: Whether the entity is for Tessell's internal purpose
+          type: boolean
+        amDetails:
+          description: The details of backups and logs in the AM
+          items:
+            $ref: '#/components/schemas/AMResourceInfo'
+          type: array
+      title: Meter Object
+      type: object
+    TessellBillDTO:
+      description: This is a definition for Tessell Bill
+      example:
+        amountDue: 5.962133916683182
+        metadata: '{}'
+        endDate: 2000-01-23T04:56:07.000+00:00
+        billPdf: billPdf
+        totalCharges: 0.8008281904610115
+        discount: 6.027456183070403
+        bucketPath: bucketPath
+        credit: 1.4658129805029452
+        startDate: 2000-01-23T04:56:07.000+00:00
+      properties:
+        startDate:
+          description: The start date from when this bill is applicable
+          format: date-time
+          type: string
+        endDate:
+          description: The start date from when this bill is applicable
+          format: date-time
+          type: string
+        billPdf:
+          description: The link to the bill pdf
+          type: string
+        totalCharges:
+          description: The total charges incurred during this billing period
+          format: double
+          type: number
+        discount:
+          description: The discount applicable during this bill period
+          format: double
+          type: number
+        credit:
+          description: Credit amount applied during this bill period
+          format: double
+          type: number
+        amountDue:
+          description: The amount due in dollars for this billing period
+          format: double
+          type: number
+        bucketPath:
+          description: The path to S3 bucket containing the bill
+          type: string
+        metadata:
+          description: Bill metadata
+          type: object
+        duration:
+          $ref: '#/components/schemas/TessellBillDuration'
+      title: Bill Object
+      type: object
+    TessellBillingRateCardDTO:
+      description: This is a definition for Tessell billing rate card
+      example:
+        usageUnit: usageUnit
+        costPerUnitBYOC: 6.027456183070403
+        entityName: entityName
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        costPerUnit: 0.8008281904610115
+      properties:
+        id:
+          description: Id of entity
+          format: uuid
+          type: string
+        entityName:
+          description: The entity Name
+          type: string
+        entityType:
+          $ref: '#/components/schemas/TessellBillingEntityType'
+        cloudType:
+          $ref: '#/components/schemas/CloudType'
+        costPerUnit:
+          description: The cost of each unit of billable entity for shared asset accounts
+          format: double
+          type: number
+        costPerUnitBYOC:
+          description: The cost of each unit of billable entity for BYOC asset accounts
+          format: double
+          type: number
+        usageUnit:
+          description: The units of the usage
+          type: string
+      title: Rate Card Object
+      type: object
+    TessellDiscountDTO:
+      description: This is a definition for Tessell discount object
+      example:
+        discountPercentage: 8.008282
+        skipBillGeneration: false
+        endDate: 2000-01-23T04:56:07.000+00:00
+        effectiveStartDate: 2000-01-23T04:56:07.000+00:00
+      properties:
+        discountPercentage:
+          description: Discount percentage for the tenant
+          format: float
+          maximum: 100
+          minimum: 0
+          type: number
+        effectiveStartDate:
+          description: Date when the discount rate becomes effective
+          format: date-time
+          type: string
+        endDate:
+          description: Date when the discount rate ends
+          format: date-time
+          type: string
+        skipBillGeneration:
+          default: false
+          description: Skip bill and invoice generation for tenant if set
+          type: boolean
+      title: Discount Object
+      type: object
+    TessellCreditDTO:
+      description: This is a definition for Tessell credits object
+      example:
+        expiryDate: 2000-01-23T04:56:07.000+00:00
+        amount: 0.8008281904610115
+        metadata: '{}'
+        dateCreated: 2000-01-23T04:56:07.000+00:00
+        balance: 6.027456183070403
+        hideBillingCreditsUnit: true
+        name: name
+        tenantId: tenantId
+        dateModified: 2000-01-23T04:56:07.000+00:00
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        id:
+          description: Id of credit entity
+          format: uuid
+          type: string
+        name:
+          description: Credit Name
+          type: string
+        dateCreated:
+          description: Credit creation timestamp
+          format: date-time
+          type: string
+        dateModified:
+          description: Credit modification timestamp
+          format: date-time
+          type: string
+        expiryDate:
+          description: Credit expiry date
+          format: date-time
+          type: string
+        amount:
+          description: Total credit amount
+          format: double
+          type: number
+        hideBillingCreditsUnit:
+          description: if want to hide the credit unit
+          type: boolean
+        balance:
+          description: Credit balance
+          format: double
+          type: number
+        tenantId:
+          description: Tenant this credit belongs to
+          type: string
+        status:
+          $ref: '#/components/schemas/TessellCreditStatus'
+        type:
+          $ref: '#/components/schemas/TessellCreditType'
+        metadata:
+          description: Credit metadata
+          type: object
+      title: Credit Object
+      type: object
+    TessellCheckCreditsDTO:
+      description: check credit
+      example:
+        allowed: true
+        message: message
+      properties:
+        allowed:
+          description: if we can provision the DB
+          type: boolean
+        message:
+          description: message to give customer
+          type: string
+      title: check credit
+      type: object
+    TessellCreditSummaryDTO:
+      description: Billing configuration for tenant
+      example:
+        amount: 0.8008281904610115
+        balance: 6.027456183070403
+        activeCredits: 1
+      properties:
+        amount:
+          description: Total credit amount
+          format: double
+          type: number
+        balance:
+          description: Total credit balance
+          format: double
+          type: number
+        activeCredits:
+          description: The number of hours that were involved in the meter
+          type: integer
+      title: Billing configuration for tenant
+      type: object
+    TessellBillSummaryDTO:
+      description: Billing configuration for tenant
+      example:
+        serviceEnabled: true
+        discount:
+          discountPercentage: 8.008282
+          skipBillGeneration: false
+          endDate: 2000-01-23T04:56:07.000+00:00
+          effectiveStartDate: 2000-01-23T04:56:07.000+00:00
+        invoice:
+          finalizeInvoice: true
+        credit:
+          amount: 0.8008281904610115
+          balance: 6.027456183070403
+          activeCredits: 1
+        validPaymentMethod: true
+      properties:
+        serviceEnabled:
+          description: Indicates if Tessell service is enabled for this tenant
+          type: boolean
+        validPaymentMethod:
+          description: Indicates weather the customer has configured a valid bill
+            payment method with Tessell
+          type: boolean
+        discount:
+          $ref: '#/components/schemas/TessellDiscountDTO'
+        credit:
+          $ref: '#/components/schemas/TessellCreditSummaryDTO'
+        invoice:
+          $ref: '#/components/schemas/TessellInvoiceConfigDTO'
+      title: Billing configuration for tenant
+      type: object
+    TessellInvoiceConfigDTO:
+      description: Tessell Invoice properties
+      example:
+        finalizeInvoice: true
+      properties:
+        finalizeInvoice:
+          description: Indicates if the tenant's invoice should be finalized or kept
+            in draft state
+          type: boolean
+      title: Tessell Invoice properties
+      type: object
+    TessellBillingProfileDTO:
+      description: This is a definition for Tessell Billing Profile
+      example:
+        emailLists:
+        - emailLists
+        - emailLists
+        address:
+          country: country
+          zipCode: zipCode
+          city: city
+          addressLine1: addressLine1
+          addressLine2: addressLine2
+          state: state
+        companyName: companyName
+        name: name
+        tenantId: tenantId
+        description: description
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        id:
+          description: The id for which the Billing profile should be created
+          format: uuid
+          type: string
+        name:
+          description: The name of the billing profile
+          type: string
+        companyName:
+          description: The company name of customer in billing profile
+          type: string
+        emailLists:
+          description: The list of all emails where invoice need to send
+          items:
+            type: string
+          type: array
+        description:
+          description: The description of the billing profile
+          type: string
+        tenantId:
+          description: Tenant this billing profile belongs to
+          type: string
+        address:
+          $ref: '#/components/schemas/TessellCustomerBillingProfileAddress'
+      title: Billing Profile
+      type: object
+    TessellCustomerBillingProfileAddress:
+      description: This is a definition for customer address in billing profile
+      example:
+        country: country
+        zipCode: zipCode
+        city: city
+        addressLine1: addressLine1
+        addressLine2: addressLine2
+        state: state
+      properties:
+        city:
+          description: city of customer
+          type: string
+        country:
+          description: country of customer
+          type: string
+        state:
+          description: state of customer
+          type: string
+        addressLine1:
+          description: addressLine1 of customer
+          type: string
+        addressLine2:
+          description: addressLine2 of customer
+          type: string
+        zipCode:
+          description: zipCode of customer
+          type: string
+      title: customer address
+      type: object
+    AMResourceInfo:
+      description: This is a definition for resources in AM
+      example:
+        usageUnit: usageUnit
+        meterHours: 2
+        dateCreated: 2000-01-23T04:56:07.000+00:00
+        usage: 5.637376656633329
+        entityId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        region: region
+        userName: userName
+      properties:
+        entityId:
+          description: The entity Id
+          format: uuid
+          type: string
+        entityType:
+          $ref: '#/components/schemas/TessellMeteringEntityType'
+        cloudType:
+          $ref: '#/components/schemas/CloudType'
+        region:
+          description: The region of the resource
+          type: string
+        userName:
+          description: The User Name
+          type: string
+        usage:
+          description: The usage for the duration of the meter
+          format: double
+          type: number
+        usageUnit:
+          description: The units of the usage
+          type: string
+        meterHours:
+          description: The number of hours that were involved in the meter
+          type: integer
+        dateCreated:
+          description: The date when the entity is created
+          format: date-time
+          type: string
+      title: AM Resource Object
+      type: object
+    TessellMonthlyCostInfoDTO:
+      description: This is a definition for monthly meter cost
+      example:
+        cost: 0.8008281904610115
+        formTime: 2000-01-23T04:56:07.000+00:00
+        toTime: 2000-01-23T04:56:07.000+00:00
+      properties:
+        formTime:
+          description: start date-time of month
+          format: date-time
+          type: string
+        toTime:
+          description: end date-time of month
+          format: date-time
+          type: string
+        cost:
+          description: Meter cost for this month
+          format: double
+          type: number
+      title: Monthly Meter Cost Object
+      type: object
+    TessellMeteringEntityType:
+      description: The type of metering entity
+      enum:
+      - SERVICE
+      - AVAILABILITY_MACHINE
+      - BACKUP
+      - LOGS
+      - BENCHMARK
+      title: Metering Entity Type
+      type: string
+    TessellBillingEntityType:
+      description: The type of billing entity
+      enum:
+      - COMPUTE
+      - STORAGE
+      - NETWORK
+      title: Billing Entity Type
+      type: string
+    CloudType:
+      description: Cloud Type
+      enum:
+      - AWS
+      - AZURE
+      title: Clouds
+      type: string
+    TessellBillDuration:
+      description: Bill Duration Type
+      enum:
+      - HOURLY
+      - MONTHLY
+      - YEARLY
+      title: Bill Duration
+      type: string
+    MeterDuration:
+      description: Meter Duration Type
+      enum:
+      - HOURLY
+      - DAILY
+      - MONTHLY
+      title: Meter Duration
+      type: string
+    TessellMeteringRateCardEntityName:
+      description: Rate card entity name
+      enum:
+      - i3.large
+      - i3en.large
+      - i3.xlarge
+      - i3en.xlarge
+      - i3.2xlarge
+      - i3en.2xlarge
+      - i3en.3xlarge
+      - i3en.4xlarge
+      - i3en.6xlarge
+      - i3en.8xlarge
+      - i3en.16xlarge
+      - i3en.24xlarge
+      - Standard_L8s_v2
+      - Standard_L16s_v2
+      - Standard_L32s_v2
+      - Standard_L48s_v2
+      - Standard_L64s_v2
+      - Standard_L80s_v2
+      - Availability Machine (AWS)
+      - Availability Machine (Azure)
+      title: Billing Rate Card's Entity Name
+      type: string
+    TessellCreditStatus:
+      description: Status of a credit entry
+      enum:
+      - ACTIVE
+      - DELETED
+      - EXPIRED
+      - EXHAUSTED
+      title: Credit Status
+      type: string
+    TessellCreditType:
+      description: Credit entry type
+      enum:
+      - TRIAL
+      - SLA
+      - PURCHASED
+      title: Credit Type
+      type: string
+    databaseEngineType:
+      description: Database Engine Type
+      enum:
+      - ORACLE
+      - POSTGRESQL
+      - SQLSERVER
+      - MYSQL
+      - APACHE_KAFKA
+      - MONGODB
+      - MILVUS
+      type: string
+    ApiError:
+      description: Common error response object for non 2xx responses
+      properties:
+        code:
+          description: Status code for the error response
+          type: string
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        defaultCodeSet:
+          type: boolean
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    ApiErrorDetails:
+      description: Common API exception details
+      properties:
+        resolution:
+          description: Resolution detail for API exception
+          type: string
+      type: object
+    ApiErrorOps:
+      description: Common error response object for non 2xx responses of internal
+        or ops APIs
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/TessellErrorCode'
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        serviceException:
+          $ref: '#/components/schemas/ApiError'
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    TessellErrorCode:
+      description: Error code object for API Exceptions
+      properties:
+        httpErrorCode:
+          description: Standard http error code
+          type: string
+        serviceCode:
+          description: Service error code
+          type: string
+        opCode:
+          description: Operation error code
+          type: string
+        description:
+          description: Error code description
+          type: string
+      type: object
+

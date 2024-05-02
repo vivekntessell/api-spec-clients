@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.tessell</groupId>
+        <artifactId>api-spec-clients</artifactId>
+        <version>local</version>
+    </parent>
+
+    <artifactId>clients</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>ad-client</module>
+        <module>benchmark-client</module>
+        <module>compute-client</module>
+        <module>dbprofile-client</module>
+        <module>dmm-client</module>
+        <module>event-client</module>
+        <module>genie-client</module>
+        <module>governance-client</module>
+        <module>infra-client</module>
+        <module>integrations-client</module>
+        <module>license-client</module>
+        <module>metering-client</module>
+        <module>monitoring-client</module>
+        <module>network-client</module>
+        <module>security-client</module>
+        <module>softwarelib-client</module>
+        <module>tenant-client</module>
+        <module>tessell-gateway-client</module>
+    </modules>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+</project>

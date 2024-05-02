@@ -1,0 +1,982 @@
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+
+  schemas:
+    # enums
+    cloudType:
+      description: Tessell supported cloud types
+      type: string
+      enum:
+        - AWS
+        - AZURE
+        - GCP
+    cloudAccountType:
+      description: Cloud Type
+      type: string
+      enum:
+        - INFRA_SERVICE
+        - TENANT_ASSETS
+        - INFRA_SERVICE_GLOBAL
+        - SES
+        - TENANT_ASSETS_GLOBAL
+    cloudAccountManagedType:
+      description: Cloud Account Managed Type
+      type: string
+      enum:
+        - TESSELL_MANAGED_SHARED
+        - TESSELL_MANAGED_DEDICATED
+        - CUSTOMER_MANAGED
+    databaseEngineType:
+      description: Database Engine Type
+      type: string
+      enum:
+        - ORACLE
+        - POSTGRESQL
+        - SQLSERVER
+        - MYSQL
+        - APACHE_KAFKA
+        - MONGODB
+        - MILVUS
+    osType:
+      description: Operating system type
+      type: string
+      enum:
+        - LINUX
+        - WINDOWS
+    tenantInfraDeploymentType:
+      description: Tenant Infra Deployment Type
+      type: string
+      enum:
+        - SHARED_ACCOUNT_SHARED_INFRA
+        - SHARED_ACCOUNT_DEDICATED_INFRA
+        - DEDICATED_ACCOUNT_DEDICATED_INFRA
+        - SHARED_ALL
+    consumerType:
+      description: Tessell Consumer Type
+      type: string
+      enum:
+        - SERVICE
+        - OPS
+        - INTERNAL
+    entityType:
+      description: Tessell Entity Type
+      type: string
+      enum:
+        - TENANT
+        - COMPUTE_RESOURCE
+        - STORAGE
+        - COMPUTE_RESOURCE_METADATA
+        - DBSERVER_SYETEM
+        - DBSERVER_SUB_SYETEM
+        - DBSERVER_SYETEM_COMPUTE_RESOURCE
+        - DATABASE_SYETEM
+        - DATABASE
+        - DATABASE_NODE
+        - DATABASE_METADATA
+        - DMM
+        - DMM_AVAILABILITY
+        - DB_BACKUP
+        - DB_SNAPSHOT
+        - DB_LOG
+        - TASK
+        - SUB_TASK
+        - SLA
+        - SCHEDULE
+        - CLOUD_ACCOUNT
+        - CLOUD_LOCATION
+        - COMPUTE_TYPE
+        - SOFTWARE_IMAGE
+        - SOFTWARE_IMAGE_VERSION
+        - SUBSCRIPTION
+        - CUSTOM_SCRIPT
+        - DEPLOYMENT
+        - TERRAFORM
+        - DB_EXPORTER
+        - USER
+        - IDENTITY_PROVIDER
+        - ENCRYPTION_KEY
+        - TESSELL_SERVICE
+        - NETWORK
+        - NETWORK_PEERING
+        - SECRET
+        - PERSONA
+        - ACL
+        - API_KEY
+
+    CurrencyType:
+      type: string
+      enum:
+        - USD
+    ChronoUnit:
+      type: string
+      enum:
+        - MINUTE
+        - HOUR
+        - DAY
+    StorageType:
+      enum:
+        - DB_DATA
+        - ARCHIVE_DATA
+        - DB_TXN_LOGS
+        - DB_SOFTWARE
+        - OS_SOFTWARE
+        - TESSELL_CLIENT_LIBRARY
+        - TEMPORARY_PATCH_SOFTWARE_HOME
+        - DB_BACKUP
+        - MONITORING_DATA
+        - S3_BUCKET
+        - TEMPORARY_NATIVE_BACKUP_DISK
+    # objects
+    opsConsumerView:
+      title: opsConsumerView
+      type: object
+      properties:
+        timestamp:
+          type: string
+          example: yyyy-MM-dd hh:mm:ss.SSS
+        code:
+          type: string
+        message:
+          type: string
+        serviceConsumerView:
+          "$ref": "#/components/schemas/serviceConsumerView"
+    serviceConsumerView:
+      title: serviceConsumerView
+      type: object
+      properties:
+        timestamp:
+          type: string
+          example: yyyy-MM-dd hh:mm:ss.SSS
+        code:
+          type: string
+        message:
+          type: string
+    apiMetadata:
+      title: apiMetadata
+      type: object
+      properties:
+        timeZone:
+          type: string
+        records:
+          type: integer
+          format: int32
+        pagination:
+          "$ref": "#/components/schemas/apiPaginationInfo"
+    apiPaginationInfo:
+      title: apiPaginationInfo
+      type: object
+      properties:
+        pageSize:
+          type: integer
+          format: int32
+        pageOffset:
+          type: integer
+          format: int32
+    apiResponse:
+      example:
+        metadata:
+          pagination:
+            pageOffset: 0
+            pageSize: 6
+          records: 1
+          timeZone: timeZone
+        response: '{}'
+      properties:
+        metadata:
+          $ref: '#/components/schemas/apiMetadata'
+        response:
+          type: object
+      title: ApiResponse
+      type: object
+    taskSummary:
+      title: taskSummary
+      type: object
+      properties:
+        taskId:
+          type: string
+          format: uuid
+        taskType:
+          type: string
+        resourceId:
+          type: string
+          format: uuid
+        associatedResourceIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        details:
+          type: object
+          additionalProperties:
+            type: string
+    apiStatus:
+      title: apiStatus
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+    parameter:
+      title: parameter
+      type: object
+      properties:
+        secure:
+          type: boolean
+        value:
+          type: string
+        valueType:
+          type: string
+    BaseEntity:
+      type: object
+      properties:
+        dateCreated:
+          x-dao-annotations: |
+            @Column(name = "DATE_CREATED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @CreationTimestamp
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+        dateModified:
+          x-dao-annotations: |
+            @Column(name = "DATE_MODIFIED", columnDefinition = "TIMESTAMP WITH TIME ZONE NOT NULL", nullable = false, updatable = false)
+              @UpdateTimestamp
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+        id:
+          x-dao-query: true
+          x-dao-annotations: |
+            @Id
+              @GeneratedValue(generator = "UUID")
+              @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+              @Column(name = "id", updatable = false, nullable = false)
+          description: generated UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+          type: string
+    EntityAclSharingInfo:
+      title: EntityAclSharingInfo
+      description: Tessell Entity ACL Sharing Info
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityUserAclSharingInfo'
+    EntityUserAclSharingInfo:
+      title: EntityUserAclSharingInfo
+      description: Tessell Entity ACL Sharing Info for a user
+      properties:
+        emailId:
+          type: string
+        role:
+          type: string
+    EntityAclSharingSummaryInfo:
+      title: EntityAclSharingSummaryInfo
+      description: Tessell Entity ACL Sharing Summary Info
+      properties:
+        users:
+          type: array
+          items:
+            type: string
+    AclPayload:
+      title: AclPayload
+      description: Payload to create an entity ACL
+      required:
+        - users
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/AclUserPayload'
+          minItems: 1
+          maxItems: 100
+    AclUserPayload:
+      title: AclUserPayload
+      description: Payload to create an user's entity ACL
+      required:
+        - emailId
+        - role
+      properties:
+        emailId:
+          description: Email id of the user
+          type: string
+          minLength: 1
+          maxLength: 256
+        role:
+          description: Role Info
+          type: string
+          minLength: 1
+          maxLength: 64
+    AclRevokePayload:
+      title: AclRevokePayload
+      description: Payload to revoke Tessell ACLs
+      required:
+        - users
+      properties:
+        users:
+          description: List of users to be deleted
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 256
+          minItems: 1
+          maxItems: 100
+    AclEligibleUser:
+      title: AclEligibleUser
+      description: Eligible user for sharing the entity
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        emailId:
+          type: string
+        eligibleRoles:
+          type: array
+          items:
+            type: string
+    GenericProperty:
+      title: GenericProperty
+      description: Generic Property with key and a value
+      properties:
+        name:
+          type: string
+          description: property name
+        value:
+          type: object
+          description: value
+        secure:
+          type: boolean
+          default: false
+          description: whether the value is a secure field
+        dateCreated:
+          type: string
+          description: Timestamp when the entity was created
+          format: date-time
+        dateModified:
+          type: string
+          description: Timestamp when the entity was last modified
+          format: date-time
+    DeleteGenericPropertyPayload:
+      title: DeleteGenericPropertyPayload
+      description: Delete Generic Property Payload
+      properties:
+        names:
+          type: array
+          items:
+            type: string
+          description: List of property names
+    TessellTag:
+      title: TessellTag
+      type: object
+      nullable: true
+      properties:
+        name:
+          description: Case sensitive, tag name
+          type: string
+          maxLength: 128
+          minLength: 1
+        value:
+          description: Case sensitive, tag value
+          type: string
+          maxLength: 256
+          minLength: 0
+    ResourceBulkDeletePayloadOps:
+      title: ResourceBulkDeletePayloadOps
+      type: object
+      required:
+        - tenantId
+      properties:
+        tenantId:
+          type: string
+          format: uuid
+        subscriptionId:
+          type: string
+          format: uuid
+        skipDeletion:
+          description: List of services to be skipped for deletion
+          type: array
+          items:
+            $ref: '#/components/schemas/SkipDeletionInfo'
+        scheduleDeletionAfterDays:
+          type: integer
+          description: days after which deletion should be scheduled
+
+    ResourceBulkDeleteResponseOps:
+      title: ResourceBulkDeleteResponseOps
+      type: object
+      properties:
+        cleanupId:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/ResourceBulkDeleteStatusOps'
+        timestamp:
+          type: string
+          format: date-time
+        tenantId:
+          type: string
+          format: uuid
+        subscriptionId:
+          type: string
+          format: uuid
+        skipDeletion:
+          description: List of services to be skipped for deletion
+          type: array
+          items:
+            $ref: '#/components/schemas/SkipDeletionInfo'
+        context:
+          type: object
+    SkipDeletionInfo:
+      title: SkipDeletionInfo
+      type: object
+      properties:
+        entityType:
+          $ref: '#/components/schemas/entityType'
+        entities:
+          description: List of entities uuids
+          type: array
+          items:
+            type: string
+            format: uuid
+    CreateUpdateTessellTagPayload:
+      title: CreateUpdateTessellTagPayload
+      description: Create or update Tessell tag Payload
+      properties:
+        tags:
+          description: List of tags
+          type: array
+          items:
+            $ref: '#/components/schemas/TessellTag'
+    DeleteTagPayload:
+      title: DeleteTagPayload
+      description: Delete Tessell tag Payload
+      properties:
+        tagNames:
+          description: List of tag names to be deleted
+          type: array
+          items:
+            type: string
+    TessellResourceUpdateInfo:
+      title: TessellResourceUpdateInfo
+      description: In progress update information for a Tessell Resource
+      properties:
+        updateType:
+          x-computed: true
+          type: string
+          description: Type of the update
+        referenceId:
+          x-computed: true
+          type: string
+          format: uuid
+          description: The reference-id of the update request
+        submittedAt:
+          x-computed: true
+          type: string
+          format: date-time
+          description: Timestamp when the resource update was requested
+        updateInfo:
+          x-computed: true
+          type: object
+          description: The specific details for a Tessell resource that are being updated
+          additionalProperties: {}
+    CloudRegionInfo:
+      title: CloudRegionInfo
+      description: Cloud and region details
+      required:
+        - cloud
+      properties:
+        cloud:
+          $ref: '#/components/schemas/cloudType'
+          description: The cloud type
+        regions:
+          description: The regions details
+          type: array
+          items:
+            $ref: '#/components/schemas/RegionInfo'
+    RegionInfo:
+      title: RegionInfo
+      description: Cloud region details
+      required:
+        - region
+      properties:
+        region:
+          description: The cloud region name
+          type: string
+        availabilityZones:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+    ServiceId:
+      type: string
+      format: uuid
+      description: The ID of the DB Service.
+    ServiceInstanceId:
+      type: string
+      format: uuid
+      description: The ID of the DB Service Instance.
+    ComputeResourceId:
+      type: string
+      format: uuid
+      description: The ID of the Compute Resource.
+    ResourceBulkDeleteStatusOps:
+      description: bulk delete status
+      type: string
+      enum:
+        - IN_PROGRESS
+        - FAILED
+        - SUCCESS
+    WeekDay:
+      description: Week Days
+      type: string
+      enum:
+        - Sunday
+        - Monday
+        - Tuesday
+        - Wednesday
+        - Thursday
+        - Friday
+        - Saturday
+      x-enum-varnames:
+        - Sunday
+        - Monday
+        - Tuesday
+        - Wednesday
+        - Thursday
+        - Friday
+        - Saturday
+    Month:
+      description: Name of a month
+      type: string
+      enum:
+        - January
+        - February
+        - March
+        - April
+        - May
+        - June
+        - July
+        - August
+        - September
+        - October
+        - November
+        - December
+      x-enum-varnames:
+        - January
+        - February
+        - March
+        - April
+        - May
+        - June
+        - July
+        - August
+        - September
+        - October
+        - November
+        - December
+    Amount:
+      type: object
+      properties:
+        value:
+          type: number
+          format: double
+        unit:
+          $ref: '#/components/schemas/CurrencyType'
+    TimeUnit:
+      type: object
+      properties:
+        value:
+          type: integer
+        unit:
+          $ref: '#/components/schemas/ChronoUnit'
+    MaturityStatus:
+      description: Maturity Status
+      type: string
+      enum:
+        - DRAFT
+        - PUBLISHED
+        - UNPUBLISHED
+    DataContentType:
+      description: Content type for the data
+      type: string
+      enum:
+        - As-Is
+        - Sanitized
+    ArgoWorkflowStatus:
+      description: Argo Workflow status
+      type: string
+      enum:
+        - SUCCESS
+        - FAILURE
+    WorkflowCallbackPayload:
+      type: object
+      description: Payload received during Argo workflow callbacks.
+      properties:
+        prevWorkflowName:
+          type: string
+          description: Previous workflow name corresponding to which the payload in the callback is received.
+        newWorkflowName:
+          type: string
+          description: New workflow name if the earlier workflow failed and there are retries left. Else null
+        status:
+          $ref: '#/components/schemas/ArgoWorkflowStatus'
+        payload:
+          type: object
+          additionalProperties:
+            type: object
+        context:
+          type: object
+        lastRunCount:
+          type: integer
+          format: int32
+        maxRunCount:
+          type: integer
+          format: int32
+    ApiError:
+      type: object
+      description: Common error response object for non 2xx responses
+      properties:
+        code:
+          type: string
+          description: Status code for the error response
+        message:
+          type: string
+          description: Error message for API response
+        details:
+          "$ref": "#/components/schemas/ApiErrorDetails"
+        defaultCodeSet:
+          type: boolean
+        contextId:
+          type: string
+          description: ContextId of API request
+        sessionId:
+          type: string
+          description: SessionId of API request
+    ApiErrorOps:
+      type: object
+      description: Common error response object for non 2xx responses of internal or ops APIs
+      properties:
+        errorCode:
+          "$ref": "#/components/schemas/TessellErrorCode"
+        message:
+          type: string
+          description: Error message for API response
+        details:
+          "$ref": "#/components/schemas/ApiErrorDetails"
+        serviceException:
+          "$ref": "#/components/schemas/ApiError"
+        contextId:
+          type: string
+          description: ContextId of API request
+        sessionId:
+          type: string
+          description: SessionId of API request
+    ApiErrorDetails:
+      type: object
+      description: Common API exception details
+      properties:
+        resolution:
+          type: string
+          description: Resolution detail for API exception
+    TessellErrorCode:
+      type: object
+      description: Error code object for API Exceptions
+      properties:
+        httpErrorCode:
+          type: string
+          description: Standard http error code
+        serviceCode:
+          type: string
+          description: Service error code
+        opCode:
+          type: string
+          description: Operation error code
+        description:
+          type: string
+          description: Error code description
+    TimeZone:
+      type: string
+      description: The timezone detail
+      default: "UTC"
+      minLength: 2
+      maxLength: 256
+    LeakStatus:
+      type: string
+      enum:
+        - LEAK
+        - NOT_LEAK
+        - UNKNOWN
+  parameters:
+    pageSize:
+      name: page-size
+      in: query
+      description: Page size for get query
+      required: false
+      schema:
+        type: integer
+        format: int32
+        default: 10
+    pageOffset:
+      name: page-offset
+      in: query
+      description: Page offset for get query
+      required: false
+      schema:
+        type: integer
+        format: int32
+        default: 0
+    timeZone:
+      name: time-zone
+      in: query
+      description: Timezone for return data
+      required: false
+      schema:
+        type: string
+        default: "UTC"
+    timeZoneOldConvention:
+      in: query
+      name: timeZone
+      description: Time Zone
+      schema:
+        type: string
+      required: false
+    timeRangeBeginAt:
+      name: time-range-begin-at
+      in: query
+      description: Start timestamp
+      required: false
+      style: form
+      schema:
+        type: string
+        example: 2022-04-10 04:20:30
+    timeRangeEndAt:
+      name: time-range-end-at
+      in: query
+      description: End timestamp
+      required: false
+      style: form
+      schema:
+        type: string
+        example: 2022-04-10 04:20:30
+    name:
+      name: name
+      in: query
+      description: Name of the Entity
+      required: false
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 512
+      example: example-123
+    consumerType:
+      name: consumer-type
+      in: query
+      description: API consumer type
+      required: false
+      schema:
+        type: string
+        default: "OPS"
+    softDelete:
+      name: soft-delete
+      in: query
+      description: Soft delete an entity
+      required: false
+      schema:
+        type: boolean
+        default: true
+    softDeleteOldConvention:
+      name: softDelete
+      in: query
+      description: Soft delete an entity
+      required: false
+      schema:
+        type: boolean
+        default: true
+    all:
+      name: all
+      in: query
+      description: Get all records
+      required: false
+      schema:
+        type: boolean
+        default: true
+    fetchAll:
+      name: all
+      in: query
+      description: Get all records (default = false)
+      required: false
+      schema:
+        type: boolean
+        default: false
+    engineType:
+      name: engine-type
+      in: query
+      description: Database Engine Type
+      required: false
+      schema:
+        type: string
+    # TODO: migrate old conventional query params
+    cloudTypeOldConvention:
+      name: cloudType
+      in: query
+      description: Name of the Cloud
+      required: false
+      schema:
+        $ref: "common-specification.yaml#/components/schemas/cloudType"
+    cloudTypeOldConventionMandatory:
+      name: cloudType
+      in: query
+      description: Name of the Cloud
+      required: true
+      schema:
+        $ref: "common-specification.yaml#/components/schemas/cloudType"
+    cloudAccount:
+      name: cloud-account
+      in: query
+      description: Cloud Account Name
+      required: false
+      schema:
+        type: string
+    cloudLocation:
+      name: cloud-location
+      in: query
+      description: Cloud Location Name
+      required: false
+      schema:
+        type: string
+    cloudRegion:
+      name: region
+      in: query
+      description: Cloud Region
+      required: false
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 128
+      examples:
+        aws:
+          value: us-east-1
+          summary: aws region example
+        azure:
+          value: eastUS
+          summary: azure region example
+    cloudRegionMandatory:
+      name: region
+      in: query
+      description: Cloud Region
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 128
+      examples:
+        aws:
+          value: us-east-1
+          summary: aws region example
+        azure:
+          value: eastUS
+          summary: azure region example
+    cloudAccountId:
+      name: cloud-account-id
+      in: query
+      description: Cloud Account Id
+      required: false
+      schema:
+        type: string
+        format: uuid
+    tenantIdPath:
+      in: path
+      name: tenantId
+      description: Tenant ID
+      required: true
+      schema:
+        type: string
+    tenantId:
+      name: tenant-id
+      in: header
+      description: Tenant Id Header
+      required: false
+      schema:
+        type: string
+    tenantIdMandatory:
+      name: tenant-id
+      in: header
+      description: Id of the Tenant
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 128
+        example: 12345678-abcd-1234-abcd-1234abcd5678
+    subscriptionNameMandatory:
+      name: subscription-name
+      in: query
+      description: Subscription name
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 64
+        example: Sub-Experiments-2
+    cloudTypeMandatory:
+      name: cloud-type
+      in: query
+      description: Cloud Type
+      required: true
+      schema:
+        $ref: 'common-specification.yaml#/components/schemas/cloudType'
+    regionMandatory:
+      name: region
+      in: query
+      description: Region
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 64
+        example: ap-south-1
+    tenant-id-in-header-required:
+      name: tenant-id
+      in: header
+      description: Tenant ID
+      required: true
+      style: simple
+      schema:
+        type: string
+        format: uuid
+    subscription-id-in-query:
+      in: query
+      name: subscription-id
+      description: Subscription ID
+      required: false
+      schema:
+        type: string
+        format: uuid
+    owners:
+      name: owners
+      in: query
+      description: List of Email Addresses for entity or resource owners
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+    loadAcls:
+      name: load-acls
+      in: query
+      description: Load ACL information
+      required: false
+      schema:
+        type: boolean
+        default: false
+
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+

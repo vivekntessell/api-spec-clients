@@ -1,0 +1,949 @@
+openapi: 3.0.3
+
+info:
+  title: API spec for Tessell Genie Service
+  version: '1.0'
+
+servers:
+  - url: http://genie:80
+
+paths:
+  /enable:
+    post:
+      operationId: enableGenie
+      summary: Enable Genie for a specific database system
+      description: Enables Genie for a specific database system
+      tags: [Genie]
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+      requestBody:
+        $ref: '#/components/requestBodies/GenieEnablePayload'
+      responses:
+        "200":
+          $ref: '#/components/responses/GenieResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tessell-ops/enable:
+    post:
+      operationId: enableGenieOps
+      summary: Enable Genie for a specific database system Ops API
+      tags: [Genie]
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+      requestBody:
+        $ref: '#/components/requestBodies/GenieEnablePayload'
+      responses:
+        "200":
+          $ref: '#/components/responses/GenieResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /disable:
+    post:
+      operationId: disableGenie
+      summary: Disable Genie for a specific database system
+      description: Disable Genie for a specific database system
+      tags: [Genie]
+      requestBody:
+        $ref: '#/components/requestBodies/GenieDisablePayload'
+      responses:
+        "200":
+          $ref: '#/components/responses/GenieResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tessell-ops/disable:
+    post:
+      operationId: disableGenieOps
+      summary: Disable Genie for a specific database system
+      tags: [Genie]
+      requestBody:
+        $ref: '#/components/requestBodies/GenieDisablePayload'
+      responses:
+        "200":
+          $ref: '#/components/responses/GenieResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /request-access:
+    get:
+      operationId: getAllRequests
+      summary: Request access to VMs of a specific ÐB_SERVICE
+      description: Request access to VMs of a specific ÐB_SERVICE
+      tags: [Genie]
+      parameters:
+        - $ref: '#/components/parameters/serviceId'
+        - $ref: '#/components/parameters/computeResourceId'
+      responses:
+        "200":
+          $ref: '#/components/responses/GenieResponseList'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+    post:
+      operationId: requestAccess
+      summary: Request access to VMs of a specific ÐB_SERVICE
+      description: Request access to VMs of a specific ÐB_SERVICE
+      tags: [Genie]
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+      requestBody:
+        $ref: '#/components/requestBodies/GenieRequestPayload'
+      responses:
+        "200":
+          $ref: '#/components/responses/GenieResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tessell-ops/request-access:
+    get:
+      operationId: getAllRequestsOps
+      summary: Request access to VMs of a specific ÐB_SERVICE
+      description: Request access to VMs of a specific ÐB_SERVICE
+      tags: [Genie]
+      parameters:
+        - $ref: '#/components/parameters/serviceId'
+        - $ref: '#/components/parameters/computeResourceId'
+      responses:
+        "200":
+          $ref: '#/components/responses/GenieResponseList'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    post:
+      operationId: requestAccessOps
+      summary: Request access to VMs of a specific ÐB_SERVICE Ops API
+      description: Request access to VMs of a specific ÐB_SERVICE
+      tags: [Genie]
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+      requestBody:
+        $ref: '#/components/requestBodies/GenieRequestPayload'
+      responses:
+        "200":
+          $ref: '#/components/responses/GenieResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/resendOTP:
+    post:
+      operationId: resendOTP
+      summary: resend OTP
+      tags: [Genie]
+      requestBody:
+        $ref: '#/components/requestBodies/GenieResendOTP'
+      responses:
+        "200":
+          $ref: '#/components/responses/GenieResponseOps'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/extend:
+    patch:
+      operationId: extendCurrentGenieRequestOps
+      summary: Extend Genie expiry time Ops
+      tags: [Genie]
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+      requestBody:
+        $ref: '#/components/requestBodies/GenieRequestPatch'
+      responses:
+        "200":
+          $ref: '#/components/responses/GenieResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /extend:
+    patch:
+      operationId: extendCurrentGenieRequest
+      summary: Extend Genie expiry time
+      tags: [Genie]
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdMandatory'
+      requestBody:
+        $ref: '#/components/requestBodies/GenieRequestPatch'
+      responses:
+        "200":
+          $ref: '#/components/responses/GenieResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tessell-ops/status:
+    get:
+      operationId: checkRequestStatusOps
+      summary: Get status for a specific Genie request
+      tags: [Genie]
+      parameters:
+        - $ref: '#/components/parameters/requestId'
+      responses:
+        "200":
+          $ref: '#/components/responses/GenieResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/update-connectivity/callback:
+    patch:
+      operationId: updateConnectivityCallback
+      summary: Update Genie status for ongoing request
+      tags: [Genie]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/UpdateConnectivityCallbackPayload'
+      responses:
+        "200":
+          $ref: '#/components/responses/GenieResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /status:
+    get:
+      operationId: checkRequestStatus
+      summary: Get status for a specific Genie request
+      tags: [Genie]
+      parameters:
+        - $ref: '#/components/parameters/requestId'
+      responses:
+        "200":
+          $ref: '#/components/responses/GenieResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tessell-ops/download/connection-details:
+    get:
+      operationId: downloadGenieConnectionDetailsOps
+      summary: Download all the relevant details required for establishing the Genie connection to the VMs of a specific DB Service.
+      tags: [Genie]
+      parameters:
+        - $ref: '#/components/parameters/requestId'
+        - $ref: '#/components/parameters/computeResourceId'
+      responses:
+        "200":
+          $ref: '#/components/responses/GenieConfigResponseDownload'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /download/connection-details:
+    get:
+      operationId: downloadGenieConnectionDetails
+      summary: Downloads connection details
+      description: Download all the relevant details required for establishing the Genie connection to the VMs of a specific DB Service.
+      tags: [Genie]
+      parameters:
+        - $ref: '#/components/parameters/requestId'
+        - $ref: '#/components/parameters/computeResourceId'
+      responses:
+        "200":
+          $ref: '#/components/responses/GenieConfigResponseDownload'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tessell-ops/bulk-revoke:
+    delete:
+      operationId: revokeActiveGenieRequests
+      summary: RevokeActiveGenieRequests
+      tags: [Genie]
+      responses:
+        "200":
+          $ref: '#/components/responses/GenieResponseList'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/genie-config:
+    post:
+      operationId: createGenieConfig
+      summary: create genie config
+      tags: [GenieConfig]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenieTenantConfig'
+      responses:
+        "200":
+          $ref: '#/components/responses/GenieTenantConfigResponse'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/genie-config/{tenantId}:
+    get:
+      operationId: getGenieConfig
+      summary: get genie config for a tenant
+      tags: [GenieConfig]
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdPath'
+      responses:
+        "200":
+          $ref: '#/components/responses/GenieConfig'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    put:
+      operationId: updateGenieConfig
+      summary: Update genie config for a tenant
+      tags: [GenieConfig]
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdPath'
+      requestBody:
+        $ref: '#/components/requestBodies/GenieConfig'
+      responses:
+        "200":
+          $ref: '#/components/responses/GenieConfig'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    delete:
+      operationId: deleteGenieConfig
+      summary: delete genie config for a tenant
+      tags: [GenieConfig]
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdPath'
+      responses:
+        "200":
+          $ref: '#/components/responses/GenieConfig'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /genie-config/{tenantId}:
+    get:
+      operationId: getGenieConfigExternal
+      summary: get genie config for a tenant
+      tags: [GenieConfig]
+      parameters:
+        - $ref: 'common-specification.yaml#/components/parameters/tenantIdPath'
+      responses:
+        "200":
+          $ref: '#/components/responses/GenieConfig'
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+components:
+  parameters:
+    serviceId:
+      description: DB Service Id for which the Genie Access request is in context
+      in: query
+      name: serviceId
+      required: false
+      schema:
+        type: string
+    computeResourceId:
+      description: Compute Resource Id for which the Genie Access request is in context
+      in: query
+      name: computeResourceId
+      required: false
+      schema:
+        type: string
+    requestId:
+      description: Request ID of the Genie request
+      in: query
+      name: requestId
+      required: false
+      schema:
+        type: string
+    genieType:
+      name: genieType
+      in: query
+      required: false
+      description: Genie Type, Customer or Internal
+      schema:
+        $ref: '#/components/schemas/GenieType'
+  requestBodies:
+    GenieEnablePayload:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenieEnablePayload'
+    GenieDisablePayload:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenieDisablePayload'
+    GenieRequestPayload:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenieRequestPayload'
+    GenieResendOTP:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenieResendOTP'
+    GenieConfig:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenieConfig'
+    GenieRequestPatch:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenieRequestPatch'
+    UpdateGenieStatus:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateGenieStatus'
+    UpdateConnectivityCallbackPayload:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateConnectivityCallbackPayload'
+    GenieTenantConfigPayload:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenieTenantConfig'
+  responses:
+    GenieResponse:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenieResponse'
+    GenieConfigResponse:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenieConfigurationInstance'
+    GenieConfigResponseDownload:
+      description: OK
+      content:
+        application/zip:
+          schema:
+            type: string
+            format: binary
+    GenieConfig:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenieConfig'
+    GenieResponseList:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/GenieResponse"
+    GenieTenantConfigResponse:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenieTenantConfig'
+    BulkDeleteResponse:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/GenieResponse"
+  schemas:
+    GenieEnablePayload:
+      title: GenieEnablePayload
+      type: object
+      description: Payload for genie
+      properties:
+        requestID:
+          description: Request ID for which Genie is to be enabled
+          type: string
+        otp:
+          description: OTP to enable the genie
+          type: string
+    GenieDisablePayload:
+      title: GenieDisablePayload
+      type: object
+      properties:
+        requestID:
+          description: Request ID for which Genie is to be disabled
+          type: string
+        isDeclined:
+          description: is genie request declined
+          type: boolean
+          default: false
+    GenieRequestPayload:
+      title: GenieRequestPayload
+      type: object
+      description: Payload for genie request
+      required:
+        - user
+        - description
+      properties:
+        computeResourceIds:
+          description: Computes for which Genie is to be enabled
+          type: array
+          items:
+            type: string
+        serviceId:
+          description: Service ID for which Genie has to be enabled for all computeResourceIds
+          type: string
+        user:
+          description: User that has taken the action
+          type: string
+        description:
+          description: Description about why Genie has to be enabled
+          type: string
+        genieType:
+          description: Genie Type, Customer or Internal
+          allOf:
+            - $ref: "#/components/schemas/GenieType"
+        expiryInMinutes:
+          type: integer
+          format: int32
+          default: 60
+          minimum: 60
+        allowedIpAddresses:
+          description: cidr block of the virtual network
+          example: 10.0.0.4/24
+          type: array
+          items:
+            type: string
+        ticketId:
+          description: Jira or freshdesk ticket filed to request Genie
+          type: string
+        ticketSummary:
+          description: Jira or freshdesk ticket summary
+          type: string
+    GenieResendOTP:
+      title: GenieResendOTP
+      type: object
+      required:
+        - requestID
+      properties:
+        requestID:
+          description: Request ID for which OTP has to be sent again
+          type: string
+        user:
+          description: User that has taken the action
+          type: string
+        ticketId:
+          description: Jira or freshdesk ticket filed to request Genie
+          type: string
+        ticketSummary:
+          description: Jira or freshdesk ticket summary
+          type: string
+    GenieRequestPatch:
+      title: GenieRequestPatch
+      type: object
+      description: Patch for genie request
+      properties:
+        requestID:
+          description: Request ID for which Genie has to be extended
+          type: string
+        expiryInMinutes:
+          type: integer
+          format: int32
+          default: 60
+          minimum: 60
+        computeResourceIds:
+          description: Computes for which Genie is to be enabled
+          type: array
+          items:
+            type: string
+    UpdateGenieStatus:
+      title: UpdateGenieStatus
+      type: object
+      description: Genie Configuration object
+      properties:
+        status:
+          description: Status for the genie request
+          allOf:
+            - $ref: "#/components/schemas/GenieStatus"
+    UpdateConnectivityCallbackPayload:
+      title: UpdateConnectivityCallbackPayload
+      type: object
+      properties:
+        status:
+          $ref: 'common-specification.yaml#/components/schemas/ArgoWorkflowStatus'
+        payload:
+          type: object
+
+    GenieResponse:
+      title: GenieResponse
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/GenieRequestEntity"
+        - $ref: "#/components/schemas/GenieRequestEntityMetadata"
+        - type: object
+          properties:
+            entities:
+              type: array
+              description: List of computes associated with the Genie request
+              items:
+                $ref: '#/components/schemas/GenieEntity'
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+
+    GenieEntity:
+      description: Genie Entity to track status of individual compute
+      x-gorm: true
+      x-gorm-table-name: TESSELL_GENIES
+      type: object
+      properties:
+        id:
+          x-gorm-primary-key: true
+          x-gorm-column-attrs: not null
+          type: string
+          description: Id
+        computeResourceId:
+          x-gorm-column-attrs: not null
+          type: string
+          description: Associated compute id
+        genieType:
+          x-gorm-column-attrs: not null
+          description: Genie Type, Customer or Internal
+          allOf:
+            - $ref: "#/components/schemas/GenieType"
+        metadata:
+          x-gorm-column-type: json
+          description: Genie Compute Metadata
+          allOf:
+            - $ref: "#/components/schemas/GenieInstanceMetadata"
+        configiration:
+          x-gorm-column-type: json
+          description: Genie configuration
+          allOf:
+            - $ref: "#/components/schemas/GenieConfigurationInstance"
+        currentStatus:
+          x-gorm-column-attrs: not null
+          description: Current status of the genie on this entity
+          allOf:
+            - $ref: "#/components/schemas/GenieStatus"
+    GenieRequestEntity:
+      description: Genie request entity to track status of individual requests
+      x-gorm: true
+      x-gorm-table-name: TESSELL_GENIE_REQUEST
+      type: object
+      properties:
+        requestId:
+          x-gorm-primary-key: true
+          x-gorm-column-attrs: not null
+          type: string
+          description: Request Id
+        genieType:
+          x-gorm-column-attrs: not null
+          description: Genie Type, Customer or Internal
+          allOf:
+            - $ref: "#/components/schemas/GenieType"
+        status:
+          x-gorm-column-attrs: not null
+          description: Current status of the genie request
+          allOf:
+            - $ref: "#/components/schemas/GenieStatus"
+        entityId:
+          type: string
+          description: entityId
+        tenantId:
+          type: string
+          description: Tenant ID
+        metadata:
+          x-gorm-column-type: json
+          description: Genie Request Metadata
+          allOf:
+            - $ref: "#/components/schemas/GenieRequestEntityMetadata"
+    GenieRequestEntityMetadata:
+      description: Genie Request Entity Metadata
+      type: object
+      properties:
+        computeResourceMetadata:
+          type: array
+          description: List of computes associated with the Genie request
+          items:
+            type: string
+        requestedBy:
+          type: string
+          description: username
+          x-gorm-column-attrs: not null
+        description:
+          type: string
+          description: Genie request description
+        ticketId:
+          type: string
+          description: Jira or freshdesk ticket filed to request Genie
+        initialisationMethod:
+          x-gorm-column-attrs: not null
+          description: Initialisation method of the Genie, Ops portal or for customer
+          allOf:
+            - $ref: "#/components/schemas/InitialisationMethod"
+        authenticationMethod:
+          x-gorm-column-attrs: not null
+          description: Authentication method of the Genie, Ops portal or for customer
+          allOf:
+            - $ref: "#/components/schemas/AuthenticationMethod"
+        dateCreated:
+          type: string
+          format: date-time
+          description: entry creation timestamp
+        expiryInMinutes:
+          type: integer
+          description: Time in minutes for which Genie access is valid
+        dateModified:
+          type: string
+          format: date-time
+          description: entry modification timestamp
+    GenieConfigMetadata:
+      description: Genie config for a tenant
+      x-gorm: true
+      x-gorm-table-name: TESSELL_GENIE_CONFIG
+      type: object
+      properties:
+        tenantID:
+          x-gorm-primary-key: true
+          x-gorm-column-attrs: not null
+          type: string
+          description: Tenant Id
+        configiration:
+          x-gorm-column-type: json
+          description: Genie configuration
+          allOf:
+            - $ref: "#/components/schemas/GenieConfigJson"
+        dateCreated:
+          type: string
+          format: date-time
+          description: entry creation timestamp
+        dateModified:
+          type: string
+          format: date-time
+          description: entry modification timestamp
+    GenieInstanceMetadata:
+      title: GenieInstanceMetadata
+      type: object
+      properties:
+        allowedIpAddresses:
+          type: array
+          items:
+            type: string
+        activeRequests:
+          type: array
+          items:
+            type: string
+        role:
+          type: string
+          description: role of the instance associated with the compute
+        name:
+          type: string
+          description: name of the instance associated with the compute
+        error:
+          type: string
+          description: Error while enabling Genie
+        command:
+          type: string
+          description: Command to enable Genie
+        statusModifiedAt:
+          type: string
+          format: date-time
+          description: Last time at which the status of the genie entity was modified
+    GenieConfigurationInstance:
+      title: Genie Configuration for a instance
+      type: object
+      description: Genie Configuration instance object
+      properties:
+        computeID:
+          type: string
+          description: Compute Resource Id of the DB Service Instance.
+        computeName:
+          type: string
+          description: Compute Resource name of the DB Service instance.
+        frpcConfig:
+          type: string
+          x-gorm-column-attrs: not null
+          description: FRPC configuration
+        clientID:
+          type: string
+          x-gorm-column-attrs: not null
+          description: FRPC client ID to authenticate with frps
+        pemFile:
+          type: string
+          description: File that contains private key
+        winRMFile:
+          type: string
+          description: Python file to establish winRM session with the host
+        instanceDetails:
+          type: string
+          description: Instance details, success and errors
+        generalInfo:
+          type: string
+          description: General Info about the connection
+        os:
+          allOf:
+            - $ref: "#/components/schemas/OsType"
+        logs:
+          type: string
+          description: Logs generated during enabling Genie - success and error
+        user:
+          type: string
+          description: Linux user
+        rdpUserName:
+          type: string
+          description: User name created on the VM for Genie
+        rdpPassword:
+          type: string
+          description: Admin password for the user
+    GenieConfigJson:
+      title: GenieConfigJson
+      type: object
+      description: Genie Configuration object
+      properties:
+        installFrp:
+          description: If FRP client software can be installed or updated on the provisioned VMs
+          type: string
+        vmAccessForCustomer:
+          description: Check if Genie for customer feature is enabled
+          type: string
+        approvalForGenieExternal:
+          description: If approval from Tessell is required when Genie is requested by external customer
+          type: string
+        approvalForGenieInternal:
+          description: If approval from Customer is required when Genie is requested by internal support team
+          type: string
+    GenieConfig:
+      title: GenieConfig
+      type: object
+      description: Genie Configuration object
+      properties:
+        installFrp:
+          description: If FRP client software can be installed or updated on the provisioned VMs
+          type: boolean
+        vmAccessForCustomer:
+          description: Check if Genie for customer feature is enabled
+          type: boolean
+        approvalForGenieExternal:
+          description: If approval from Tessell is required when Genie is requested by external customer
+          type: boolean
+        approvalForGenieInternal:
+          description: If approval from Customer is required when Genie is requested by internal support team
+          type: boolean
+    GenieTenantConfig:
+      title: GenieTenantConfig
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/GenieConfig'
+        - type: object
+          properties:
+            tenantId:
+              type: string
+              description: Tenant Id
+
+    GenieStatus:
+      title: GenieStatus
+      description: Enumeration for genie status
+      type: string
+      enum:
+        - ENABLED
+        - DISABLED
+        - REQUESTED
+        - REQUEST_DECLINED
+        - ENABLING
+        - PARTIAL_ENABLED
+        - DISABLING
+        - FAILED_ENABLE
+        - FAILED_DISABLE
+    InitialisationMethod:
+      title: InitialisationMethod
+      description: Enumeration for genie initialisation
+      type: string
+      enum:
+        - OPS_PORTAL
+        - CUSTOMER_PORTAL
+    AuthenticationMethod:
+      title: AuthenticationMethod
+      description: Enumeration for genie authentication
+      type: string
+      enum:
+        - OTP
+        - CUSTOMER_APPROVAL
+    GenieType:
+      title: GenieType
+      description: Enumeration for genie type
+      type: string
+      enum:
+        - CUSTOMER
+        - INTERNAL
+    OsType:
+      title: OsType
+      description: Enumeration for os type
+      type: string
+      enum:
+        - Linux
+        - Windows

@@ -1,0 +1,807 @@
+openapi: 3.0.0
+info:
+  description: Tessell Infra APIs
+  title: Tessell Infra Management Service API
+  version: v1beta
+servers:
+- description: Inferred Url
+  url: http://tessell-infra:8080
+paths:
+  /tessell-ops/infra/resources:
+    delete:
+      operationId: deleteInfraResource
+      parameters:
+      - description: Cloud Resource Url
+        explode: true
+        in: query
+        name: cloud-resource-url
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: Soft delete an entity
+        in: query
+        name: soft-delete
+        required: false
+        schema:
+          default: true
+          type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Delete a Tessell Infra Resource
+      tags:
+      - tessell-infra-resource-controller
+      x-accepts: application/json
+    get:
+      operationId: getInfraResources
+      parameters:
+      - description: Cloud Resource Url
+        explode: true
+        in: query
+        name: cloud-resource-url
+        required: false
+        schema:
+          default: ""
+          type: string
+        style: form
+      - description: Cloud Account Id
+        explode: true
+        in: query
+        name: cloud-account-id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: form
+      - description: Cloud Location
+        explode: true
+        in: query
+        name: cloud-location
+        required: false
+        schema:
+          default: ""
+          type: string
+        style: form
+      - description: Resource Purpose
+        explode: true
+        in: query
+        name: purpose
+        required: false
+        schema:
+          default: ""
+          type: string
+        style: form
+      - description: Infra Resource Status
+        explode: true
+        in: query
+        name: status
+        required: false
+        schema:
+          $ref: '#/components/schemas/InfraResourceStatus'
+        style: form
+      - description: Infra Resource Type
+        explode: true
+        in: query
+        name: resource-type
+        required: false
+        schema:
+          $ref: '#/components/schemas/InfraResourceType'
+        style: form
+      - description: Whether to include secrets in the response
+        explode: true
+        in: query
+        name: include-secrets
+        required: false
+        schema:
+          default: true
+          type: boolean
+        style: form
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      - description: Timezone for return data
+        in: query
+        name: time-zone
+        required: false
+        schema:
+          default: UTC
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/InfraResource'
+                type: array
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: View a list of available Tessell Infra Resources
+      tags:
+      - tessell-infra-resource-controller
+      x-accepts: application/json
+    patch:
+      operationId: updateInfraResource
+      parameters:
+      - description: Cloud Resource Url
+        explode: true
+        in: query
+        name: cloud-resource-url
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: Whether to update the secrets or not
+        explode: true
+        in: query
+        name: update-secrets
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InfraResource'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InfraResource'
+          description: OK
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Update a Tessell Infra Resource
+      tags:
+      - tessell-infra-resource-controller
+      x-contentType: application/json
+      x-accepts: application/json
+    post:
+      operationId: createInfraResource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/InfraResource'
+              type: array
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/InfraResource'
+                type: array
+          description: OK
+        "201":
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Create a new Tessell Infra Resource
+      tags:
+      - tessell-infra-resource-controller
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-ops/infra/resources/k8s-name:
+    get:
+      operationId: getK8sName
+      parameters:
+      - description: Cloud Resource Url
+        explode: true
+        in: query
+        name: cloud-resource-url
+        required: false
+        schema:
+          default: ""
+          type: string
+        style: form
+      - description: Cloud Account Id
+        explode: true
+        in: query
+        name: cloud-account-id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: form
+      - description: Cloud Location
+        explode: true
+        in: query
+        name: cloud-location
+        required: false
+        schema:
+          default: ""
+          type: string
+        style: form
+      - description: Resource Purpose
+        explode: true
+        in: query
+        name: purpose
+        required: false
+        schema:
+          default: ""
+          type: string
+        style: form
+      - description: Infra Resource Status
+        explode: true
+        in: query
+        name: status
+        required: false
+        schema:
+          $ref: '#/components/schemas/InfraResourceStatus'
+        style: form
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      - description: Timezone for return data
+        in: query
+        name: time-zone
+        required: false
+        schema:
+          default: UTC
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/K8sName'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: View the K8s name
+      tags:
+      - tessell-infra-resource-controller
+      x-accepts: application/json
+  /tessell-ops/task-workflows/{deployment-id}/variables:
+    delete:
+      operationId: deleteTaskWorkflowVariables
+      parameters:
+      - description: Workflow deployment ID
+        explode: false
+        in: path
+        name: deployment-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Filter for a specific deployment type
+        explode: true
+        in: query
+        name: deployment-type
+        required: true
+        schema:
+          format: string
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Deletes task workflow variables
+      tags:
+      - task-workflow
+      x-accepts: application/json
+    get:
+      operationId: getTaskWorkflowVariables
+      parameters:
+      - description: Workflow deployment ID
+        explode: false
+        in: path
+        name: deployment-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Filter for a specific deployment type
+        explode: true
+        in: query
+        name: deployment-type
+        required: true
+        schema:
+          format: string
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskWorkflowVariablesPayload'
+          description: Task Workflow variables response
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get task workflow variables.
+      tags:
+      - task-workflow
+      x-accepts: application/json
+    post:
+      description: Store task workflow variables
+      operationId: storeTaskWorkflowVariables
+      parameters:
+      - description: Workflow deployment ID
+        explode: false
+        in: path
+        name: deployment-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Filter for a specific deployment type
+        explode: true
+        in: query
+        name: deployment-type
+        required: true
+        schema:
+          format: string
+          type: string
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskWorkflowVariablesPayload'
+        description: Task Workflow variable request
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskWorkflowVariablesPayload'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Store task workflow variables
+      tags:
+      - task-workflow
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-ops/libraries/presigned-url:
+    get:
+      operationId: getPresignedURL
+      parameters:
+      - description: Tenant Id Header
+        in: header
+        name: tenant-id
+        required: false
+        schema:
+          type: string
+      - description: object id of the aws resource for which presigned url has to
+          be generated
+        explode: true
+        in: query
+        name: object-id
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: Number of minutes the presigned url is valid
+        explode: true
+        in: query
+        name: expiration-minutes
+        required: false
+        schema:
+          default: 60
+          format: int32
+          type: integer
+        style: form
+      - description: location of the s3 object provided
+        explode: true
+        in: query
+        name: region
+        required: false
+        schema:
+          default: us-east-1
+          type: string
+        style: form
+      - description: If the url to be generated for external or internal consumption
+        explode: true
+        in: query
+        name: is-external
+        required: false
+        schema:
+          default: true
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresignedUrl'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Fetches the presigned url for the provided s3 object
+      tags:
+      - tessell-infra-resource-controller
+      x-accepts: application/json
+  /tessell-ops/infra/dns-update:
+    post:
+      operationId: updateDnsRecord
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DnsRecordUpdatePayload'
+        description: Task Workflow variable request
+        required: true
+      responses:
+        "200":
+          description: 200 response
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Updates DNS record for AWS/Azure DNS solutions
+      tags:
+      - cloud-resource
+      x-contentType: application/json
+      x-accepts: application/json
+components:
+  schemas:
+    InfraResource:
+      example:
+        tessellCloudAccountId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        dateCreated: 2000-01-23T04:56:07.000+00:00
+        resourcePurpose: resourcePurpose
+        cloudResourceUrl: cloudResourceUrl
+        tenantId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        dateModified: 2000-01-23T04:56:07.000+00:00
+        cloudLocationId: cloudLocationId
+        resourceInfo:
+          data: '{}'
+          parameters:
+            key:
+              valueType: valueType
+              secure: true
+              value: value
+      properties:
+        cloudLocationId:
+          description: Resource's  cloud location Id
+          type: string
+        cloudResourceUrl:
+          description: Infra resource's cloud URL
+          maxLength: 2147483647
+          minLength: 3
+          type: string
+        resourceInfo:
+          $ref: '#/components/schemas/InfraResourceInfo'
+        resourcePurpose:
+          description: Infra Resource purpose
+          type: string
+        resourceType:
+          $ref: '#/components/schemas/InfraResourceType'
+        status:
+          $ref: '#/components/schemas/InfraResourceStatus'
+        tenantId:
+          description: Resource's Tessell tenant account id
+          format: uuid
+          type: string
+        tessellCloudAccountId:
+          description: Resource's Tessell cloud account ID
+          format: uuid
+          type: string
+        dateCreated:
+          description: Timestamp when the tenant was registered
+          format: date-time
+          type: string
+        dateModified:
+          description: Timestamp when the Tenant entry was last modified
+          format: date-time
+          type: string
+      title: InfraResource
+      type: object
+    InfraResourceType:
+      description: Tessell Infra Resource status
+      enum:
+      - AWS_EC2_REPO
+      - AWS_EKS
+      - AWS_LAMBDA
+      - AWS_SQS
+      - AWS_VPC
+      - AWS_S3
+      - AWS_DYNAMODB
+      - AZURE_AKS
+      - AZURE_AQS
+      - AZURE_BLOB_STORAGE
+      - AZURE_FUNCTION
+      - AZURE_WORKSPACE
+      - AZURE_VNET
+      - AWS_IAM
+      - AZURE_LOG_ANALYTICS_WORKSPACE
+      - AZURE_RESOURCE_GROUP
+      - RECOVERY_SERVICE_VAULT
+      - AZURE_STORAGE_ACCOUNT
+      - AZURE_USER_ASSIGNED_IDENTITY
+      - AZURE_APP_GTW
+      - AZURE_KEY_VAULT
+      - METADATA_REPO
+      - AZURE_B2C_TENANT
+      - AZURE_DNS
+      type: string
+    InfraResourceStatus:
+      description: Tessell Infra Resource Type
+      enum:
+      - CREATED
+      - CREATING
+      - DELETED
+      - DELETING
+      - STOPPED
+      type: string
+    InfraResourceInfo:
+      example:
+        data: '{}'
+        parameters:
+          key:
+            valueType: valueType
+            secure: true
+            value: value
+      properties:
+        data:
+          type: object
+        parameters:
+          additionalProperties:
+            $ref: '#/components/schemas/parameter'
+          type: object
+      title: InfraResourceInfo
+      type: object
+    TaskWorkflowVariablesPayload:
+      example:
+        variables: variables
+        workflowName: workflowName
+      properties:
+        workflowName:
+          type: string
+        variables:
+          type: string
+      required:
+      - variables
+      - workflowName
+      title: TaskWorkflowVariablesPayload
+    K8sName:
+      description: K8s name object
+      example:
+        name: name
+      properties:
+        name:
+          description: Name of the K8s cluster
+          type: string
+      required:
+      - name
+      title: K8s name
+      type: object
+    DnsRecordUpdatePayload:
+      description: Payload for updating the dns record
+      example:
+        ip: ip
+        domainName: domainName
+        dnsService: AZURE_DNS
+        cloudAccountId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        dnsName: dnsName
+        region: region
+        ttl: ""
+      properties:
+        ip:
+          description: IP address of the Virtual Machine
+          format: ip4
+          type: string
+        dnsName:
+          description: DNS name of the Virtual Machine
+          type: string
+        domainName:
+          description: Domain name
+          type: string
+        ttl:
+          description: Time to live value for the DNS record
+          type: int
+        region:
+          description: Cloud region
+          type: string
+        dnsService:
+          description: DNS service being used
+          enum:
+          - AZURE_DNS
+          - ROUTE_53
+          - NO_DNS
+          type: string
+        cloudAccountId:
+          description: Cloud account ID for the account where DNS record is present
+          format: uuid
+          type: string
+      required:
+      - dnsName
+      - dnsService
+      - domainName
+      - ip
+      - region
+      - ttl
+      title: DnsRecordUpdatePayload
+      type: object
+    ApiErrorOps:
+      description: Common error response object for non 2xx responses of internal
+        or ops APIs
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/TessellErrorCode'
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        serviceException:
+          $ref: '#/components/schemas/ApiError'
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    TessellErrorCode:
+      description: Error code object for API Exceptions
+      properties:
+        httpErrorCode:
+          description: Standard http error code
+          type: string
+        serviceCode:
+          description: Service error code
+          type: string
+        opCode:
+          description: Operation error code
+          type: string
+        description:
+          description: Error code description
+          type: string
+      type: object
+    ApiErrorDetails:
+      description: Common API exception details
+      properties:
+        resolution:
+          description: Resolution detail for API exception
+          type: string
+      type: object
+    ApiError:
+      description: Common error response object for non 2xx responses
+      properties:
+        code:
+          description: Status code for the error response
+          type: string
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        defaultCodeSet:
+          type: boolean
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    apiStatus:
+      example:
+        message: message
+        status: status
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+      title: apiStatus
+      type: object
+    parameter:
+      example:
+        valueType: valueType
+        secure: true
+        value: value
+      properties:
+        secure:
+          type: boolean
+        value:
+          type: string
+        valueType:
+          type: string
+      title: parameter
+      type: object
+    PresignedUrl:
+      example:
+        presigned-url: presigned-url
+      properties:
+        presigned-url:
+          type: string
+      required:
+      - presigned-url
+      title: PresignedUrl
+      type: object
+

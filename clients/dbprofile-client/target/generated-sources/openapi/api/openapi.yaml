@@ -1,0 +1,2338 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: support@tessell.com
+    name: Inc
+    url: https://www.tessell.com
+  description: REST API Documentation
+  termsOfService: https://www.tessell.com/terms
+  title: REST API Documentation
+  version: "1.0"
+servers:
+- description: Inferred Url
+  url: http://localhost:8084
+paths:
+  /tessell-ops/databases/profiles/options-profile-types:
+    get:
+      operationId: getDatabaseOptionProfileTypesOps
+      parameters:
+      - description: name
+        explode: true
+        in: query
+        name: name
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: status
+        explode: true
+        in: query
+        name: status
+        required: false
+        schema:
+          $ref: '#/components/schemas/DatabaseOptionTypeStatus'
+        style: form
+      - description: engine-type
+        explode: true
+        in: query
+        name: engine-type
+        required: false
+        schema:
+          $ref: '#/components/schemas/databaseEngineType'
+        style: form
+      - description: version
+        explode: true
+        in: query
+        name: version
+        required: false
+        schema:
+          example: "15.5"
+          maxLength: 32
+          minLength: 1
+          type: string
+        style: form
+      - description: multiple (Deprecated)
+        explode: true
+        in: query
+        name: multiple
+        required: false
+        schema:
+          default: true
+          type: boolean
+        style: form
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      - description: Timezone for return data
+        in: query
+        name: time-zone
+        required: false
+        schema:
+          default: UTC
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionTypeListResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get a list of available Tessell Database Options Profile Types
+      tags:
+      - tessell-database-profile-controller
+      x-accepts: application/json
+  /tessell-ops/databases/profiles/options-profile-types/{id}:
+    get:
+      operationId: getDatabaseOptionProfileTypesOpsById
+      parameters:
+      - description: id
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionTypeDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: View available Tessell Database Options Profile Types by Id
+      tags:
+      - tessell-database-profile-controller
+      x-accepts: application/json
+  /databases/profiles/options-profile-types:
+    get:
+      operationId: getDatabaseOptionProfileTypes
+      parameters:
+      - description: Status of an Options Profile Type
+        explode: true
+        in: query
+        name: status
+        required: false
+        schema:
+          $ref: '#/components/schemas/DatabaseOptionTypeStatus'
+        style: form
+      - description: Database Engine type
+        explode: true
+        in: query
+        name: engine-type
+        required: false
+        schema:
+          $ref: '#/components/schemas/databaseEngineType'
+        style: form
+      - description: Database Engine version
+        explode: true
+        in: query
+        name: version
+        required: false
+        schema:
+          example: "15.5"
+          maxLength: 32
+          minLength: 1
+          type: string
+        style: form
+      - description: multiple (Deprecated)
+        explode: true
+        in: query
+        name: multiple
+        required: false
+        schema:
+          default: true
+          type: boolean
+        style: form
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      - description: Timezone for return data
+        in: query
+        name: time-zone
+        required: false
+        schema:
+          default: UTC
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionTypeListResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get a list of available Tessell Database Options Profile Types
+      tags:
+      - tessell-database-profile-controller
+      x-accepts: application/json
+  /databases/profiles/options-profile-types/{name}:
+    get:
+      operationId: getDatabaseOptionProfileTypesByName
+      parameters:
+      - description: Options Profile name
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          example: Postgres Default Options Profile
+          maxLength: 64
+          minLength: 1
+          type: string
+        style: simple
+      - description: Flag to include / exclude ACL information
+        explode: true
+        in: query
+        name: load-acls
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionTypeDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get Options Profile Types by name
+      tags:
+      - tessell-database-profile-controller
+      x-accepts: application/json
+  /tessell-ops/databases/profiles/options-profiles:
+    get:
+      operationId: getDatabaseOptionProfilesOps
+      parameters:
+      - description: tenant id
+        explode: true
+        in: query
+        name: tenant-id
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: name
+        explode: true
+        in: query
+        name: name
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: status
+        explode: true
+        in: query
+        name: status
+        required: false
+        schema:
+          $ref: '#/components/schemas/DatabaseOptionProfileStatus'
+        style: form
+      - description: engine-type
+        explode: true
+        in: query
+        name: engine-type
+        required: false
+        schema:
+          $ref: '#/components/schemas/databaseEngineType'
+        style: form
+      - description: version
+        explode: true
+        in: query
+        name: version
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: multiple (Deprecated)
+        explode: true
+        in: query
+        name: multiple
+        required: false
+        schema:
+          default: true
+          type: boolean
+        style: form
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      - description: Timezone for return data
+        in: query
+        name: time-zone
+        required: false
+        schema:
+          default: UTC
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionProfileListResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Get a list of available Database Options Profiles
+      tags:
+      - tessell-database-profile-controller
+      x-accepts: application/json
+  /databases/profiles/governance/options-profiles:
+    get:
+      operationId: getDatabaseOptionProfiles
+      parameters:
+      - description: Status of an Options Profile
+        explode: true
+        in: query
+        name: status
+        required: false
+        schema:
+          $ref: '#/components/schemas/DatabaseOptionProfileStatus'
+        style: form
+      - description: Database Engine type
+        explode: true
+        in: query
+        name: engine-type
+        required: false
+        schema:
+          $ref: '#/components/schemas/databaseEngineType'
+        style: form
+      - description: Database Engine version
+        explode: true
+        in: query
+        name: version
+        required: false
+        schema:
+          example: "15.5"
+          maxLength: 32
+          minLength: 1
+          type: string
+        style: form
+      - description: Flag to include / exclude ACL information
+        explode: true
+        in: query
+        name: load-acls
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: multiple (Deprecated)
+        explode: true
+        in: query
+        name: multiple
+        required: false
+        schema:
+          default: true
+          type: boolean
+        style: form
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      - description: Timezone for return data
+        in: query
+        name: time-zone
+        required: false
+        schema:
+          default: UTC
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionProfileListResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get a list of available Database Options Profiles
+      tags:
+      - tessell-database-profile-controller
+      x-accepts: application/json
+    post:
+      operationId: createDatabaseOptionProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TessellDatabaseOptionProfileDTO'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionProfileDTO'
+          description: OK
+        "201":
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Create a new Options Profile
+      tags:
+      - tessell-database-profile-controller
+      x-contentType: application/json
+      x-accepts: application/json
+  /databases/profiles/governance/options-profiles/{name}:
+    get:
+      operationId: getDatabaseOptionProfilesByName
+      parameters:
+      - description: Options Profile name
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          example: Postgres Custom Option Profile
+          maxLength: 64
+          minLength: 1
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionProfileDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get an Options Profile by name
+      tags:
+      - tessell-database-profile-controller
+      x-accepts: application/json
+  /databases/profiles/options-profiles:
+    get:
+      operationId: getDatabaseOptionProfilesForConsumption
+      parameters:
+      - description: Status of an Options Profile
+        explode: true
+        in: query
+        name: status
+        required: false
+        schema:
+          $ref: '#/components/schemas/DatabaseOptionProfileStatus'
+        style: form
+      - description: Database Engine type
+        explode: true
+        in: query
+        name: engine-type
+        required: false
+        schema:
+          $ref: '#/components/schemas/databaseEngineType'
+        style: form
+      - description: Database Engine type
+        explode: true
+        in: query
+        name: version
+        required: false
+        schema:
+          example: "15.5"
+          maxLength: 32
+          minLength: 1
+          type: string
+        style: form
+      - description: Flag to include / exclude ACL information
+        explode: true
+        in: query
+        name: load-acls
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: multiple (Deprecated)
+        explode: true
+        in: query
+        name: multiple
+        required: false
+        schema:
+          default: true
+          type: boolean
+        style: form
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      - description: Timezone for return data
+        in: query
+        name: time-zone
+        required: false
+        schema:
+          default: UTC
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionProfileConsumptionListResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get a list of available Tessell Database Options Profiles
+      tags:
+      - tessell-database-profile-controller
+      x-accepts: application/json
+  /databases/profiles/options-profiles/{name}:
+    get:
+      operationId: getDatabaseOptionProfilesConsumptionByName
+      parameters:
+      - description: Options Profile name
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          example: Postgres Custom Option Profile
+          maxLength: 64
+          minLength: 1
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionProfileConsumptionDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get an Options Profile by name
+      tags:
+      - tessell-database-profile-controller
+      x-accepts: application/json
+  /databases/profiles/options-profiles/{id}:
+    delete:
+      operationId: deleteDatabaseOptionProfile
+      parameters:
+      - description: Options Profile identifier
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: When set to false, it permanently deletes a Parameter Profile.
+          When set to true, Option Profile can be recovered by contacting Tessell
+          Support.
+        explode: true
+        in: query
+        name: soft-delete
+        required: false
+        schema:
+          default: true
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Delete an Options Profile
+      tags:
+      - tessell-database-profile-controller
+      x-accepts: application/json
+    patch:
+      operationId: updateDatabaseOptionProfile
+      parameters:
+      - description: Option Profile identifier
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TessellDatabaseOptionProfileDTO'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionProfileDTO'
+          description: OK
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Update an Options Profile
+      tags:
+      - tessell-database-profile-controller
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-ops/databases/profiles/options-profiles/{id}:
+    delete:
+      operationId: deleteDatabaseOptionProfileOps
+      parameters:
+      - description: Options Profile identifier
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: soft-delete
+        explode: true
+        in: query
+        name: soft-delete
+        required: false
+        schema:
+          default: true
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Delete a Tessell Database Options Profile
+      tags:
+      - tessell-database-profile-controller
+      x-accepts: application/json
+    get:
+      operationId: getDatabaseOptionProfilesOpsById
+      parameters:
+      - description: id
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: tenant id
+        explode: true
+        in: query
+        name: tenant-id
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionProfileDTO'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: View available Tessell Database Options Profiles by Id
+      tags:
+      - tessell-database-profile-controller
+      x-accepts: application/json
+    patch:
+      operationId: updateDatabaseOptionProfileOps
+      parameters:
+      - description: Options Profile identifier
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TessellDatabaseOptionProfileDTO'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TessellDatabaseOptionProfileDTO'
+          description: OK
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Update a Tessell Database Options Profile
+      tags:
+      - tessell-database-profile-controller
+      x-contentType: application/json
+      x-accepts: application/json
+  /databases/profiles/governance/parameter-profiles/{name}/acls:
+    delete:
+      operationId: revokeDBParameterProfileAcls
+      parameters:
+      - description: Options Profile name
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          example: Postgres Custom Option Profile
+          maxLength: 64
+          minLength: 1
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AclRevokePayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Revoke access of given users from a Parameter Profile
+      tags:
+      - tessell-DBProfile-acls-controller
+      x-contentType: application/json
+      x-accepts: application/json
+    patch:
+      operationId: createDBParameterProfileAcls
+      parameters:
+      - description: Options Profile name
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          example: Postgres Custom Option Profile
+          maxLength: 64
+          minLength: 1
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AclPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AclPayload'
+          description: OK
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Create/Update ACLs of a Parameter Profile
+      tags:
+      - tessell-DBProfile-acls-controller
+      x-contentType: application/json
+      x-accepts: application/json
+  /databases/profiles/governance/options-profiles/{name}/acls:
+    delete:
+      operationId: revokeDBOptionsProfileAcls
+      parameters:
+      - description: Options Profile name
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          example: Postgres Custom Option Profile
+          maxLength: 64
+          minLength: 1
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AclRevokePayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Revoke access of given users from an Options Profile
+      tags:
+      - tessell-DBProfile-acls-controller
+      x-contentType: application/json
+      x-accepts: application/json
+    patch:
+      operationId: createDBOptionsProfileAcls
+      parameters:
+      - description: Options Profile name
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          example: Postgres Custom Option Profile
+          maxLength: 64
+          minLength: 1
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AclPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AclPayload'
+          description: OK
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Create/Update ACLs of an Options Profile
+      tags:
+      - tessell-DBProfile-acls-controller
+      x-contentType: application/json
+      x-accepts: application/json
+  /databases/profiles/governance/parameter-profiles/{name}/acls/eligible-users:
+    get:
+      operationId: getPrivilegedUserForDBParameterProfile
+      parameters:
+      - description: Parameter Profile name
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          example: Postgres Custom Parameter Profile
+          maxLength: 64
+          minLength: 1
+          type: string
+        style: simple
+      - description: role
+        explode: true
+        in: query
+        name: role
+        required: false
+        schema:
+          example: Member
+          maxLength: 64
+          minLength: 1
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AclEligibleUser'
+                type: array
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get a list of all users along with role they are eligible on a Parameter
+        Profile
+      tags:
+      - tessell-DBProfile-acls-controller
+      x-accepts: application/json
+  /databases/profiles/governance/options-profiles/{name}/acls/eligible-users:
+    get:
+      operationId: getPrivilegedUserForDBOptionsProfile
+      parameters:
+      - description: Options Profile name
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          example: Postgres Custom Option Profile
+          maxLength: 64
+          minLength: 1
+          type: string
+        style: simple
+      - description: Name of role
+        explode: true
+        in: query
+        name: role
+        required: false
+        schema:
+          example: Member
+          maxLength: 64
+          minLength: 1
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AclEligibleUser'
+                type: array
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get a list of all users along with role they are eligible on an Options
+        Profile
+      tags:
+      - tessell-DBProfile-acls-controller
+      x-accepts: application/json
+  /databases/profiles/governance/options-profiles/{name}/{action}:
+    patch:
+      operationId: updateOptionProfileStatus
+      parameters:
+      - description: Options Profile name
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          example: Postgres Custom Option Profile
+          maxLength: 64
+          minLength: 1
+          type: string
+        style: simple
+      - description: Actions like DRAFT/PUBLISH/UNPUBLISH
+        explode: false
+        in: path
+        name: action
+        required: true
+        schema:
+          example: PUBLISH
+          maxLength: 32
+          minLength: 1
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Update Options Profile's Maturity Status
+      tags:
+      - tessell-DBProfile-acls-controller
+      x-accepts: application/json
+  /databases/profiles/governance/parameter-profiles/{name}/{action}:
+    patch:
+      operationId: updateParameterProfileStatus
+      parameters:
+      - description: Parameter Profile name
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          example: Postgres Custom Parameter Profile
+          maxLength: 64
+          minLength: 1
+          type: string
+        style: simple
+      - description: Actions like DRAFT/PUBLISH/UNPUBLISH
+        explode: false
+        in: path
+        name: action
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        "204":
+          description: No Content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Update Parameter Profile's Maturity Status
+      tags:
+      - tessell-DBProfile-acls-controller
+      x-accepts: application/json
+components:
+  schemas:
+    TessellDatabaseOptionTypeListResponse:
+      allOf:
+      - $ref: '#/components/schemas/apiResponse'
+      example:
+        response:
+        - name: name
+          options:
+          - permanent: true
+            name: name
+            description: description
+            applyNow: true
+            persistent: true
+            optionSettings:
+            - allowedValues: allowedValues
+              dataType: dataType
+              name: name
+              description: description
+            - allowedValues: allowedValues
+              dataType: dataType
+              name: name
+              description: description
+          - permanent: true
+            name: name
+            description: description
+            applyNow: true
+            persistent: true
+            optionSettings:
+            - allowedValues: allowedValues
+              dataType: dataType
+              name: name
+              description: description
+            - allowedValues: allowedValues
+              dataType: dataType
+              name: name
+              description: description
+          description: description
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          version: version
+        - name: name
+          options:
+          - permanent: true
+            name: name
+            description: description
+            applyNow: true
+            persistent: true
+            optionSettings:
+            - allowedValues: allowedValues
+              dataType: dataType
+              name: name
+              description: description
+            - allowedValues: allowedValues
+              dataType: dataType
+              name: name
+              description: description
+          - permanent: true
+            name: name
+            description: description
+            applyNow: true
+            persistent: true
+            optionSettings:
+            - allowedValues: allowedValues
+              dataType: dataType
+              name: name
+              description: description
+            - allowedValues: allowedValues
+              dataType: dataType
+              name: name
+              description: description
+          description: description
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          version: version
+      properties:
+        response:
+          items:
+            $ref: '#/components/schemas/TessellDatabaseOptionTypeDTO'
+          type: array
+      title: TessellDatabaseOptionTypeListResponse
+      type: object
+    TessellDatabaseOptionProfileListResponse:
+      allOf:
+      - $ref: '#/components/schemas/apiResponse'
+      example:
+        response:
+        - owner: owner
+          metadata:
+            data: '{}'
+          oob: true
+          description: Custom Options Profile
+          dateModified: 2000-01-23T04:56:07.000+00:00
+          sharedWith:
+            users:
+            - role: role
+              emailId: emailId
+            - role: role
+              emailId: emailId
+          userId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          version: "15.5"
+          driverInfo:
+            data: '{}'
+          dateCreated: 2000-01-23T04:56:07.000+00:00
+          loggedInUserRole: loggedInUserRole
+          name: Postgres Custom Option Profile
+          optionTypeId: 123e4567-e89b-12d3-a456-426614174001
+          tenantId: 12345678-abcd-1234-abcd-1234abcd5678
+          options:
+          - name: NATIVE_NETWORK_ENCRYPTION
+            applyNow: true
+            optionSettings:
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+          - name: NATIVE_NETWORK_ENCRYPTION
+            applyNow: true
+            optionSettings:
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+          - name: NATIVE_NETWORK_ENCRYPTION
+            applyNow: true
+            optionSettings:
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+          - name: NATIVE_NETWORK_ENCRYPTION
+            applyNow: true
+            optionSettings:
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+          - name: NATIVE_NETWORK_ENCRYPTION
+            applyNow: true
+            optionSettings:
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+          id: 123e4567-e89b-12d3-a456-426614174000
+        - owner: owner
+          metadata:
+            data: '{}'
+          oob: true
+          description: Custom Options Profile
+          dateModified: 2000-01-23T04:56:07.000+00:00
+          sharedWith:
+            users:
+            - role: role
+              emailId: emailId
+            - role: role
+              emailId: emailId
+          userId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          version: "15.5"
+          driverInfo:
+            data: '{}'
+          dateCreated: 2000-01-23T04:56:07.000+00:00
+          loggedInUserRole: loggedInUserRole
+          name: Postgres Custom Option Profile
+          optionTypeId: 123e4567-e89b-12d3-a456-426614174001
+          tenantId: 12345678-abcd-1234-abcd-1234abcd5678
+          options:
+          - name: NATIVE_NETWORK_ENCRYPTION
+            applyNow: true
+            optionSettings:
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+          - name: NATIVE_NETWORK_ENCRYPTION
+            applyNow: true
+            optionSettings:
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+          - name: NATIVE_NETWORK_ENCRYPTION
+            applyNow: true
+            optionSettings:
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+          - name: NATIVE_NETWORK_ENCRYPTION
+            applyNow: true
+            optionSettings:
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+          - name: NATIVE_NETWORK_ENCRYPTION
+            applyNow: true
+            optionSettings:
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+          id: 123e4567-e89b-12d3-a456-426614174000
+      properties:
+        response:
+          items:
+            $ref: '#/components/schemas/TessellDatabaseOptionProfileDTO'
+          type: array
+      title: TessellDatabaseOptionProfileListResponse
+      type: object
+    TessellDatabaseOptionProfileConsumptionListResponse:
+      allOf:
+      - $ref: '#/components/schemas/apiResponse'
+      example:
+        response:
+        - owner: owner
+          driverInfo:
+            data: '{}'
+          metadata:
+            data: '{}'
+          optionTypeId: 123e4567-e89b-12d3-a456-426614174001
+          name: sample_entity
+          options:
+          - name: NATIVE_NETWORK_ENCRYPTION
+            applyNow: true
+            optionSettings:
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+          - name: NATIVE_NETWORK_ENCRYPTION
+            applyNow: true
+            optionSettings:
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+          tenantId: tenantId
+          description: description
+          id: 123e4567-e89b-12d3-a456-426614174000
+          version: version
+        - owner: owner
+          driverInfo:
+            data: '{}'
+          metadata:
+            data: '{}'
+          optionTypeId: 123e4567-e89b-12d3-a456-426614174001
+          name: sample_entity
+          options:
+          - name: NATIVE_NETWORK_ENCRYPTION
+            applyNow: true
+            optionSettings:
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+          - name: NATIVE_NETWORK_ENCRYPTION
+            applyNow: true
+            optionSettings:
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+            - name: SQLNET.ENCRYPTION_TYPES_SERVER
+              value: AES256
+          tenantId: tenantId
+          description: description
+          id: 123e4567-e89b-12d3-a456-426614174000
+          version: version
+      properties:
+        response:
+          items:
+            $ref: '#/components/schemas/TessellDatabaseOptionProfileConsumptionDTO'
+          type: array
+      title: TessellDatabaseOptionProfileConsumptionListResponse
+      type: object
+    DatabaseOptionProfileDriverInfo:
+      example:
+        data: '{}'
+      properties:
+        data:
+          type: object
+      title: DatabaseOptionProfileDriverInfo
+      type: object
+    DatabaseOptionProfileMetadata:
+      example:
+        data: '{}'
+      properties:
+        data:
+          type: object
+      title: DatabaseOptionProfileMetadata
+      type: object
+    DatabaseOptionSettingType:
+      example:
+        allowedValues: allowedValues
+        dataType: dataType
+        name: name
+        description: description
+      properties:
+        allowedValues:
+          type: string
+        dataType:
+          type: string
+        description:
+          type: string
+        name:
+          type: string
+      title: DatabaseOptionSettingType
+      type: object
+    DatabaseOptionType:
+      example:
+        permanent: true
+        name: name
+        description: description
+        applyNow: true
+        persistent: true
+        optionSettings:
+        - allowedValues: allowedValues
+          dataType: dataType
+          name: name
+          description: description
+        - allowedValues: allowedValues
+          dataType: dataType
+          name: name
+          description: description
+      properties:
+        applyNow:
+          type: boolean
+        description:
+          type: string
+        name:
+          type: string
+        optionSettings:
+          items:
+            $ref: '#/components/schemas/DatabaseOptionSettingType'
+          type: array
+        permanent:
+          type: boolean
+        persistent:
+          type: boolean
+      title: DatabaseOptionType
+      type: object
+    DatabaseParameterProfileDriverInfoOld:
+      properties:
+        data:
+          type: object
+      title: DatabaseParameterProfileDriverInfoOld
+      type: object
+    DatabaseParameterProfileMetadataOld:
+      properties:
+        data:
+          type: object
+      title: DatabaseParameterProfileMetadataOld
+      type: object
+    DatabaseParameterTypeOld:
+      properties:
+        allowedValues:
+          type: string
+        applyType:
+          type: string
+        dataType:
+          type: string
+        defaultValue:
+          type: string
+        description:
+          type: string
+        name:
+          type: string
+      title: DatabaseParameterTypeOld
+      type: object
+    DatabaseProfileOptionSettingType:
+      example:
+        name: SQLNET.ENCRYPTION_TYPES_SERVER
+        value: AES256
+      properties:
+        name:
+          example: SQLNET.ENCRYPTION_TYPES_SERVER
+          maxLength: 128
+          minLength: 1
+          type: string
+        value:
+          example: AES256
+          maxLength: 1000
+          minLength: 1
+          type: string
+      required:
+      - name
+      - value
+      title: DatabaseProfileOptionSettingType
+      type: object
+    DatabaseProfileOptionType:
+      example:
+        name: NATIVE_NETWORK_ENCRYPTION
+        applyNow: true
+        optionSettings:
+        - name: SQLNET.ENCRYPTION_TYPES_SERVER
+          value: AES256
+        - name: SQLNET.ENCRYPTION_TYPES_SERVER
+          value: AES256
+        - name: SQLNET.ENCRYPTION_TYPES_SERVER
+          value: AES256
+        - name: SQLNET.ENCRYPTION_TYPES_SERVER
+          value: AES256
+        - name: SQLNET.ENCRYPTION_TYPES_SERVER
+          value: AES256
+      properties:
+        applyNow:
+          type: boolean
+        name:
+          description: Option name
+          example: NATIVE_NETWORK_ENCRYPTION
+          maxLength: 128
+          minLength: 1
+          type: string
+        optionSettings:
+          items:
+            $ref: '#/components/schemas/DatabaseProfileOptionSettingType'
+          maxItems: 50
+          minItems: 0
+          type: array
+      required:
+      - applyNow
+      - name
+      - optionSettings
+      title: DatabaseProfileOptionType
+      type: object
+    DatabaseProfileParameterTypeOld:
+      properties:
+        applyType:
+          type: string
+        name:
+          type: string
+        value:
+          type: string
+      title: DatabaseProfileParameterTypeOld
+      type: object
+    TessellDatabaseOptionProfileDTO:
+      description: This is a definition for Tessell Database Option Profile Object
+      example:
+        owner: owner
+        metadata:
+          data: '{}'
+        oob: true
+        description: Custom Options Profile
+        dateModified: 2000-01-23T04:56:07.000+00:00
+        sharedWith:
+          users:
+          - role: role
+            emailId: emailId
+          - role: role
+            emailId: emailId
+        userId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        version: "15.5"
+        driverInfo:
+          data: '{}'
+        dateCreated: 2000-01-23T04:56:07.000+00:00
+        loggedInUserRole: loggedInUserRole
+        name: Postgres Custom Option Profile
+        optionTypeId: 123e4567-e89b-12d3-a456-426614174001
+        tenantId: 12345678-abcd-1234-abcd-1234abcd5678
+        options:
+        - name: NATIVE_NETWORK_ENCRYPTION
+          applyNow: true
+          optionSettings:
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+        - name: NATIVE_NETWORK_ENCRYPTION
+          applyNow: true
+          optionSettings:
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+        - name: NATIVE_NETWORK_ENCRYPTION
+          applyNow: true
+          optionSettings:
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+        - name: NATIVE_NETWORK_ENCRYPTION
+          applyNow: true
+          optionSettings:
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+        - name: NATIVE_NETWORK_ENCRYPTION
+          applyNow: true
+          optionSettings:
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+        id: 123e4567-e89b-12d3-a456-426614174000
+      properties:
+        id:
+          description: Tessell generated UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+          type: string
+        name:
+          description: Name of an Options Profile
+          example: Postgres Custom Option Profile
+          maxLength: 64
+          minLength: 1
+          type: string
+        description:
+          description: Description of an Options Profile
+          example: Custom Options Profile
+          maxLength: 128
+          minLength: 0
+          type: string
+        oob:
+          description: Database Option Profile description
+          type: boolean
+        engineType:
+          $ref: '#/components/schemas/databaseEngineType'
+        status:
+          $ref: '#/components/schemas/DatabaseOptionProfileStatus'
+        maturityStatus:
+          $ref: '#/components/schemas/DatabaseOptionProfileMaturityStatus'
+        optionTypeId:
+          description: Tessell option type UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174001
+          format: uuid
+          type: string
+        owner:
+          maxLength: 128
+          minLength: 1
+          type: string
+        tenantId:
+          example: 12345678-abcd-1234-abcd-1234abcd5678
+          maxLength: 128
+          minLength: 1
+          type: string
+        loggedInUserRole:
+          description: The role of the logged in user for accessing the db profile
+          maxLength: 128
+          minLength: 1
+          type: string
+        options:
+          description: Database Option Profile's associated options
+          items:
+            $ref: '#/components/schemas/DatabaseProfileOptionType'
+          maxItems: 1000
+          minItems: 1
+          type: array
+        metadata:
+          $ref: '#/components/schemas/DatabaseOptionProfileMetadata'
+        driverInfo:
+          $ref: '#/components/schemas/DatabaseOptionProfileDriverInfo'
+        userId:
+          description: Database Option Profile's user id
+          format: uuid
+          type: string
+        sharedWith:
+          $ref: '#/components/schemas/EntityAclSharingInfo'
+        version:
+          description: Database Engine version
+          example: "15.5"
+          maxLength: 32
+          minLength: 1
+          type: string
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+      required:
+      - engineType
+      - name
+      - options
+      - version
+      title: TessellDatabaseOptionProfileDTO
+      type: object
+    TessellDatabaseParameterProfileDTO:
+      description: This is a definition for Tessell Database Parameter Profile Object
+      properties:
+        id:
+          description: Tessell generated UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+          type: string
+        name:
+          description: Name of the entity
+          example: sample_entity
+          type: string
+        description:
+          description: Database Parameter Profile description
+          type: string
+        oob:
+          type: boolean
+        engineType:
+          $ref: '#/components/schemas/databaseEngineType'
+        parameterTypeId:
+          description: Tessell parameter type UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174001
+          format: uuid
+          type: string
+        status:
+          $ref: '#/components/schemas/DatabaseParameterProfileStatusOld'
+        maturityStatus:
+          $ref: '#/components/schemas/DatabaseParameterProfileMaturityStatusOld'
+        owner:
+          type: string
+        tenantId:
+          type: string
+        loggedInUserRole:
+          description: The role of the logged in user for accessing the db profile
+          type: string
+        parameters:
+          description: Database Parameter Profile's associated parameters
+          items:
+            $ref: '#/components/schemas/DatabaseProfileParameterTypeOld'
+          type: array
+        metadata:
+          $ref: '#/components/schemas/DatabaseParameterProfileMetadataOld'
+        driverInfo:
+          $ref: '#/components/schemas/DatabaseParameterProfileDriverInfoOld'
+        topology:
+          description: Database Parameter Profile's topology
+          type: string
+        userId:
+          description: Database Parameter Profile's user id
+          format: uuid
+          type: string
+        sharedWith:
+          $ref: '#/components/schemas/EntityAclSharingInfo'
+        version:
+          description: Database Parameter Profile's version
+          type: string
+        dateCreated:
+          description: Timestamp when the entity was created
+          format: date-time
+          type: string
+        dateModified:
+          description: Timestamp when the entity was last modified
+          format: date-time
+          type: string
+      required:
+      - name
+      title: TessellDatabaseParameterProfileDTO
+      type: object
+    TessellDatabaseOptionProfileConsumptionDTO:
+      example:
+        owner: owner
+        driverInfo:
+          data: '{}'
+        metadata:
+          data: '{}'
+        optionTypeId: 123e4567-e89b-12d3-a456-426614174001
+        name: sample_entity
+        options:
+        - name: NATIVE_NETWORK_ENCRYPTION
+          applyNow: true
+          optionSettings:
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+        - name: NATIVE_NETWORK_ENCRYPTION
+          applyNow: true
+          optionSettings:
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+          - name: SQLNET.ENCRYPTION_TYPES_SERVER
+            value: AES256
+        tenantId: tenantId
+        description: description
+        id: 123e4567-e89b-12d3-a456-426614174000
+        version: version
+      properties:
+        description:
+          type: string
+        driverInfo:
+          $ref: '#/components/schemas/DatabaseOptionProfileDriverInfo'
+        engineType:
+          $ref: '#/components/schemas/databaseEngineType'
+        id:
+          description: Tessell generated UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+          type: string
+        optionTypeId:
+          description: Tessell option type UUID for the entity
+          example: 123e4567-e89b-12d3-a456-426614174001
+          format: uuid
+          type: string
+        metadata:
+          $ref: '#/components/schemas/DatabaseOptionProfileMetadata'
+        name:
+          description: Name of the entity
+          example: sample_entity
+          type: string
+        maturityStatus:
+          $ref: '#/components/schemas/DatabaseOptionProfileMaturityStatus'
+        options:
+          description: Database Option Profile's associated options
+          items:
+            $ref: '#/components/schemas/DatabaseProfileOptionType'
+          type: array
+        owner:
+          type: string
+        tenantId:
+          type: string
+        version:
+          description: Database Option Profile's version
+          type: string
+      required:
+      - name
+      title: TessellDatabaseOptionProfileConsumptionDTO
+      type: object
+    TessellDatabaseParameterTypeDTO:
+      properties:
+        id:
+          format: uuid
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        engineType:
+          $ref: '#/components/schemas/databaseEngineType'
+        version:
+          type: string
+        topology:
+          type: string
+        status:
+          $ref: '#/components/schemas/DatabaseParameterTypeStatusOld'
+        parameters:
+          items:
+            $ref: '#/components/schemas/DatabaseParameterTypeOld'
+          type: array
+      title: TessellDatabaseParameterTypeDTO
+      type: object
+    TessellDatabaseOptionTypeDTO:
+      example:
+        name: name
+        options:
+        - permanent: true
+          name: name
+          description: description
+          applyNow: true
+          persistent: true
+          optionSettings:
+          - allowedValues: allowedValues
+            dataType: dataType
+            name: name
+            description: description
+          - allowedValues: allowedValues
+            dataType: dataType
+            name: name
+            description: description
+        - permanent: true
+          name: name
+          description: description
+          applyNow: true
+          persistent: true
+          optionSettings:
+          - allowedValues: allowedValues
+            dataType: dataType
+            name: name
+            description: description
+          - allowedValues: allowedValues
+            dataType: dataType
+            name: name
+            description: description
+        description: description
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        version: version
+      properties:
+        id:
+          format: uuid
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        engineType:
+          $ref: '#/components/schemas/databaseEngineType'
+        version:
+          type: string
+        status:
+          $ref: '#/components/schemas/DatabaseOptionTypeStatus'
+        options:
+          items:
+            $ref: '#/components/schemas/DatabaseOptionType'
+          type: array
+      title: TessellDatabaseOptionTypeDTO
+      type: object
+    DatabaseParameterProfileStatusOld:
+      description: Database ParameterProfile Status
+      enum:
+      - DELETED
+      - DELETING
+      - DRAFT
+      - PUBLISH
+      - UNPUBLISH
+      type: string
+    DatabaseOptionProfileStatus:
+      description: Database OptionsProfile Status
+      enum:
+      - DELETED
+      - DELETING
+      - DRAFT
+      - PUBLISH
+      - UNPUBLISH
+      type: string
+    DatabaseParameterProfileMaturityStatusOld:
+      description: Database ParameterProfile Status
+      enum:
+      - DRAFT
+      - PUBLISHED
+      - UNPUBLISHED
+      type: string
+    DatabaseOptionProfileMaturityStatus:
+      description: Database OptionsProfile Status
+      enum:
+      - DRAFT
+      - PUBLISHED
+      - UNPUBLISHED
+      type: string
+    DatabaseOptionTypeStatus:
+      enum:
+      - DISABLED
+      - ENABLED
+      type: string
+    DatabaseParameterTypeStatusOld:
+      enum:
+      - DISABLED
+      - ENABLED
+      type: string
+    databaseEngineType:
+      description: Database Engine Type
+      enum:
+      - ORACLE
+      - POSTGRESQL
+      - SQLSERVER
+      - MYSQL
+      - APACHE_KAFKA
+      - MONGODB
+      - MILVUS
+      type: string
+    ApiErrorOps:
+      description: Common error response object for non 2xx responses of internal
+        or ops APIs
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/TessellErrorCode'
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        serviceException:
+          $ref: '#/components/schemas/ApiError'
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    TessellErrorCode:
+      description: Error code object for API Exceptions
+      properties:
+        httpErrorCode:
+          description: Standard http error code
+          type: string
+        serviceCode:
+          description: Service error code
+          type: string
+        opCode:
+          description: Operation error code
+          type: string
+        description:
+          description: Error code description
+          type: string
+      type: object
+    ApiErrorDetails:
+      description: Common API exception details
+      properties:
+        resolution:
+          description: Resolution detail for API exception
+          type: string
+      type: object
+    ApiError:
+      description: Common error response object for non 2xx responses
+      properties:
+        code:
+          description: Status code for the error response
+          type: string
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        defaultCodeSet:
+          type: boolean
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    apiStatus:
+      example:
+        message: message
+        status: status
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+      title: apiStatus
+      type: object
+    AclRevokePayload:
+      description: Payload to revoke Tessell ACLs
+      example:
+        users:
+        - users
+        - users
+        - users
+        - users
+        - users
+      properties:
+        users:
+          description: List of users to be deleted
+          items:
+            maxLength: 256
+            minLength: 1
+            type: string
+          maxItems: 100
+          minItems: 1
+          type: array
+      required:
+      - users
+      title: AclRevokePayload
+    AclPayload:
+      description: Payload to create an entity ACL
+      example:
+        users:
+        - role: role
+          emailId: emailId
+        - role: role
+          emailId: emailId
+        - role: role
+          emailId: emailId
+        - role: role
+          emailId: emailId
+        - role: role
+          emailId: emailId
+      properties:
+        users:
+          items:
+            $ref: '#/components/schemas/AclUserPayload'
+          maxItems: 100
+          minItems: 1
+          type: array
+      required:
+      - users
+      title: AclPayload
+    AclUserPayload:
+      description: Payload to create an user's entity ACL
+      example:
+        role: role
+        emailId: emailId
+      properties:
+        emailId:
+          description: Email id of the user
+          maxLength: 256
+          minLength: 1
+          type: string
+        role:
+          description: Role Info
+          maxLength: 64
+          minLength: 1
+          type: string
+      required:
+      - emailId
+      - role
+      title: AclUserPayload
+    AclEligibleUser:
+      description: Eligible user for sharing the entity
+      example:
+        firstName: firstName
+        lastName: lastName
+        eligibleRoles:
+        - eligibleRoles
+        - eligibleRoles
+        emailId: emailId
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        emailId:
+          type: string
+        eligibleRoles:
+          items:
+            type: string
+          type: array
+      title: AclEligibleUser
+    apiResponse:
+      example:
+        metadata:
+          pagination:
+            pageOffset: 0
+            pageSize: 6
+          records: 1
+          timeZone: timeZone
+        response: '{}'
+      properties:
+        metadata:
+          $ref: '#/components/schemas/apiMetadata'
+        response:
+          type: object
+      title: ApiResponse
+      type: object
+    apiMetadata:
+      properties:
+        timeZone:
+          type: string
+        records:
+          format: int32
+          type: integer
+        pagination:
+          $ref: '#/components/schemas/apiPaginationInfo'
+      title: apiMetadata
+      type: object
+    apiPaginationInfo:
+      properties:
+        pageSize:
+          format: int32
+          type: integer
+        pageOffset:
+          format: int32
+          type: integer
+      title: apiPaginationInfo
+      type: object
+    EntityAclSharingInfo:
+      description: Tessell Entity ACL Sharing Info
+      example:
+        users:
+        - role: role
+          emailId: emailId
+        - role: role
+          emailId: emailId
+      properties:
+        users:
+          items:
+            $ref: '#/components/schemas/EntityUserAclSharingInfo'
+          type: array
+      title: EntityAclSharingInfo
+    EntityUserAclSharingInfo:
+      description: Tessell Entity ACL Sharing Info for a user
+      example:
+        role: role
+        emailId: emailId
+      properties:
+        emailId:
+          type: string
+        role:
+          type: string
+      title: EntityUserAclSharingInfo
+

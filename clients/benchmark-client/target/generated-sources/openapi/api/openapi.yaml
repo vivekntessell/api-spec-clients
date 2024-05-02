@@ -1,0 +1,632 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: yashesh.mankad@tessell.com
+    name: Yashesh Mankad
+  description: Benchmark Service API Specification
+  title: Benchmark Service API
+  version: "1.0"
+servers:
+- url: http://localhost:8080
+paths:
+  /benchmark-catalog:
+    get:
+      operationId: getBenchmarkCatalog
+      parameters:
+      - description: Engine type for the benchmark
+        explode: true
+        in: query
+        name: engineType
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Page offset
+        explode: true
+        in: query
+        name: pageOffset
+        required: false
+        schema:
+          default: 0
+          type: integer
+        style: form
+      - description: Page Size
+        explode: true
+        in: query
+        name: pageSize
+        required: false
+        schema:
+          default: 10
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/BenchmarkCatalog'
+                type: array
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Fetch list of supported benchmarks (catalog)
+      tags:
+      - benchmarkController
+      x-accepts: application/json
+  /benchmarks-catalog/{id}:
+    get:
+      operationId: getBenchmarkCatalogEntryById
+      parameters:
+      - description: ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BenchmarkCatalog'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Fetch benchmark catalog entry by id
+      tags:
+      - benchmarkController
+      x-accepts: application/json
+  /benchmarks:
+    get:
+      operationId: getBenchmarks
+      parameters:
+      - description: Benchmark id
+        explode: true
+        in: query
+        name: id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: form
+      - description: Service id
+        explode: true
+        in: query
+        name: service
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: form
+      - description: Username of the benchmark submitter
+        explode: true
+        in: query
+        name: username
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: status
+        explode: true
+        in: query
+        name: status
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Start time of time range to compare against benchmark update
+          timestamp
+        explode: true
+        in: query
+        name: timeRangeStart
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: End time of time range to compare against benchmark update timestamp
+        explode: true
+        in: query
+        name: timeRangeEnd
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: tenant-id
+        explode: false
+        in: header
+        name: tenant-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Page offset
+        explode: true
+        in: query
+        name: pageOffset
+        required: false
+        schema:
+          default: 0
+          type: integer
+        style: form
+      - description: Page Size
+        explode: true
+        in: query
+        name: pageSize
+        required: false
+        schema:
+          default: 10
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Benchmark'
+                type: array
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Fetch list of current benchmarks
+      tags:
+      - benchmarkController
+      x-accepts: application/json
+    post:
+      description: Create new benchmark request
+      operationId: createBenchmark
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Benchmark'
+        description: Create benchmark
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Benchmark'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Create new benchmark request
+      tags:
+      - benchmarkController
+      x-contentType: application/json
+      x-accepts: application/json
+  /benchmarks/{id}:
+    get:
+      operationId: getBenchmarkById
+      parameters:
+      - description: ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Benchmark'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Fetch benchmark by id
+      tags:
+      - benchmarkController
+      x-accepts: application/json
+  /tessell-ops/benchmarks/{id}:
+    patch:
+      operationId: updateBenchmarkById
+      parameters:
+      - description: ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Benchmark'
+        description: Update benchmark
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Benchmark'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Update benchmark by id
+      tags:
+      - benchmarkController
+      x-contentType: application/json
+      x-accepts: application/json
+components:
+  schemas:
+    BenchmarkCatalog:
+      description: Benchmark Catalog object
+      example:
+        metadata: ""
+        name: name
+        tenantId: tenantId
+        description: description
+        engineType: ""
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        version: 0
+        benchmarkType: ""
+      properties:
+        id:
+          description: entry identifier
+          format: uuid
+          type: string
+          x-gorm-primary-key: true
+        name:
+          description: entry name
+          type: string
+          x-gorm-column-attrs: not null
+        description:
+          description: entry description
+          type: string
+        benchmarkType:
+          allOf:
+          - $ref: '#/components/schemas/BenchmarkType'
+          x-gorm-column-attrs: column:benchmark_type;not null
+          x-gorm-column-type: tessell_benchmark_type
+        engineType:
+          allOf:
+          - $ref: '#/components/schemas/databaseEngineType'
+          x-gorm-column-attrs: column:engine_type;not null
+          x-gorm-column-type: tessell_supported_database_engine
+        version:
+          description: catalog entry version
+          type: integer
+          x-exclude-from: service
+          x-gorm-column-attrs: not null
+        tenantId:
+          description: tenant id
+          type: string
+          x-exclude-from: service
+          x-gorm-column-attrs: column:tenant_id;not null
+        metadata:
+          allOf:
+          - $ref: '#/components/schemas/BenchmarkCatalogMetadata'
+          description: entry metadata
+          x-gorm-column-attrs: not null
+          x-gorm-column-type: json
+      title: Benchmark Catalog Entity
+      type: object
+      x-gorm: true
+      x-gorm-table-name: TESSELL_BENCHMARK_CATALOG
+    BenchmarkCatalogMetadata:
+      description: Benchmark catalog metadata object
+      properties:
+        compute:
+          description: compute details
+          items:
+            $ref: '#/components/schemas/BenchmarkCatalogCompute'
+          type: array
+          x-gorm-column-attrs: not null
+      title: Benchmark Metadata
+      type: object
+    BenchmarkCatalogCompute:
+      description: Benchmark Catalog Compute Entry
+      properties:
+        computeShape:
+          description: compute shape name
+          type: string
+        clientCount:
+          description: client count
+          type: integer
+        datasetSizeInGB:
+          description: dataset size
+          type: integer
+        durationInMin:
+          description: benchmark duration in minutes
+          type: integer
+      title: Benchmark Catalog Compute Entry
+      type: object
+    Benchmark:
+      description: Benchmark object
+      example:
+        metadata: ""
+        description: description
+        dateModified: 2000-01-23T04:56:07.000+00:00
+        output: output
+        input: ""
+        benchmarkCatalog: benchmarkCatalog
+        dateCreated: 2000-01-23T04:56:07.000+00:00
+        service: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        name: name
+        tenantId: tenantId
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        status: ""
+        username: username
+      properties:
+        id:
+          description: entry identifier
+          format: uuid
+          type: string
+          x-gorm-primary-key: true
+        name:
+          description: entry name
+          type: string
+          x-gorm-column-attrs: not null
+        description:
+          description: entry description
+          type: string
+        dateCreated:
+          description: entry creation timestamp
+          format: date-time
+          type: string
+        dateModified:
+          description: entry modification timestamp
+          format: date-time
+          type: string
+        benchmarkCatalog:
+          description: benchmark catalog entry
+          type: string
+          x-gorm-column-attrs: not null
+        service:
+          description: service id for the benchmark
+          format: uuid
+          type: string
+          x-gorm-column-attrs: not null
+        status:
+          allOf:
+          - $ref: '#/components/schemas/BenchmarkStatus'
+          description: benchmark status
+          x-gorm-column-attrs: not null
+          x-gorm-column-type: tessell_benchmark_status
+        tenantId:
+          description: tenant id
+          type: string
+          x-exclude-from: service
+          x-gorm-column-attrs: not null
+        username:
+          description: username
+          type: string
+          x-gorm-column-attrs: not null
+        input:
+          allOf:
+          - $ref: '#/components/schemas/BenchmarkInput'
+          description: benchmark inputs
+          x-gorm-column-attrs: not null
+          x-gorm-column-type: json
+        output:
+          description: benchmark results
+          type: string
+          x-gorm-column-type: json
+        metadata:
+          allOf:
+          - $ref: '#/components/schemas/BenchmarkMetadata'
+          description: benchmark metadata
+          x-gorm-column-attrs: not null
+          x-gorm-column-type: json
+      title: Benchmark Entity
+      type: object
+      x-gorm: true
+      x-gorm-table-name: TESSELL_BENCHMARKS
+    BenchmarkInput:
+      description: Benchmark input object
+      properties:
+        clientCount:
+          description: client count
+          type: integer
+          x-gorm-column-attrs: not null
+        datasetSizeInGB:
+          description: dataset size
+          type: integer
+          x-gorm-column-attrs: not null
+        durationInMin:
+          description: run duration
+          type: integer
+          x-gorm-column-attrs: not null
+      title: Benchmark Input
+      type: object
+    BenchmarkMetadata:
+      description: Benchmark metadata object
+      properties:
+        computeShape:
+          description: compute shape name
+          type: string
+          x-gorm-column-attrs: not null
+        serviceName:
+          description: service name for the benchmark
+          type: string
+          x-gorm-column-attrs: not null
+        servicePassword:
+          description: service password
+          type: string
+          x-exclude-from: service
+        tps:
+          description: current tps counter
+          type: integer
+        deploymentId:
+          description: bastion node deployment id
+          type: string
+        engineType:
+          allOf:
+          - $ref: '#/components/schemas/databaseEngineType'
+          x-gorm-column-attrs: not null
+        cloudType:
+          allOf:
+          - $ref: '#/components/schemas/cloudType'
+          x-gorm-column-attrs: not null
+        bmHost:
+          allOf:
+          - $ref: '#/components/schemas/BenchmarkHostMetadata'
+          description: benchmark host metadata
+      title: Benchmark Metadata
+      type: object
+    BenchmarkHostMetadata:
+      description: Benchmark host metadata object
+      properties:
+        computeShapeName:
+          description: tessell compute shape name for bastion host
+          type: string
+        computeShapeId:
+          description: tessell compute shape id for bastion host
+          type: string
+        region:
+          description: cloud region where host is created
+          type: string
+        cloudAccountType:
+          description: type of account (byoa, tessell managed, etc)
+          type: string
+        subscriptionName:
+          description: subscription name for bastion host (same as service subscription
+            name)
+          type: string
+      title: Benchmark Host Metadata
+      type: object
+    BenchmarkType:
+      description: Enumeration for type of benchmark run
+      enum:
+      - PGBENCH
+      - SYSBENCH
+      title: BenchmarkType
+      type: string
+    BenchmarkStatus:
+      description: Enumeration for benchmark status
+      enum:
+      - PENDING
+      - RUNNING
+      - INITIALIZING
+      - DATA_SEEDING
+      - COMPLETE
+      - FAILED
+      title: BenchmarkStatus
+      type: string
+    ApiError:
+      description: Common error response object for non 2xx responses
+      properties:
+        code:
+          description: Status code for the error response
+          type: string
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        defaultCodeSet:
+          type: boolean
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    ApiErrorDetails:
+      description: Common API exception details
+      properties:
+        resolution:
+          description: Resolution detail for API exception
+          type: string
+      type: object
+    ApiErrorOps:
+      description: Common error response object for non 2xx responses of internal
+        or ops APIs
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/TessellErrorCode'
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        serviceException:
+          $ref: '#/components/schemas/ApiError'
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    TessellErrorCode:
+      description: Error code object for API Exceptions
+      properties:
+        httpErrorCode:
+          description: Standard http error code
+          type: string
+        serviceCode:
+          description: Service error code
+          type: string
+        opCode:
+          description: Operation error code
+          type: string
+        description:
+          description: Error code description
+          type: string
+      type: object
+    databaseEngineType:
+      description: Database Engine Type
+      enum:
+      - ORACLE
+      - POSTGRESQL
+      - SQLSERVER
+      - MYSQL
+      - APACHE_KAFKA
+      - MONGODB
+      - MILVUS
+      type: string
+    cloudType:
+      description: Tessell supported cloud types
+      enum:
+      - AWS
+      - AZURE
+      - GCP
+      type: string
+

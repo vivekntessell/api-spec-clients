@@ -1,0 +1,698 @@
+openapi: 3.0.3
+
+info:
+  title: Tessell Gateway Service API
+  version: "1.0"
+  contact:
+    name: Samir Das
+    email: samir.das@tessell.com
+  description: Tessell Gateway Service API Specification
+
+servers:
+  - url: "http://localhost:8080"
+
+paths:
+  /command:
+    post:
+      tags:
+        - tessellGatewayServiceController
+      summary: Send a new command to a DB VM.
+      operationId: sendCommand
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/command"
+      responses:
+        "200":
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /ta-status/{taId}:
+    get:
+      tags:
+        - tessellGatewayServiceController
+      summary: Get the status of a command
+      operationId: getTessellAgentStatus
+      parameters:
+        - in: path
+          name: taId
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /status/{taId}/{executionId}:
+    get:
+      tags:
+        - tessellGatewayServiceController
+      summary: Get the status of a command
+      operationId: getCommandStatus
+      parameters:
+        - in: path
+          name: taId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: executionId
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: SUCCESS
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/commandStatusResponse"
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /upgrade-library/{taId}:
+    put:
+      tags:
+        - tessellGatewayServiceController
+      summary: Upgrade a library in the vm
+      operationId: upgradeLibrary
+      parameters:
+        - in: path
+          name: taId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpgradeLibraryPayload"
+      responses:
+        "200":
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /read-file/{taId}:
+    get:
+      tags:
+        - tessellGatewayServiceController
+      summary: Read a file from DB VM.
+      operationId: readRemoteFile
+      parameters:
+        - in: path
+          name: taId
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: filePath
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: line-limit
+          required: false
+          schema:
+            type: integer
+            default: 200
+        - in: query
+          name: offset
+          required: false
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadFileResponse"
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /scrape:
+    get:
+      tags:
+        - tessellGatewayServiceController
+      summary: Scrape TA for DB metrics.
+      operationId: scrape
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /curl:
+    post:
+      tags:
+        - tessellGatewayServiceController
+      summary: Send a curl command request to a monitoring VM.
+      operationId: sendCurlRequest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CurlRequest"
+      responses:
+        "200":
+          description: SUCCESS
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurlResponse"
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiError
+  /tessell-ops/tenants/{tenantId}/register:
+    post:
+      tags:
+        - tessellGatewayServiceController
+      summary: Register Account for Tenant
+      operationId: registerTenantAccount
+      parameters:
+        - in: path
+          name: tenantId
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/registerTenantAccountResponse"
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    delete:
+      tags:
+        - tessellGatewayServiceController
+      summary: Deregister Account for Tenant
+      operationId: deregisterTenantAccount
+      parameters:
+        - in: path
+          name: tenantId
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        "200":
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/tenants/{tenantId}/stream:
+    post:
+      tags:
+        - tessellGatewayServiceController
+      summary: Initialize stream for Tenant
+      operationId: initializeTenantStream
+      parameters:
+        - in: path
+          name: tenantId
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        '201':
+          description: Created
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+    delete:
+      tags:
+        - tessellGatewayServiceController
+      summary: Delete stream for Tenant
+      operationId: deleteTenantStream
+      parameters:
+        - in: path
+          name: tenantId
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        "200":
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/agent/{deploymentId}/token:
+    get:
+      tags:
+        - tessellGatewayServiceController
+      summary: Get Tessell Agent Token
+      operationId: getTessellAgentToken
+      parameters:
+        - in: path
+          name: deploymentId
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: query
+          name: agent-type
+          schema:
+            $ref: "#/components/schemas/agentType"
+          required: true
+        - in: header
+          name: tenant-id
+          schema:
+            type: string
+          required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getTessellAgentTokenResponse"
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+  /tessell-ops/tenants/{tenantId}/upgrade:
+    post:
+      tags:
+        - tessellGatewayServiceController
+      summary: Publish Upgrade message for Tenant Services
+      operationId: publishTenantServicesUpgrade
+      parameters:
+        - in: path
+          name: tenantId
+          schema:
+            type: string
+            format: uuid
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/publishTenantServicesUpgradeRequest"
+      responses:
+        '200':
+          description: OK
+        default:
+          description: API error response
+          content:
+            application/json:
+              schema:
+                $ref: common-specification.yaml#/components/schemas/ApiErrorOps
+components:
+  schemas:
+    command:
+      type: object
+      description: Command packet sent by TGS to an agent.
+      properties:
+        dbVmId:
+          type: string
+          description: DB VM identifier
+        cmdString:
+          type: string
+          description: Commend Identifier.
+        payload:
+          type: string
+          format: byte
+          description: Command Payload.
+        executionId:
+          type: string
+          description: Associated Execution ID with the request.
+        timeout:
+          type: integer
+          description: Timeout for this execution in seconds.
+
+    commandStatusResponse:
+      type: object
+      description: Command status is sent by TA to TGA when a command is completed.
+      properties:
+        status:
+          $ref: "#/components/schemas/commandStatus"
+        output:
+          type: string
+          description: output of the associated log file.
+          format: byte
+        error:
+          type: string
+          description: error message.
+        errno:
+          type: integer
+          description: Error number from the command.
+
+    UpgradeLibraryPayload:
+      type: object
+      description: Upgrade library payload
+      properties:
+        id:
+          type: string
+          description: upgrade request id
+        type:
+          type: string
+          description: output of the associated log file.
+        library:
+          type: string
+          description: library name
+        url:
+          type: string
+          description: presigned url
+        version:
+          type: string
+          description: new version
+        checksum:
+          type: string
+          description: checksum of the package of the library
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+
+    ReadFileResponse:
+      type: object
+      description: Read file response
+      properties:
+        fileContent:
+          type: string
+          format: byte
+        error:
+          type: string
+          description: error message.
+        errno:
+          type: integer
+          description: Error number from the command.
+
+    commandStatus:
+      type: string
+      description: Status of the command.
+      enum:
+        - FAILED
+        - SUCCESS
+        - RUNNING
+        - WAITING
+        - SCHEDULED
+
+    RPCRequest:
+      type: object
+      required:
+        - service
+        - endpoint
+        - namespace
+      properties:
+        service:
+          type: string
+        port:
+          type: integer
+        endpoint:
+          type: string
+        method:
+          type: string
+        headers:
+          type: object
+        payload:
+          type: string
+          format: byte
+        mediaType:
+          type: string
+        namespace:
+          type: string
+        timeout:
+          type: integer
+
+    RPCResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        payload:
+          type: string
+          format: byte
+
+    checkConnectivityRequest:
+      type: object
+      description: Check Connectivity request payload
+      properties:
+        endpoints:
+          type: array
+          items:
+            type: string
+          description: List of endpoints in format DNS/IP:Port
+
+    checkConnectivityResponse:
+      type: object
+      description: Check Connectivity response
+      properties:
+        status:
+          $ref: "#/components/schemas/connectivityStatus"
+        error:
+          type: string
+          description: error message.
+        errno:
+          type: integer
+          description: Error number from the command.
+
+    connectivityStatus:
+      type: string
+      description: Status of connectivity.
+      enum:
+        - FAILED
+        - SUCCESS
+
+    registerTenantAccountResponse:
+      type: object
+      description: User credentials for the registered account
+      properties:
+        accountName:
+          type: string
+          description: Name of the account
+        dmmSchedulerCredentials:
+          $ref: "#/components/schemas/JWTCredentials"
+        governanceCredentials:
+          $ref: "#/components/schemas/JWTCredentials"
+
+    getTessellAgentTokenResponse:
+      type: object
+      description: User credentials for the registered agent
+      properties:
+        accountName:
+          type: string
+          description: Name of the account
+        tessellAgentCredentials:
+          $ref: "#/components/schemas/JWTCredentials"
+
+    JWTCredentials:
+      type: object
+      description: JWT Credentials
+      properties:
+        userName:
+          type: string
+          description: Name of the user
+        publicKey:
+          type: string
+          description: Public Key
+        seed:
+          type: string
+          description: Seed
+        jwt:
+          type: string
+          description: JWT of the user
+
+    agentType:
+      type: string
+      description: Type of Tessell Agent.
+      enum:
+        - DB_SERVICE
+        - MONITORING
+
+    UpgradeParametersRequest:
+      type: object
+      required:
+        - namespace
+      properties:
+        namespace:
+          type: string
+        computeResourceId:
+          type: string
+        deploymentId:
+          type: string
+        tenantId:
+          type: string
+        agentType:
+          type: string
+        timeout:
+          type: integer
+
+    UpgradeParametersResponse:
+      type: object
+      properties:
+        controlPlaneCloudType:
+          type: string
+        computeResource:
+          type: object
+          additionalProperties:
+            type: string
+        dbServices:
+          type: array
+          items:
+            $ref: "#/components/schemas/dbService"
+        tenantInfo:
+          type: object
+        infraConfig:
+          $ref: "#/components/schemas/infraConfig"
+        genieInfo:
+          type: object
+
+    dbService:
+      type: object
+      description: DB Service Info
+      properties:
+        name:
+          type: string
+        id:
+          type: string
+        serviceInstanceId:
+          type: string
+
+    infraConfig:
+      type: object
+      properties:
+        k8sConfig:
+          type: object
+          additionalProperties:
+            type: string
+        loggingConfig:
+          type: object
+          additionalProperties:
+            type: string
+        agentConfig:
+          type: object
+          additionalProperties:
+            type: string
+        networkProfile:
+          type: object
+
+    CurlRequest:
+      type: object
+      description: curl Request.
+      properties:
+        dbVmId:
+          type: string
+          description: DB VM identifier
+        requestMethod:
+          $ref: "#/components/schemas/RequestMethod"
+        endpoint:
+          type: string
+          description: Endpoint to which request needs to be made
+        header:
+          type: string
+          description: request headers
+        payload:
+          type: string
+          description: request payload
+        timeout:
+          type: integer
+          description: Timeout for this execution in seconds.
+
+    RequestMethod:
+      type: string
+      description: Request Method
+      enum:
+        - GET
+        - PUT
+        - POST
+        - DELETE
+        - PATCH
+        - OPTIONS
+
+    CurlResponse:
+      type: object
+      description: curl response
+      properties:
+        statusCode:
+          type: integer
+          description: Response Status Code
+        response:
+          type: string
+          description: curl response
+
+    publishTenantServicesUpgradeRequest:
+      type: object
+      description: publish tenant services upgrade request
+      properties:
+        libraries:
+          type: array
+          items:
+            $ref: "#/components/schemas/libraryUpgradeInfo"
+          description: List of libraries available for upgrade
+
+
+    libraryUpgradeInfo:
+      type: object
+      required:
+        - library
+        - url
+        - version
+        - checksum
+      properties:
+        library:
+          type: string
+        url:
+          type: string
+        version:
+          type: string
+        checksum:
+          type: string
+        os:
+          type: string
+        engine:
+          type: string
+        cloud:
+          type: string

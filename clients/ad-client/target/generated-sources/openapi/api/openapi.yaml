@@ -1,0 +1,610 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: support@tessell.com
+    name: Tessell Inc.
+    url: https://www.tessell.com
+  description: AD Domain Governance API Documentation
+  title: AD Domain Governance API Documentation
+  version: "1.0"
+servers:
+- description: AD Domain Governance API Base Path
+  url: http://localhost:8080/
+paths:
+  /ad-domains:
+    get:
+      description: Returns all Ad Domain available.
+      operationId: getAdDomainsServiceView
+      parameters:
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AdDomainServiceView'
+                type: array
+          description: List of ad Domains
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Returns all Ad Domain available.
+      tags:
+      - ad-domain-service
+      x-accepts: application/json
+  /ad-domains/id/{id}:
+    get:
+      description: Returns an ad domain.
+      operationId: getAdDomainById
+      parameters:
+      - description: Tessell Ad Domain Identifier
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdDomainServiceView'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Returns an ad domain.
+      tags:
+      - ad-domain-service
+      x-accepts: application/json
+  /ad-domains/governance:
+    get:
+      operationId: getAdDomainsGovernance
+      parameters:
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AdDomain'
+                type: array
+          description: List of ad Domains
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get List of Active Directory Domain
+      tags:
+      - ad-domain-governance
+      x-accepts: application/json
+  /ad-domains/governance/register:
+    post:
+      operationId: registerAdDomain
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterAdDomainPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdDomain'
+          description: OK
+        "201":
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Register an Active Directory Domain
+      tags:
+      - ad-domain-governance
+      x-contentType: application/json
+      x-accepts: application/json
+  /ad-domains/governance/id/{id}/reconfigure:
+    patch:
+      operationId: reconfigureAdDomain
+      parameters:
+      - description: Ad Domain Identifier
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReconfigureAdDomainPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdDomain'
+          description: OK
+        "201":
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Reconfigure an Active Directory Domain
+      tags:
+      - ad-domain-governance
+      x-contentType: application/json
+      x-accepts: application/json
+  /ad-domains/governance/id/{id}/deregister:
+    delete:
+      operationId: deregisterAdDomain
+      parameters:
+      - description: Ad Domain Identifier
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/apiStatus'
+          description: OK
+        "201":
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Deregister an Active Directory Domain
+      tags:
+      - ad-domain-governance
+      x-accepts: application/json
+  /tessell-internal/ad-domains/id/{id}:
+    get:
+      description: Returns Active Directory Domain
+      operationId: getAdDomainByIdInternal
+      parameters:
+      - description: Ad Domain Identifier
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdDomainInternal'
+          description: List of ad Domains
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Returns Active Directory Domain
+      tags:
+      - ad-domain-internal
+      x-accepts: application/json
+  /tessell-internal/ad-domains/id/{id}/replicate:
+    patch:
+      operationId: replicateAdDomainCreds
+      parameters:
+      - description: Ad Domain Identifier
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplicateAdDomainPayload'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdDomainInternal'
+          description: OK
+        "201":
+          description: Created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Replicate Ad Domain Credential
+      tags:
+      - ad-domain-internal
+      x-contentType: application/json
+      x-accepts: application/json
+  /tessell-internal/ad-domains:
+    get:
+      description: List of Active Directory Domains
+      operationId: getAdDomainsInternal
+      parameters:
+      - description: Page size for get query
+        in: query
+        name: page-size
+        required: false
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: Page offset for get query
+        in: query
+        name: page-offset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+      - description: SubscriptionId
+        explode: true
+        in: query
+        name: subscriptionId
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: form
+      - description: CloudType
+        explode: true
+        in: query
+        name: cloudType
+        required: false
+        schema:
+          $ref: '#/components/schemas/cloudType'
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AdDomainInternal'
+                type: array
+          description: List of ad Domains
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: List of Active Directory Domains
+      tags:
+      - ad-domain-internal
+      x-accepts: application/json
+components:
+  schemas:
+    RegisterAdDomainPayload:
+      description: Register Ad Domain Payload
+      properties:
+        tessellName:
+          description: Tessell Name for Ad Domain
+          type: string
+        domainName:
+          description: Domain Name
+          type: string
+        netBIOSorOU:
+          description: NetBIOS name or OU for AD
+          type: string
+        dnsServer:
+          items:
+            type: string
+          type: array
+        domainAccountUser:
+          description: Domain Account User
+          type: string
+        domainAccountPassword:
+          description: Domain Account Password
+          type: string
+      type: object
+    ReconfigureAdDomainPayload:
+      description: Reconfigure Ad Domain Payload
+      properties:
+        dnsServer:
+          items:
+            type: string
+          type: array
+        domainAccountUser:
+          description: Domain Account User
+          type: string
+        domainAccountPassword:
+          description: Domain Account Password
+          type: string
+      type: object
+    ReplicateAdDomainPayload:
+      description: Replicate Ad Domain Creds Payload
+      properties:
+        subscriptionId:
+          format: uuid
+          type: string
+        cloudType:
+          $ref: '#/components/schemas/cloudType'
+        regions:
+          items:
+            type: string
+          type: array
+      type: object
+    AdDomain:
+      description: AD Domain Details
+      example:
+        domainName: domainName
+        tessellName: tessellName
+        netBIOSorOU: netBIOSorOU
+        domainAccountUser: domainAccountUser
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        dnsServer:
+        - dnsServer
+        - dnsServer
+      properties:
+        id:
+          format: uuid
+          type: string
+        tessellName:
+          description: Tessell Name for Ad Domain
+          type: string
+        domainName:
+          description: Domain Name
+          type: string
+        netBIOSorOU:
+          description: NetBIOS name or OU
+          type: string
+        dnsServer:
+          items:
+            type: string
+          type: array
+        domainAccountUser:
+          description: Domain Account User
+          type: string
+      type: object
+    AdDomainServiceView:
+      description: AD Domain Service View
+      example:
+        domainName: domainName
+        tessellName: tessellName
+        netBIOSorOU: netBIOSorOU
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        id:
+          format: uuid
+          type: string
+        tessellName:
+          description: Tessell Name for Ad Domain
+          type: string
+        domainName:
+          description: Domain Name
+          type: string
+        netBIOSorOU:
+          description: NetBIOS name or OU
+          type: string
+      type: object
+    AdDomainInternal:
+      description: AD Domain Internal
+      example:
+        domainName: domainName
+        tessellName: tessellName
+        netBIOSorOU: netBIOSorOU
+        domainAccountUser: domainAccountUser
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        domainAccountPassword:
+        - regions:
+          - regions
+          - regions
+          keyName: keyName
+          secretId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          subscriptionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        - regions:
+          - regions
+          - regions
+          keyName: keyName
+          secretId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          subscriptionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        dnsServer:
+        - dnsServer
+        - dnsServer
+      properties:
+        id:
+          format: uuid
+          type: string
+        tessellName:
+          description: Tessell Name for Ad Domain
+          type: string
+        domainName:
+          description: Domain Name
+          type: string
+        netBIOSorOU:
+          description: NetBIOS name or OU
+          type: string
+        dnsServer:
+          items:
+            type: string
+          type: array
+        domainAccountUser:
+          description: Domain Account User
+          type: string
+        domainAccountPassword:
+          items:
+            $ref: '#/components/schemas/DomainAccountPasswordMetadata'
+          type: array
+      type: object
+    DomainAccountPasswordMetadata:
+      description: AD Domain Account Password
+      example:
+        regions:
+        - regions
+        - regions
+        keyName: keyName
+        secretId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        subscriptionId: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        subscriptionId:
+          description: Subscription Id
+          format: uuid
+          type: string
+        cloudType:
+          $ref: '#/components/schemas/cloudType'
+        regions:
+          items:
+            type: string
+          type: array
+        secretId:
+          format: uuid
+          type: string
+        keyName:
+          description: KeyName
+          type: string
+      type: object
+    ApiError:
+      description: Common error response object for non 2xx responses
+      properties:
+        code:
+          description: Status code for the error response
+          type: string
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        defaultCodeSet:
+          type: boolean
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    ApiErrorDetails:
+      description: Common API exception details
+      properties:
+        resolution:
+          description: Resolution detail for API exception
+          type: string
+      type: object
+    apiStatus:
+      example:
+        message: message
+        status: status
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+      title: apiStatus
+      type: object
+    ApiErrorOps:
+      description: Common error response object for non 2xx responses of internal
+        or ops APIs
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/TessellErrorCode'
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        serviceException:
+          $ref: '#/components/schemas/ApiError'
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    TessellErrorCode:
+      description: Error code object for API Exceptions
+      properties:
+        httpErrorCode:
+          description: Standard http error code
+          type: string
+        serviceCode:
+          description: Service error code
+          type: string
+        opCode:
+          description: Operation error code
+          type: string
+        description:
+          description: Error code description
+          type: string
+      type: object
+    cloudType:
+      description: Tessell supported cloud types
+      enum:
+      - AWS
+      - AZURE
+      - GCP
+      type: string
+

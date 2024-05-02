@@ -1,0 +1,1312 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: samir.das@tessell.com
+    name: Samir Das
+  description: Event Service API Specification
+  title: Event Service API
+  version: "1.0"
+servers:
+- url: http://localhost:8080
+tags:
+- name: eventController
+- name: notificationController
+paths:
+  /event-service/events:
+    get:
+      description: Reads event for the current user.
+      operationId: getEvents
+      parameters:
+      - description: Start timestamp, when searching events in a range
+        explode: true
+        in: query
+        name: start-time
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: End timestamp, when searching events in a range
+        explode: true
+        in: query
+        name: end-time
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Entity Type
+        explode: true
+        in: query
+        name: entityType
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Entity/Resource ID
+        explode: true
+        in: query
+        name: entityID
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Severity of the event
+        explode: true
+        in: query
+        name: severity
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Parent event identifier
+        explode: true
+        in: query
+        name: parentEventId
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Event Type
+        explode: true
+        in: query
+        name: eventType
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Page offset
+        explode: true
+        in: query
+        name: pageOffset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+        style: form
+      - description: Page Size
+        explode: true
+        in: query
+        name: pageSize
+        required: false
+        schema:
+          default: 10
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventApiResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Reads event for the current user.
+      tags:
+      - eventController
+      x-accepts: application/json
+  /event-service/event/{eventType}/suppress:
+    patch:
+      description: Suppress an event type
+      operationId: suppressEvent
+      parameters:
+      - explode: false
+        in: path
+        name: eventType
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        $ref: '#/components/requestBodies/inline_object'
+        content:
+          application/json:
+            schema:
+              properties:
+                entityType:
+                  type: string
+                entityId:
+                  type: string
+                severity:
+                  $ref: '#/components/schemas/Severity'
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Suppress an event type
+      tags:
+      - eventController
+      x-contentType: application/json
+      x-accepts: application/json
+  /event-service/event/{eventType}/unsuppress:
+    patch:
+      description: Unsuppress a previously suppressed event.
+      operationId: unsuppressEvent
+      parameters:
+      - explode: false
+        in: path
+        name: eventType
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        $ref: '#/components/requestBodies/inline_object_1'
+        content:
+          application/json:
+            schema:
+              properties:
+                entityType:
+                  type: string
+                entityId:
+                  type: string
+                severity:
+                  $ref: '#/components/schemas/Severity'
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Unsuppress a previous suppressed event.
+      tags:
+      - eventController
+      x-contentType: application/json
+      x-accepts: application/json
+  /event-service/notifications/count:
+    get:
+      description: Get the current count of active notifications in the specified
+        time
+      operationId: getNotificationsCount
+      parameters:
+      - description: Start timestamp, when searching events in a range
+        explode: true
+        in: query
+        name: start-time
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: End timestamp, when searching events in a range
+        explode: true
+        in: query
+        name: end-time
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationCount'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get notification count
+      tags:
+      - notificationController
+      x-accepts: application/json
+  /event-service/notifications/batch-acknowledge:
+    post:
+      description: Acknowledges notifications
+      operationId: batchAcknowledgeNotification
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchAcknowledgeRequest'
+        description: Batch Acknowledge Body
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcknowledgeNotificationResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Acknowledge notifications
+      tags:
+      - notificationController
+      x-contentType: application/json
+      x-accepts: application/json
+  /event-service/notifications/summary:
+    get:
+      description: Get latest notifications summary for the current user.
+      operationId: getNotificationSummary
+      parameters:
+      - description: Start timestamp, when searching events in a range
+        explode: true
+        in: query
+        name: start-time
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: End timestamp, when searching events in a range
+        explode: true
+        in: query
+        name: end-time
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Page offset
+        explode: true
+        in: query
+        name: pageOffset
+        required: false
+        schema:
+          default: 0
+          type: integer
+        style: form
+      - description: Page Size
+        explode: true
+        in: query
+        name: pageSize
+        required: false
+        schema:
+          default: 10
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationSummaryApiResponse'
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Get notifications summary
+      tags:
+      - notificationController
+      x-accepts: application/json
+  /tessell-ops/event-service/notifications:
+    get:
+      description: Reads notification for the current user.
+      operationId: getNotificationsOps
+      parameters:
+      - description: Start timestamp, when searching events in a range
+        explode: true
+        in: query
+        name: start-time
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: End timestamp, when searching events in a range
+        explode: true
+        in: query
+        name: end-time
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Entity Name
+        explode: true
+        in: query
+        name: entityType
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Entity Name
+        explode: true
+        in: query
+        name: entityName
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Severity of the event
+        explode: true
+        in: query
+        name: severity
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Event type
+        explode: true
+        in: query
+        name: eventType
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Page offset
+        explode: true
+        in: query
+        name: pageOffset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+        style: form
+      - description: Page Size
+        explode: true
+        in: query
+        name: pageSize
+        required: false
+        schema:
+          default: 10
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NotificationApiResponse'
+                type: array
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorOps'
+          description: API error response
+      summary: Returns the events for the user
+      tags:
+      - notificationController
+      x-accepts: application/json
+  /event-service/notifications:
+    get:
+      description: Reads notification for the current user.
+      operationId: getNotifications
+      parameters:
+      - description: Start timestamp, when searching events in a range
+        explode: true
+        in: query
+        name: start-time
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: End timestamp, when searching events in a range
+        explode: true
+        in: query
+        name: end-time
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Entity Name
+        explode: true
+        in: query
+        name: entityType
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Entity Name
+        explode: true
+        in: query
+        name: entityName
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Severity of the event
+        explode: true
+        in: query
+        name: severity
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Event type
+        explode: true
+        in: query
+        name: eventType
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Page offset
+        explode: true
+        in: query
+        name: pageOffset
+        required: false
+        schema:
+          default: 0
+          format: int32
+          type: integer
+        style: form
+      - description: Page Size
+        explode: true
+        in: query
+        name: pageSize
+        required: false
+        schema:
+          default: 10
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NotificationApiResponse'
+                type: array
+          description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+          description: API error response
+      summary: Returns the events for the user
+      tags:
+      - notificationController
+      x-accepts: application/json
+components:
+  requestBodies:
+    inline_object_1:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_object_1'
+    inline_object:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_object'
+  schemas:
+    BatchAcknowledgeRequest:
+      description: Batch acknowledge request
+      properties:
+        ids:
+          items:
+            type: string
+          type: array
+        acknowledgeAll:
+          default: true
+          description: acknowledges all the notifications of the user
+          type: boolean
+      title: Batch acknowledge request
+      type: object
+    EventEntity:
+      description: Event object
+      properties:
+        id:
+          description: event identifier
+          type: string
+          x-exclude-from: service
+        tenantId:
+          description: Tenant identifier
+          type: string
+          x-exclude-from: service
+          x-gorm-column-attrs: not null
+        userEventId:
+          description: User Event identifier
+          type: string
+        subscriptionName:
+          description: Subscription name
+          type: string
+        subscriptionId:
+          description: Subscription Id
+          type: string
+        userId:
+          description: User identifier
+          type: string
+        ownerName:
+          description: Owner of the entity
+          type: string
+        userGroup:
+          description: User group
+          type: string
+        eventType:
+          type: string
+          x-gorm-column-attrs: not null
+        appName:
+          description: App that generated the event
+          type: string
+        severity:
+          allOf:
+          - $ref: '#/components/schemas/Severity'
+          x-gorm-column-attrs: not null
+        entityId:
+          description: Entity identifier
+          type: string
+        entityName:
+          description: Entity Name
+          type: string
+        message:
+          description: message
+          type: string
+          x-gorm-column-attrs: not null
+        occurredAt:
+          description: occurred at timestamp
+          format: date-time
+          type: string
+        entityType:
+          description: entity type
+          type: string
+        entityTypeDisplayName:
+          description: entity type display name
+          type: string
+        parentEventId:
+          description: Parent event identifier
+          type: string
+        order:
+          description: Event order under the parent event
+          type: integer
+        entityMetadata:
+          description: Entity metadata
+          type: string
+        eventMetadata:
+          description: Event metadata
+          type: string
+        systemGenerated:
+          description: Is system generated event
+          type: boolean
+        visibility:
+          allOf:
+          - $ref: '#/components/schemas/Visibility'
+          x-gorm-column-attrs: not null
+      title: Event Entity
+      type: object
+      x-gorm: true
+      x-gorm-table-name: TESSELL_EVENTS
+    Event:
+      description: Event object
+      example:
+        severity: ""
+        occurredAt: 2000-01-23T04:56:07.000+00:00
+        appName: appName
+        entityType: entityType
+        entityId: entityId
+        eventType: eventType
+        message: message
+        systemGenerated: true
+        userId: userId
+        eventMetadata: eventMetadata
+        entityMetadata: entityMetadata
+        ownerName: ownerName
+        entityName: entityName
+        subscriptionName: subscriptionName
+        tenantId: tenantId
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        parentEventId: parentEventId
+        userGroup: userGroup
+        order: 5
+      properties:
+        id:
+          description: event identifier
+          format: uuid
+          type: string
+          x-exclude-from: service
+          x-gorm-primary-key: true
+        tenantId:
+          description: Tenant identifier
+          type: string
+          x-exclude-from: service
+          x-gorm-column-attrs: not null
+        subscriptionName:
+          description: Subscription name
+          type: string
+        userId:
+          description: User identifier
+          type: string
+        userGroup:
+          description: User group
+          type: string
+        ownerName:
+          description: Owner of the entity
+          type: string
+        eventType:
+          type: string
+          x-gorm-column-attrs: not null
+        appName:
+          description: App that generated the event
+          type: string
+        severity:
+          allOf:
+          - $ref: '#/components/schemas/Severity'
+          x-gorm-column-attrs: not null
+        entityId:
+          description: Entity identifier
+          type: string
+        entityName:
+          description: Entity name
+          type: string
+        message:
+          description: message
+          type: string
+          x-gorm-column-attrs: not null
+        occurredAt:
+          description: occurred at timestamp
+          format: date-time
+          type: string
+        entityType:
+          description: entity type
+          type: string
+        parentEventId:
+          description: Parent event identifier
+          type: string
+        order:
+          description: Event order under the parent event
+          type: integer
+        entityMetadata:
+          description: Entity metadata
+          type: string
+        eventMetadata:
+          description: Event metadata
+          type: string
+        systemGenerated:
+          description: Is system generated event
+          type: boolean
+        visibility:
+          $ref: '#/components/schemas/Visibility'
+      required:
+      - appName
+      - entityId
+      - entityName
+      - entityType
+      - eventType
+      - id
+      - message
+      - occurredAt
+      - order
+      - ownerName
+      - parentEventId
+      - severity
+      - subscriptionName
+      - systemGenerated
+      - tenantId
+      - userId
+      title: Event
+      type: object
+    UserEvent:
+      description: User Event object
+      example:
+        acknowledged: true
+        notifyUser: true
+        tenantId: tenantId
+        id: id
+        event:
+          severity: ""
+          occurredAt: 2000-01-23T04:56:07.000+00:00
+          appName: appName
+          entityType: entityType
+          entityId: entityId
+          eventType: eventType
+          message: message
+          systemGenerated: true
+          userId: userId
+          eventMetadata: eventMetadata
+          entityMetadata: entityMetadata
+          ownerName: ownerName
+          entityName: entityName
+          subscriptionName: subscriptionName
+          tenantId: tenantId
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          parentEventId: parentEventId
+          userGroup: userGroup
+          order: 5
+        userId: userId
+        acknowledgedAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        id:
+          description: notification identifier
+          type: string
+          x-exclude-from: service
+          x-gorm-primary-key: true
+        tenantId:
+          description: Tenant identifier
+          type: string
+          x-exclude-from: service
+          x-gorm-column-attrs: not null
+        userId:
+          description: User identifier
+          type: string
+        event:
+          $ref: '#/components/schemas/Event'
+        acknowledged:
+          description: is event acknowledged?
+          type: boolean
+        acknowledgedAt:
+          description: acknowledged timestamp
+          format: date-time
+          type: string
+        notifyUser:
+          description: whether to notify the user
+          type: boolean
+      required:
+      - acknowledged
+      - acknowledgedAt
+      - event
+      - id
+      - tenantId
+      - userId
+      title: User Event
+      type: object
+    UserEventEntity:
+      description: User Event object
+      properties:
+        id:
+          description: notification identifier
+          type: string
+          x-exclude-from: service
+          x-gorm-primary-key: true
+        tenantId:
+          description: Tenant identifier
+          type: string
+          x-exclude-from: service
+          x-gorm-column-attrs: not null
+        userId:
+          description: User identifier
+          type: string
+        event:
+          $ref: '#/components/schemas/EventEntity'
+        acknowledged:
+          description: is event acknowledged?
+          type: boolean
+        acknowledgedAt:
+          description: acknowledged timestamp
+          format: date-time
+          type: string
+        notifyUser:
+          description: whether to notify the user
+          type: boolean
+        subevents:
+          description: all events with same parent ID
+          items:
+            $ref: '#/components/schemas/EventEntity'
+          type: array
+      title: User Event Entity
+      type: object
+      x-gorm: true
+    NotificationCount:
+      description: Notification count object
+      example:
+        count: 0
+      properties:
+        count:
+          description: Total number of events in the provided time range that are
+            not acknowledged
+          type: integer
+      required:
+      - acknowledgedCount
+      - count
+      title: Notification Count
+      type: object
+    NotificationSummary:
+      description: Notification summary object
+      example:
+        occurredAt: 2000-01-23T04:56:07.000+00:00
+        acknowledged: true
+        entityName: entityName
+        entityType: entityType
+        appName: appName
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        message: message
+      properties:
+        id:
+          description: notification identifier
+          format: uuid
+          type: string
+        acknowledged:
+          description: is event acknowledged by the user?
+          type: boolean
+        message:
+          description: message
+          type: string
+        entityName:
+          description: Entity name
+          type: string
+        entityType:
+          description: Entity type
+          type: string
+        occurredAt:
+          description: occurred at timestamp
+          format: date-time
+          type: string
+        appName:
+          description: App that generated the event
+          type: string
+      required:
+      - acknowledged
+      - appName
+      - entityName
+      - entityType
+      - id
+      - message
+      - occurredAt
+      title: Notification Summary
+      type: object
+    Severity:
+      description: Enumeration for severity level
+      enum:
+      - INFO
+      - WARNING
+      - CRITICAL
+      title: Severity
+      type: string
+    Visibility:
+      description: Visibility level
+      enum:
+      - USER
+      - SYSTEM
+      title: Visibility
+      type: string
+    GetEventResponse:
+      items:
+        $ref: '#/components/schemas/Event'
+      title: Get Events Response
+      type: array
+    GetNotificationResponse:
+      items:
+        $ref: '#/components/schemas/UserEventList'
+      title: Get Notifications Response
+      type: array
+    UserEventList:
+      example:
+        parentEventId: parentEventId
+        events:
+        - acknowledged: true
+          notifyUser: true
+          tenantId: tenantId
+          id: id
+          event:
+            severity: ""
+            occurredAt: 2000-01-23T04:56:07.000+00:00
+            appName: appName
+            entityType: entityType
+            entityId: entityId
+            eventType: eventType
+            message: message
+            systemGenerated: true
+            userId: userId
+            eventMetadata: eventMetadata
+            entityMetadata: entityMetadata
+            ownerName: ownerName
+            entityName: entityName
+            subscriptionName: subscriptionName
+            tenantId: tenantId
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            parentEventId: parentEventId
+            userGroup: userGroup
+            order: 5
+          userId: userId
+          acknowledgedAt: 2000-01-23T04:56:07.000+00:00
+        - acknowledged: true
+          notifyUser: true
+          tenantId: tenantId
+          id: id
+          event:
+            severity: ""
+            occurredAt: 2000-01-23T04:56:07.000+00:00
+            appName: appName
+            entityType: entityType
+            entityId: entityId
+            eventType: eventType
+            message: message
+            systemGenerated: true
+            userId: userId
+            eventMetadata: eventMetadata
+            entityMetadata: entityMetadata
+            ownerName: ownerName
+            entityName: entityName
+            subscriptionName: subscriptionName
+            tenantId: tenantId
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            parentEventId: parentEventId
+            userGroup: userGroup
+            order: 5
+          userId: userId
+          acknowledgedAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        parentEventId:
+          description: Entity name
+          type: string
+        events:
+          items:
+            $ref: '#/components/schemas/UserEvent'
+          type: array
+      title: User events list
+      type: object
+    NotificationSummaryResponse:
+      items:
+        $ref: '#/components/schemas/NotificationSummary'
+      title: Get Notifications Summary Response
+      type: array
+    AcknowledgeNotificationResponse:
+      items:
+        type: string
+      title: Acknowledge Notifications Summary Response
+      type: array
+    ApiMetadata:
+      example:
+        pagination:
+          pageOffset: 0
+          pageSize: 6
+        records: 1
+        timeZone: timeZone
+      properties:
+        pagination:
+          $ref: '#/components/schemas/ApiPaginationInfo'
+        records:
+          format: int32
+          type: integer
+        timeZone:
+          type: string
+      title: ApiMetadata
+      type: object
+    ApiPaginationInfo:
+      example:
+        pageOffset: 0
+        pageSize: 6
+      properties:
+        pageOffset:
+          format: int32
+          type: integer
+        pageSize:
+          format: int32
+          type: integer
+      required:
+      - pageOffset
+      - pageSize
+      title: ApiPaginationInfo
+      type: object
+    EventApiResponse:
+      example:
+        metadata:
+          pagination:
+            pageOffset: 0
+            pageSize: 6
+          records: 1
+          timeZone: timeZone
+        response:
+        - severity: ""
+          occurredAt: 2000-01-23T04:56:07.000+00:00
+          appName: appName
+          entityType: entityType
+          entityId: entityId
+          eventType: eventType
+          message: message
+          systemGenerated: true
+          userId: userId
+          eventMetadata: eventMetadata
+          entityMetadata: entityMetadata
+          ownerName: ownerName
+          entityName: entityName
+          subscriptionName: subscriptionName
+          tenantId: tenantId
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          parentEventId: parentEventId
+          userGroup: userGroup
+          order: 5
+        - severity: ""
+          occurredAt: 2000-01-23T04:56:07.000+00:00
+          appName: appName
+          entityType: entityType
+          entityId: entityId
+          eventType: eventType
+          message: message
+          systemGenerated: true
+          userId: userId
+          eventMetadata: eventMetadata
+          entityMetadata: entityMetadata
+          ownerName: ownerName
+          entityName: entityName
+          subscriptionName: subscriptionName
+          tenantId: tenantId
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          parentEventId: parentEventId
+          userGroup: userGroup
+          order: 5
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ApiMetadata'
+        response:
+          items:
+            $ref: '#/components/schemas/Event'
+          title: Get Events Response
+          type: array
+      title: EventApiResponse
+      type: object
+    NotificationApiResponse:
+      example:
+        metadata:
+          pagination:
+            pageOffset: 0
+            pageSize: 6
+          records: 1
+          timeZone: timeZone
+        response:
+        - parentEventId: parentEventId
+          events:
+          - acknowledged: true
+            notifyUser: true
+            tenantId: tenantId
+            id: id
+            event:
+              severity: ""
+              occurredAt: 2000-01-23T04:56:07.000+00:00
+              appName: appName
+              entityType: entityType
+              entityId: entityId
+              eventType: eventType
+              message: message
+              systemGenerated: true
+              userId: userId
+              eventMetadata: eventMetadata
+              entityMetadata: entityMetadata
+              ownerName: ownerName
+              entityName: entityName
+              subscriptionName: subscriptionName
+              tenantId: tenantId
+              id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+              parentEventId: parentEventId
+              userGroup: userGroup
+              order: 5
+            userId: userId
+            acknowledgedAt: 2000-01-23T04:56:07.000+00:00
+          - acknowledged: true
+            notifyUser: true
+            tenantId: tenantId
+            id: id
+            event:
+              severity: ""
+              occurredAt: 2000-01-23T04:56:07.000+00:00
+              appName: appName
+              entityType: entityType
+              entityId: entityId
+              eventType: eventType
+              message: message
+              systemGenerated: true
+              userId: userId
+              eventMetadata: eventMetadata
+              entityMetadata: entityMetadata
+              ownerName: ownerName
+              entityName: entityName
+              subscriptionName: subscriptionName
+              tenantId: tenantId
+              id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+              parentEventId: parentEventId
+              userGroup: userGroup
+              order: 5
+            userId: userId
+            acknowledgedAt: 2000-01-23T04:56:07.000+00:00
+        - parentEventId: parentEventId
+          events:
+          - acknowledged: true
+            notifyUser: true
+            tenantId: tenantId
+            id: id
+            event:
+              severity: ""
+              occurredAt: 2000-01-23T04:56:07.000+00:00
+              appName: appName
+              entityType: entityType
+              entityId: entityId
+              eventType: eventType
+              message: message
+              systemGenerated: true
+              userId: userId
+              eventMetadata: eventMetadata
+              entityMetadata: entityMetadata
+              ownerName: ownerName
+              entityName: entityName
+              subscriptionName: subscriptionName
+              tenantId: tenantId
+              id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+              parentEventId: parentEventId
+              userGroup: userGroup
+              order: 5
+            userId: userId
+            acknowledgedAt: 2000-01-23T04:56:07.000+00:00
+          - acknowledged: true
+            notifyUser: true
+            tenantId: tenantId
+            id: id
+            event:
+              severity: ""
+              occurredAt: 2000-01-23T04:56:07.000+00:00
+              appName: appName
+              entityType: entityType
+              entityId: entityId
+              eventType: eventType
+              message: message
+              systemGenerated: true
+              userId: userId
+              eventMetadata: eventMetadata
+              entityMetadata: entityMetadata
+              ownerName: ownerName
+              entityName: entityName
+              subscriptionName: subscriptionName
+              tenantId: tenantId
+              id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+              parentEventId: parentEventId
+              userGroup: userGroup
+              order: 5
+            userId: userId
+            acknowledgedAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ApiMetadata'
+        response:
+          items:
+            $ref: '#/components/schemas/UserEventList'
+          title: Get Notifications Response
+          type: array
+      title: NotificationApiResponse
+      type: object
+    NotificationSummaryApiResponse:
+      example:
+        metadata:
+          pagination:
+            pageOffset: 0
+            pageSize: 6
+          records: 1
+          timeZone: timeZone
+        response:
+        - occurredAt: 2000-01-23T04:56:07.000+00:00
+          acknowledged: true
+          entityName: entityName
+          entityType: entityType
+          appName: appName
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          message: message
+        - occurredAt: 2000-01-23T04:56:07.000+00:00
+          acknowledged: true
+          entityName: entityName
+          entityType: entityType
+          appName: appName
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          message: message
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ApiMetadata'
+        response:
+          items:
+            $ref: '#/components/schemas/NotificationSummary'
+          title: Get Notifications Summary Response
+          type: array
+      title: NotificationSummaryApiResponse
+      type: object
+    ApiError:
+      description: Common error response object for non 2xx responses
+      properties:
+        code:
+          description: Status code for the error response
+          type: string
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        defaultCodeSet:
+          type: boolean
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    ApiErrorDetails:
+      description: Common API exception details
+      properties:
+        resolution:
+          description: Resolution detail for API exception
+          type: string
+      type: object
+    ApiErrorOps:
+      description: Common error response object for non 2xx responses of internal
+        or ops APIs
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/TessellErrorCode'
+        message:
+          description: Error message for API response
+          type: string
+        details:
+          $ref: '#/components/schemas/ApiErrorDetails'
+        serviceException:
+          $ref: '#/components/schemas/ApiError'
+        contextId:
+          description: ContextId of API request
+          type: string
+        sessionId:
+          description: SessionId of API request
+          type: string
+      type: object
+    TessellErrorCode:
+      description: Error code object for API Exceptions
+      properties:
+        httpErrorCode:
+          description: Standard http error code
+          type: string
+        serviceCode:
+          description: Service error code
+          type: string
+        opCode:
+          description: Operation error code
+          type: string
+        description:
+          description: Error code description
+          type: string
+      type: object
+    inline_object:
+      properties:
+        entityType:
+          type: string
+        entityId:
+          type: string
+        severity:
+          $ref: '#/components/schemas/Severity'
+      type: object
+    inline_object_1:
+      properties:
+        entityType:
+          type: string
+        entityId:
+          type: string
+        severity:
+          $ref: '#/components/schemas/Severity'
+      type: object
+

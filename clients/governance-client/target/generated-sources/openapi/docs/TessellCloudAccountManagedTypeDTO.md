@@ -1,0 +1,15 @@
+
+
+# TessellCloudAccountManagedTypeDTO
+
+## Enum
+
+
+* `TESSELL_MANAGED_SHARED` (value: `"TESSELL_MANAGED_SHARED"`)
+
+* `TESSELL_MANAGED_DEDICATED` (value: `"TESSELL_MANAGED_DEDICATED"`)
+
+* `CUSTOMER_MANAGED` (value: `"CUSTOMER_MANAGED"`)
+
+
+
